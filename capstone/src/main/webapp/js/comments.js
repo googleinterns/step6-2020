@@ -16,8 +16,7 @@ function init() {
   commentField = document.getElementById("comment-field");
   commentContainer = document.getElementById("comments");
   
-  // determines if the comments are currently being displayed
-  commentsShown = false;
+  showComments();
 }
 
 function getComments() {
@@ -60,23 +59,12 @@ function buildElement(type, content) {
   return element;
 }
 
-/** If comments are being shown, populate them with the most up to date values. */
-function refreshComments() {
-  if (commentsShown) {
-    commentContainer.innerHTML = '';
-    getComments().then(
-      comments => comments.forEach(
-        comment => commentContainer.appendChild(buildCommentElement(comment))
-      )
-    );
-  }
-}
-
 function addUserComment() {
   postComment(commentField.value, getUserId());
 
   commentField.value = "";
-  refreshComments();
+  commentContainer.innerHTML = '';
+  showComments();
 }
 
 function buildCommentElement(comment) {
@@ -95,7 +83,9 @@ function buildCommentElement(comment) {
 }
 
 function showComments() {
-  document.getElementById("show-comments-button").remove();
-  commentsShown = true;
-  refreshComments();
+  getComments().then(
+    comments => comments.forEach(
+      comment => commentContainer.appendChild(buildCommentElement(comment))
+    )
+  );
 }
