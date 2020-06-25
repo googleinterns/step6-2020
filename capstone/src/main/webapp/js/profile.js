@@ -1,5 +1,5 @@
 // Toggle between view and edit profile options.
-function showProfile() {
+function toggleProfile() {
   var viewProfile = document.getElementById("view-profile-section");
   var editProfile = document.getElementById("edit-profile-section");
 
