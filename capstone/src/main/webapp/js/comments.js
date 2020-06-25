@@ -53,7 +53,7 @@ function getUserName(userId) {
 
 /** Build html element of specified type and content */
 function buildElement(type, content) {
-  let element = document.createElement(type, content);
+  let element = document.createElement(type);
   element.innerText = content;
 
   return element;
@@ -67,18 +67,30 @@ function addUserComment() {
   showComments();
 }
 
+function buildShowRepliesElement(commentId) {
+  let button = document.createElement('button');
+
+  button.className = 'show-replies-button';
+  button.onlick = () => showReplies(commentId);
+  button.innerText = 'Show replies';
+
+  return button;
+}
+
 function buildCommentElement(comment) {
   let commentElement = document.createElement('div');
   
   commentElement.className = 'comment'
   commentElement.id = comment.id;
   commentElement.innerHTML = '';
-  commentElement.appendChild(buildElement('p', comment.content));
+  commentElement.innerHTML += comment.content + '\n';
+  commentElement.appendChild(buildElement('br', ""))
+  // commentElement.appendChild(buildElement('p', comment.content));
+  getUserName(comment.userId)
+    .then(userName =>  commentElement.appendChild(buildElement("small", userName)))
+    .then(() => commentElement.appendChild(buildElement('br', "")))
+    .then(() => commentElement.appendChild(buildShowRepliesElement(comment.id)));
   
-  getUserName(comment.userId).then(
-    userName =>  commentElement.appendChild(buildElement('small', userName))
-  );
-
   return commentElement;
 }
 
@@ -88,4 +100,8 @@ function showComments() {
       comment => commentContainer.appendChild(buildCommentElement(comment))
     )
   );
+}
+
+function showReplies(commentId) {
+  console.log("show replies for " + commentId);
 }
