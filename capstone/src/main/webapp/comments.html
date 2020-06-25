@@ -4,16 +4,15 @@
     <meta charset="UTF-8">
     <title>Comments</title>
     <link rel="stylesheet" href="css/comments.css">
-    <script src="js/comments.js"></script>
+    <script type="module" src="js/comments.js"></script>
   </head>
-  <body onload="init()">
-      <div id="comment-input">
-        <textarea cols="70" id="comment-field" placeholder="Write a comment" rows="2" type="text"></textarea>
-        <input type="submit" value="Post" onclick="addUserComment()"> 
-      </div>
+  <body>
+    <div id="comment-input">
+      <textarea cols="70" id="comment-field" placeholder="Write a comment" rows="2" type="text"></textarea>
+      <input type="submit" value="Post" onclick="addUserComment()"> 
+    </div>
 
-      <div id="comments">
-      </div>
+    <div id="comments">
     </div>
   </body>
 </html>
