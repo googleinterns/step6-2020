@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Profile</title>
+    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/profile.css">
     <script src="js/profile.js"></script>
   </head>
@@ -20,8 +21,8 @@
     </nav>
 
     <div class="content">
-      <div class="view-profile-section">
-        <a href="/profile.html"><button onclick="showProfile()">Edit Profile</button></a>
+      <div id="view-profile-section">
+        <button onclick="toggleProfile()">Edit Profile</button>
         <h1>John Doe</h1>
         <p>
           Hello! I'm John and I'm a singer. This pandemic is a rough one and
@@ -38,8 +39,8 @@
         </p>
       </div>
 
-      <div class="edit-profile-section">
-        <form class="edit-profile">
+      <div id="edit-profile-section">
+        <form id="edit-profile">
           <label for="fname">First name:</label><br>
           <input type="text" value="John"><br>
           <label for="lname">Last name:</label><br>
@@ -58,17 +59,13 @@
             I would head off to the nearby beach and take a swim. Painting is a little
             difficult for me, but I'm getting there! 
           </textarea>
-          <input type="submit" value="Submit" onclick="showProfile()">
+          <input type="submit" value="Submit" onclick="toggleProfile()">
         </form> 
       </div>
 
       </div class="comment-section">
         <!-- TODO: Add comment section here. -->
       </div>
-    </div>
-
-    <div class="footer">
-      <p>If you have questions, click on this link to contact us! :)</p>
     </div>
   </body>
 </html>
