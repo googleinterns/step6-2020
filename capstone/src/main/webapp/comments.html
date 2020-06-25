@@ -6,16 +6,16 @@
     <link rel="stylesheet" href="css/comments.css">
     <script src="js/comments.js"></script>
   </head>
-  <body>
+  <body onload="init()">
       <div id="comment-input">
-        <textarea id="comment-field" type="text " rows="2"  placeholder="write a comment"></textarea>
-        <input type="submit" value="Post" onclick="addComment()"> 
+        <textarea cols="70" id="comment-field" placeholder="Write a comment" rows="2" type="text"></textarea>
+        <input type="submit" value="Post" onclick="addUserComment()"> 
       </div>
+
       <div id="comments">
-        <button type="button" onclick="showComments()" id=show-comments-button>
+        <button id="show-comments-button" type="button" onclick="showComments()" >
           Show comments
         </button>
-      </div>
       </div>
     </div>
   </body>

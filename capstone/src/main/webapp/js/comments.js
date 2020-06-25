@@ -12,17 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-commentField = document.getElementById("comment-field");
-showCommentsButton = document.getElementById("show-comments-button");
+function init() {
+  commentField = document.getElementById("comment-field");
+  commentContainer = document.getElementById("comments");
+  
+  // determines if the comments are currently being displayed
+  commentsShown = false;
+}
 
-// determines if the comments are currently being displayed
-commentsShown = false;
+function getComments() {
+  // TODO (bergmoney@): make get request to comments servlet
+  comments = [
+    {userId: 1, content: 'Hii', timestamp: 1},
+    {userId: 2, content: 'I am sorry about what happened to your business', timestamp: 2}
+  ]
 
-function buildElement(type, content) {
-  element = document.createElement(type, content);
-  element.innerText = content;
+  return wrapInPromise(comments);
+}
 
-  return element;
+function postComment(content, userId) {
+  //TODO (bergmoney@): Post comment to servlet
+  console.log("Post comment \"" + content + "\" by user " + userId);
 }
 
 function getUserId() {
@@ -34,44 +44,58 @@ function getUserName(userId) {
   // TODO (bergmoney@): Request username from API
   let users = ["lukas", "winnie", "eashan", "ben", "alyssa"];
 
-  return users[userId];
+  return wrapInPromise(users[userId]);
 }
 
-function clearCommentField() {
-  commentField.value = "";  
+/** Wrap a value in a promise to simulate a server request. */
+function wrapInPromise(val) {
+  return new Promise((resolve, reject) => resolve(val));
 }
 
+/** Build html element of specified type and content */
+function buildElement(type, content) {
+  let element = document.createElement(type, content);
+  element.innerText = content;
+
+  return element;
+}
+
+/** If comments are being shown, populate them with the most up to date values. */
 function refreshComments() {
   if (commentsShown) {
-    getComments.then(
-      comments => comments.forEach(showComment)
+    commentContainer.innerHTML = '';
+    getComments().then(
+      comments => comments.forEach(
+        comment => commentContainer.appendChild(buildCommentElement(comment))
+      )
     );
   }
 }
 
-function addComment() {
+function addUserComment() {
   postComment(commentField.value, getUserId());
 
-  clearCommentField();
+  commentField.value = "";
   refreshComments();
 }
 
-/** Creates a comment element containing text. */
-function showComment(comment) {
+function buildCommentElement(comment) {
   let commentElement = document.createElement('div');
   
   commentElement.className = 'comment'
   commentElement.id = comment.id;
   commentElement.innerHTML = '';
   commentElement.appendChild(buildElement('p', comment.content));
-  commentElement.appendChild(buildElement("small", getUserName(comment.userId)));
-  commentElement.appendChild(createDeleteButton(comment.id));
+  
+  getUserName(comment.userId).then(
+    userName =>  commentElement.appendChild(buildElement("small", userName))
+  );
 
   return commentElement;
 }
 
 function showComments() {
-  showCommentsButton.remove();
+  document.getElementById("show-comments-button").remove();
   commentsShown = true;
   refreshComments();
 }
