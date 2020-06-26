@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { wrapInPromise, buildElement } from '/js/util.js';
+import { wrapInPromise, buildElement, buildButton } from '/js/util.js';
 
 var commentField = undefined;
 var commentContainer = undefined;
@@ -34,9 +34,9 @@ function getComments() {
   return wrapInPromise(comments);
 }
 
-function postComment(content, userId) {
+function postComment(content, userId, parentId = null) {
   //TODO (bergmoney@): Post comment to servlet
-  console.log('Post comment \'' + content + '\' by user ' + userId);
+  console.log('Post comment \'' + content + '\' by user ' + userId + ' with parent ' + parentId);
 }
 
 function getUserId() {
@@ -69,26 +69,6 @@ function addUserComment() {
   showComments();
 }
 
-function buildShowRepliesElement(commentId) {
-  let button = document.createElement('button');
-
-  button.className = 'show-replies-button';
-  button.addEventListener('click', () => showReplies(commentId));
-  button.innerText = 'Show replies';
-
-  return button;
-}
-
-function buildRepliesDiv(commentId) {
-  let div = document.createElement('div');
-
-  div.className = 'replies';
-  div.innerHTML = '';
-  div.appendChild(buildShowRepliesElement(commentId));
-
-  return div;
-}
-
 async function buildCommentElement(comment) {
   let commentElement = document.createElement('div');
   
@@ -104,11 +84,66 @@ async function buildCommentElement(comment) {
   return commentElement;
 }
 
+function buildShowRepliesElement(commentId) {
+  let button = document.createElement('button');
+
+  button.className = 'show-replies-button';
+  button.addEventListener('click', () => showReplies(commentId));
+  button.innerText = 'Show replies';
+
+  return button;
+}
+
+function buildRepliesDiv(commentId) {
+  let div = document.createElement('div');
+
+  div.className = 'replies';
+  div.innerHTML = '';
+  div.appendChild(buildButton('show-replies-button', () => showReplies(commentId), 'Show replies'));
+
+  return div;
+}
+
+function showReplyToCommentField(commentId) {
+  let replyToCommentDiv = document.getElementById(commentId).querySelector('.reply-to-comment-div');
+
+  replyToCommentDiv.innerHTML = '';
+
+  let textArea = document.createElement('textarea');
+  textArea.cols = 70;
+  textArea.placeholder = 'Write a comment';
+  textArea.rows = 2;
+  textArea.type = 'text';
+
+  replyToCommentDiv.appendChild(textArea);
+  
+  replyToCommentDiv.appendChild( 
+    buildButton(
+      'submit-reply-button', 
+      () => postComment(textArea.value, getUserId(), commentId), 
+      'Post'
+    )
+  );
+}
+
+function buildReplyToCommentDiv(commentId) {
+  let div = document.createElement('div');
+
+  div.className = 'reply-to-comment-div';
+  div.innerHTML = '';
+  div.appendChild(
+      buildButton('reply-to-comment-button', () => showReplyToCommentField(commentId), 'Reply'));
+
+  return div
+}
+
 async function buildTopLevelCommentElement(comment) {
   let commentElement = await buildCommentElement(comment);
   
   commentElement.appendChild(document.createElement('br'));
+  commentElement.appendChild(buildReplyToCommentDiv(comment.id));
   commentElement.appendChild(buildRepliesDiv(comment.id));
+  
 
   return commentElement;
 }
