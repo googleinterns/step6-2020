@@ -39,40 +39,9 @@ function getMonthDiff(now, then) {
 /** 
 * Format timestamp by showing the minutes/hours/days/weeks/months/years passed since date */
 export function showTimeElapsedSince(then) {
-  let now = new Date();
+  var moment = require('moment');
+  let thenMoment = moment(then);
+  let nowMoment = moment(now);
 
-  let milliSecondDiff = now - then;
-  let secondDiff = div(milliSecondDiff, 1000);
-
-  let minuteDiff = div(secondDiff, 60);
-  if (minuteDiff < 1) {
-    return secondDiff + 's'
-  }
-
-  let hourDiff = div(minuteDiff, 60);
-  if (hourDiff < 1) {
-    return minuteDiff + ' m';
-  }
-
-  let dayDiff = div(hourDiff, 24);
-  if (dayDiff < 1) {
-    return hourDiff + 'h';
-  }
-
-  let weekDiff = div(dayDiff, 7);
-  if (weekDiff < 1) {
-    return dayDiff + 'd';
-  }
-
-  let monthDiff = getMonthDiff(now, then);
-  if (monthDiff < 1) {
-    return weekDiff + 'wk';
-  }
-
-  let yearDiff = div(monthDiff, 12);
-  if (yearDiff < 1) {
-    return monthDiff + 'mo';
-  }
-
-  return yearDiff + 'yr';
+  return nowMoment.diff(thenMoment, 'days');
 }
