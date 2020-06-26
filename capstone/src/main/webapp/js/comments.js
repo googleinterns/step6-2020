@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { wrapInPromise, buildElement } from '/js/util.js';
+import { wrapInPromise, buildElement, buildButton } from '/js/util.js';
 
-var commentField = undefined;
-var commentContainer = undefined;
+var COMMENT_FIELD = undefined;
+var COMMENT_CONTAINER = undefined;
 
 window.onload = () =>{
-  commentField = document.getElementById('comment-field');
-  commentContainer = document.getElementById('comments');
+  COMMENT_FIELD = document.getElementById('comment-field');
+  COMMENT_CONTAINER = document.getElementById('comments');
   
   showComments();
 }
@@ -34,9 +34,9 @@ function getComments() {
   return wrapInPromise(comments);
 }
 
-function postComment(content, userId) {
+function postComment(content, userId, parentId = null) {
   //TODO (bergmoney@): Post comment to servlet
-  console.log('Post comment \'' + content + '\' by user ' + userId);
+  console.log('Post comment \'' + content + '\' by user ' + userId + ' with parent ' + parentId);
 }
 
 function getUserId() {
@@ -61,32 +61,12 @@ function getReplies(commentId) {
   return wrapInPromise(replies);
 }
 
-function addUserComment() {
-  postComment(commentField.value, getUserId());
+function addUserComment(textArea, parentId = null) {
+  postComment(textArea.value, getUserId(), parentId);
 
-  commentField.value = '';
-  commentContainer.innerHTML = '';
+  textArea.value = '';
+  COMMENT_CONTAINER.innerHTML = '';
   showComments();
-}
-
-function buildShowRepliesElement(commentId) {
-  let button = document.createElement('button');
-
-  button.className = 'show-replies-button';
-  button.addEventListener('click', () => showReplies(commentId));
-  button.innerText = 'Show replies';
-
-  return button;
-}
-
-function buildRepliesDiv(commentId) {
-  let div = document.createElement('div');
-
-  div.className = 'replies';
-  div.innerHTML = '';
-  div.appendChild(buildShowRepliesElement(commentId));
-
-  return div;
 }
 
 async function buildCommentElement(comment) {
@@ -104,11 +84,65 @@ async function buildCommentElement(comment) {
   return commentElement;
 }
 
+function buildShowRepliesElement(commentId) {
+  let button = document.createElement('button');
+
+  button.className = 'show-replies-button';
+  button.addEventListener('click', () => showReplies(commentId));
+  button.innerText = 'Show replies';
+
+  return button;
+}
+
+function buildRepliesDiv(commentId) {
+  let div = document.createElement('div');
+
+  div.className = 'replies';
+  div.innerHTML = '';
+  div.appendChild(buildButton('show-replies-button', () => showReplies(commentId), 'Show replies'));
+
+  return div;
+}
+
+function showReplyToCommentField(parentId) {
+  let replyToCommentDiv = document.getElementById(parentId).querySelector('.reply-to-comment-div');
+
+  replyToCommentDiv.innerHTML = '';
+
+  let textArea = document.createElement('textArea');
+  textArea.cols = 70;
+  textArea.placeholder = 'Write a comment';
+  textArea.rows = 2;
+
+  replyToCommentDiv.appendChild(textArea);
+  
+  replyToCommentDiv.appendChild( 
+    buildButton(
+      'submit-reply-button', 
+      () => addUserComment(textArea, parentId),
+      'Post'
+    )
+  );
+}
+
+function buildReplyToCommentDiv(parentId) {
+  let div = document.createElement('div');
+
+  div.className = 'reply-to-comment-div';
+  div.innerHTML = '';
+  div.appendChild(
+      buildButton('reply-to-comment-button', () => showReplyToCommentField(parentId), 'Reply'));
+
+  return div
+}
+
 async function buildTopLevelCommentElement(comment) {
   let commentElement = await buildCommentElement(comment);
   
   commentElement.appendChild(document.createElement('br'));
+  commentElement.appendChild(buildReplyToCommentDiv(comment.id));
   commentElement.appendChild(buildRepliesDiv(comment.id));
+  
 
   return commentElement;
 }
@@ -118,7 +152,7 @@ function showComments() {
     comments => comments.forEach(
       comment => 
         buildTopLevelCommentElement(comment).then(commentElement =>
-          commentContainer.appendChild(commentElement)
+          COMMENT_CONTAINER.appendChild(commentElement)
         )
     )
   );

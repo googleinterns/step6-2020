@@ -24,3 +24,14 @@ export function buildElement(type, content) {
 
   return element;
 }
+
+/** Build button with a given class name, action when clicked, and label */
+export function buildButton(className, clickAction, label) {
+  let button = document.createElement('button');
+
+  button.className = className;
+  button.addEventListener('click', clickAction);
+  button.innerText = label;
+
+  return button;
+}
