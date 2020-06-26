@@ -90,7 +90,8 @@ function buildCommentElement(comment) {
   commentElement.className = 'comment';
   commentElement.id = comment.id;
   commentElement.innerHTML = '';
-  commentElement.innerHTML = showTimeElapsedSince(new Date(comment.timestamp)) + '\n' + '<br>';
+  commentElement.appendChild(
+      buildElement('small', showTimeElapsedSince(new Date(comment.timestamp))));
   commentElement.appendChild(buildElement('p', comment.content));
   
   getUserName(comment.userId).then(
