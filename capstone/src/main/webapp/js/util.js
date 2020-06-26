@@ -16,3 +16,11 @@
 export function wrapInPromise(val) {
   return new Promise((resolve, reject) => resolve(val));
 }
+
+/** Build html element of specified type and content */
+export function buildElement(type, content) {
+  let element = document.createElement(type);
+  element.innerText = content;
+
+  return element;
+}
