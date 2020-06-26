@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { wrapInPromise } from '/js/util.js';
+import { wrapInPromise, showTimeElapsedSince } from '/js/util.js';
 
 var commentField = undefined;
 var commentContainer = undefined;
@@ -26,9 +26,26 @@ window.onload = function () {
 
 function getComments() {
   // TODO (bergmoney@): make get request to comments servlet
+  let translatedLoremIpsum = "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant pleasure?"
+
+  let originalLoremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+
+
   let comments = [
-    {userId: 1, content: 'Hii', timestamp: 1},
-    {userId: 2, content: 'I am sorry about what happened to your business', timestamp: 2}
+    {userId: 1, content: 'Hii', 
+        timestamp: Date.parse('01 Jan 1970 00:00:00 GMT')},
+    {userId: 2, content: 'I am sorry about what happened to your business', 
+        timestamp: Date.parse('30 Jun 2019 00:00:00 GMT')},
+    {userId: 2, content: translatedLoremIpsum,
+        timestamp: Date.parse('01 Jan 2020 00:00:00 GMT')},
+    {userId: 3, content: originalLoremIpsum,
+        timestamp: Date.parse('01 Jun 2020 00:00:00 GMT')},
+    {userId: 0, content: 'I love pizza. This should never happen to a pizza joint. Sending my love',
+        timestamp: Date.parse('24 Jun 2020 00:00:00 GMT')},
+    {userId: 0, content: 'I love pizza. This should never happen to a pizza joint. Sending my love',
+        timestamp: Date.parse('26 Jun 2020 10:00:00 GMT')},
+    {userId: 0, content: 'I love pizza. This should never happen to a pizza joint. Sending my love',
+        timestamp: Date.parse('26 Jun 2020 16:00:00 GMT')}
   ];
 
   return wrapInPromise(comments);
@@ -70,9 +87,10 @@ function addUserComment() {
 function buildCommentElement(comment) {
   let commentElement = document.createElement('div');
   
-  commentElement.className = 'comment'
+  commentElement.className = 'comment';
   commentElement.id = comment.id;
   commentElement.innerHTML = '';
+  commentElement.innerHTML = showTimeElapsedSince(new Date(comment.timestamp)) + '\n' + '<br>';
   commentElement.appendChild(buildElement('p', comment.content));
   
   getUserName(comment.userId).then(
