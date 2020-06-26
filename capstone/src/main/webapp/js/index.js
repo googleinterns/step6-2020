@@ -7,28 +7,38 @@ window.onload = function() {
     let businessCard = document.createElement('div');
     businessCard.classList.add('business-card');
 
-    // Create header as well as link to this business page.
-    let businessLink = buildElement('a', '');
-    businessLink.href = 'business.html';
-    businessLink.appendChild(buildElement('h2', getBusinessNames()[i]));
-    businessCard.appendChild(businessLink);
-
-    // Add description to business.
-    let businessInfo = buildElement('p', getBusinessDescriptions()[i]);
-    businessInfo.classList.add('business-info');
-    businessCard.appendChild(businessInfo);
-
-    // Add show more button.
-    let showMore = buildElement('p', '');
-    let showMoreSpan = buildElement('span', 'Show More');
-    showMore.appendChild(showMoreSpan);
-    showMore.classList.add('show-more');
-    showMore.id = 'business' + i;
-    showMore.onclick = function() { showMoreInfo(showMore.id); };
-    businessCard.appendChild(showMore);
+    businessCard.appendChild(createBusinessLink(i, 'business.html'));
+    businessCard.appendChild(createBusinessInfo(i));
+    businessCard.appendChild(createShowMoreButton(i));
 
     businesses.appendChild(businessCard);
   }
+}
+
+function createBusinessLink(index, href) {
+  // Creates a business card header that links to the respective business page.
+  let businessLink = buildElement('a', '');
+  businessLink.href = href;
+  businessLink.appendChild(buildElement('h2', getBusinessNames()[index]));
+  return businessLink;
+}
+
+function createBusinessInfo(index) {
+  // Creates a description to the business.
+  let businessInfo = buildElement('p', getBusinessDescriptions()[index]);
+  businessInfo.classList.add('business-info');
+  return businessInfo;
+}
+
+function createShowMoreButton(index) {
+  // Creates the show more button at the bottom of the business card.
+  let showMore = buildElement('p', '');
+  let showMoreSpan = buildElement('span', 'Show More');
+  showMore.appendChild(showMoreSpan);
+  showMore.classList.add('show-more');
+  showMore.id = 'business' + index;
+  showMore.onclick = function() { showMoreInfo(showMore.id); };
+  return showMore;
 }
 
 function showMoreInfo(id) {
@@ -44,10 +54,12 @@ function showMoreInfo(id) {
 }
 
 function getBusinessNames() {
+  // temporary function that will be replaced by fetches to datastore.
   return ['La Villa Pizzeria', 'La Casa Pizzeria'];
 }
 
 function getBusinessDescriptions() {
+  // temporary function that will be replaced by fetches to datastore.
   return [`In order to tell the story of how La Villa came to be in 1982 properly, 
           we must go back three decades before. In 1955 my Uncle, Gino Branchinelli 
           opened the family's first Pizzeria on 5th avenue and Bay ridge. He along 
