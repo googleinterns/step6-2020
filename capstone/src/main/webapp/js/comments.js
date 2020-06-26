@@ -14,12 +14,12 @@
 
 import { wrapInPromise, buildElement, buildButton } from '/js/util.js';
 
-var commentField = undefined;
-var commentContainer = undefined;
+var COMMENT_FIELD = undefined;
+var COMMENT_CONTAINER = undefined;
 
 window.onload = () =>{
-  commentField = document.getElementById('comment-field');
-  commentContainer = document.getElementById('comments');
+  COMMENT_FIELD = document.getElementById('comment-field');
+  COMMENT_CONTAINER = document.getElementById('comments');
   
   showComments();
 }
@@ -61,11 +61,11 @@ function getReplies(commentId) {
   return wrapInPromise(replies);
 }
 
-function addUserComment() {
-  postComment(commentField.value, getUserId());
+function addUserComment(textArea, parentId = null) {
+  postComment(textArea.value, getUserId(), parentId);
 
-  commentField.value = '';
-  commentContainer.innerHTML = '';
+  textArea.value = '';
+  COMMENT_CONTAINER.innerHTML = '';
   showComments();
 }
 
@@ -104,35 +104,34 @@ function buildRepliesDiv(commentId) {
   return div;
 }
 
-function showReplyToCommentField(commentId) {
-  let replyToCommentDiv = document.getElementById(commentId).querySelector('.reply-to-comment-div');
+function showReplyToCommentField(parentId) {
+  let replyToCommentDiv = document.getElementById(parentId).querySelector('.reply-to-comment-div');
 
   replyToCommentDiv.innerHTML = '';
 
-  let textArea = document.createElement('textarea');
+  let textArea = document.createElement('textArea');
   textArea.cols = 70;
   textArea.placeholder = 'Write a comment';
   textArea.rows = 2;
-  textArea.type = 'text';
 
   replyToCommentDiv.appendChild(textArea);
   
   replyToCommentDiv.appendChild( 
     buildButton(
       'submit-reply-button', 
-      () => postComment(textArea.value, getUserId(), commentId), 
+      () => addUserComment(textArea, parentId),
       'Post'
     )
   );
 }
 
-function buildReplyToCommentDiv(commentId) {
+function buildReplyToCommentDiv(parentId) {
   let div = document.createElement('div');
 
   div.className = 'reply-to-comment-div';
   div.innerHTML = '';
   div.appendChild(
-      buildButton('reply-to-comment-button', () => showReplyToCommentField(commentId), 'Reply'));
+      buildButton('reply-to-comment-button', () => showReplyToCommentField(parentId), 'Reply'));
 
   return div
 }
@@ -153,7 +152,7 @@ function showComments() {
     comments => comments.forEach(
       comment => 
         buildTopLevelCommentElement(comment).then(commentElement =>
-          commentContainer.appendChild(commentElement)
+          COMMENT_CONTAINER.appendChild(commentElement)
         )
     )
   );
