@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { wrapInPromise, showTimeElapsedSince } from '/js/util.js';
+import { wrapInPromise } from '/js/util.js';
 
 var commentField = undefined;
 var commentContainer = undefined;
@@ -33,19 +33,19 @@ function getComments() {
 
   let comments = [
     {userId: 1, content: 'Hii', 
-        timestamp: Date.parse('01 Jan 1970 00:00:00 GMT')},
+        timestamp: Date.parse('01 Jan 1970 00:00:00 GMT'), timeElapsedStr: '20yr'},
     {userId: 2, content: 'I am sorry about what happened to your business', 
-        timestamp: Date.parse('30 Jun 2019 00:00:00 GMT')},
+        timestamp: Date.parse('30 Jun 2019 00:00:00 GMT'), timeElapsedStr: '5mo'},
     {userId: 2, content: translatedLoremIpsum,
-        timestamp: Date.parse('01 Jan 2020 00:00:00 GMT')},
+        timestamp: Date.parse('01 Jan 2020 00:00:00 GMT'), timeElapsedStr: '10wk'},
     {userId: 3, content: originalLoremIpsum,
-        timestamp: Date.parse('01 Jun 2020 00:00:00 GMT')},
+        timestamp: Date.parse('01 Jun 2020 00:00:00 GMT'), timeElapsedStr: '1wk'},
     {userId: 0, content: 'I love pizza. This should never happen to a pizza joint. Sending my love',
-        timestamp: Date.parse('24 Jun 2020 00:00:00 GMT')},
+        timestamp: Date.parse('24 Jun 2020 00:00:00 GMT'), timeElapsedStr: '1d'},
     {userId: 0, content: 'I love pizza. This should never happen to a pizza joint. Sending my love',
-        timestamp: Date.parse('26 Jun 2020 10:00:00 GMT')},
+        timestamp: Date.parse('26 Jun 2020 10:00:00 GMT'), timeElapsedStr: '10h'},
     {userId: 0, content: 'I love pizza. This should never happen to a pizza joint. Sending my love',
-        timestamp: Date.parse('26 Jun 2020 16:00:00 GMT')}
+        timestamp: Date.parse('26 Jun 2020 16:00:00 GMT'), timeElapsedStr: '4h'}
   ];
 
   return wrapInPromise(comments);
@@ -90,8 +90,8 @@ function buildCommentElement(comment) {
   commentElement.className = 'comment';
   commentElement.id = comment.id;
   commentElement.innerHTML = '';
-  commentElement.appendChild(
-      buildElement('small', showTimeElapsedSince(comment.timestamp)));
+  // TODO (bergmoney@): add field that shows how much time has elapsed to the backend comment object
+  commentElement.appendChild(buildElement('small', comment.timeElapsedStr));
   commentElement.appendChild(buildElement('p', comment.content));
   
   getUserName(comment.userId).then(

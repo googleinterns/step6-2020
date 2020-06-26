@@ -17,48 +17,7 @@ export function wrapInPromise(val) {
   return new Promise((resolve, reject) => resolve(val));
 }
 
-function millisElapsedSince(ts) {
-  let current = new Date();
-  return current.getTime() - ts;
-}
-
 /** Perform integer division, rounding the floating point result down. */
 export function div(a, b) {
   return Math.floor(a / b);
-}
-
-function getMonthDiff(now, then) {
-  let yearDiff = now.getFullYear() - then.getFullYear();
-  
-  // Could be negative (e.g. when comparing January 2020 with December 2019)
-  let monthDiff = now.getMonth() - then.getMonth();
-
-  return yearDiff * 12 + monthDiff;
-}
-
-/** 
-* Format timestamp by showing the minutes/hours/days/weeks/months/years passed since date */
-export function showTimeElapsedSince(then) {
-  let elapsedTimeMillis = (new Date()) - then;
-
-  let seconds = div(elapsedTimeMillis, 1000);
-  let minutes = div(seconds, 60);
-  let hours = div(minutes, 60);
-  let days = div(hours, 60);
-  let weeks = div(days, 7);
-  let years = div(days, 365);
-
-  if (years != 0) {
-    return years + 'yr';
-  } else if (weeks != 0) {
-    return weeks + 'wk'
-  } else if (days != 0) {
-    return days + 'd';
-  } else if (hours != 0) {
-    return hours + 'h';
-  } else if (minutes != 0) {
-    return minutes + 'm';
-  } else {
-    return seconds + 's';
-  }
 }
