@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { wrapInPromise, showTimeElapsedSince } from '/js/util.js';
+import { buildElement, showTimeElapsedSince, wrapInPromise } from '/js/util.js';
 
 var commentField = undefined;
 var commentContainer = undefined;
 
-window.onload = function () {
+window.onload = () =>{
   commentField = document.getElementById('comment-field');
   commentContainer = document.getElementById('comments');
   
@@ -68,12 +68,14 @@ function getUserName(userId) {
   return wrapInPromise(users[userId]);
 }
 
-/** Build html element of specified type and content */
-function buildElement(type, content) {
-  let element = document.createElement(type, content);
-  element.innerText = content;
-
-  return element;
+function getReplies(commentId) {
+  // TODO (bergmoney@): Request replies from API
+  let hash = commentId + 10;
+  let replies = [
+    {id: hash, userId: 0, content: 'Hii', timestamp: 1},
+    {id: hash, userId: 1, content: 'I am sorry about what happened to your business', timestamp: 2}
+  ]
+  return wrapInPromise(replies);
 }
 
 function addUserComment() {
@@ -84,7 +86,27 @@ function addUserComment() {
   showComments();
 }
 
-function buildCommentElement(comment) {
+function buildShowRepliesElement(commentId) {
+  let button = document.createElement('button');
+
+  button.className = 'show-replies-button';
+  button.addEventListener('click', () => showReplies(commentId));
+  button.innerText = 'Show replies';
+
+  return button;
+}
+
+function buildRepliesDiv(commentId) {
+  let div = document.createElement('div');
+
+  div.className = 'replies';
+  div.innerHTML = '';
+  div.appendChild(buildShowRepliesElement(commentId));
+
+  return div;
+}
+
+async function buildCommentElement(comment) {
   let commentElement = document.createElement('div');
   
   commentElement.className = 'comment';
@@ -92,11 +114,20 @@ function buildCommentElement(comment) {
   commentElement.innerHTML = '';
   commentElement.appendChild(
       buildElement('small', showTimeElapsedSince(new Date(comment.timestamp))));
-  commentElement.appendChild(buildElement('p', comment.content));
+  commentElement.innerHTML += comment.content + '\n';
+  commentElement.appendChild(document.createElement('br'));
   
-  getUserName(comment.userId).then(
-    userName =>  commentElement.appendChild(buildElement('small', userName))
-  );
+  let userName = await getUserName(comment.userId);
+  commentElement.appendChild(buildElement('small', userName));
+  
+  return commentElement;
+}
+
+async function buildTopLevelCommentElement(comment) {
+  let commentElement = await buildCommentElement(comment);
+  
+  commentElement.appendChild(document.createElement('br'));
+  commentElement.appendChild(buildRepliesDiv(comment.id));
 
   return commentElement;
 }
@@ -104,7 +135,23 @@ function buildCommentElement(comment) {
 function showComments() {
   getComments().then(
     comments => comments.forEach(
-      comment => commentContainer.appendChild(buildCommentElement(comment))
+      comment => 
+        buildTopLevelCommentElement(comment).then(commentElement =>
+          commentContainer.appendChild(commentElement)
+        )
+    )
+  );
+}
+
+async function showReplies(commentId) {
+  let replyDiv = document.getElementById(commentId).querySelector('.replies');
+
+  replyDiv.innerHTML = '';
+
+  let replies = await getReplies(commentId);
+  replies.forEach(reply =>
+    buildCommentElement(reply).then(commentElement =>
+      replyDiv.appendChild(commentElement)
     )
   );
 }
