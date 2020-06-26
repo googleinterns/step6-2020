@@ -17,10 +17,37 @@ import { wrapInPromise, buildElement } from '/js/util.js';
 var commentField = undefined;
 var commentContainer = undefined;
 
-window.onload = () =>{
-  commentField = document.getElementById('comment-field');
+window.onload = () => loadCommentSection(document.getElementById('comment-section'));
+
+export function loadCommentSection(parentDiv) {
   commentContainer = document.getElementById('comments');
+
+  parentDiv.innerHTML = '';
   
+  let commentInput = document.createElement('div');
+  commentInput.id = 'comment-input';
+  commentInput.innerHTML = '';
+  
+  commentField = document.createElement('textarea');
+  commentField.cols = 70;
+  commentField.placeholder = 'Write a comment';
+  commentField.rows = 3;
+  
+  commentInput.appendChild(commentField);
+
+  let submitButton = document.createElement('button');
+  submitButton.className = 'submit-button';
+  submitButton.innerText = 'Submit';
+  submitButton.addEventListener('click', () => addUserComment());
+
+  commentInput.appendChild(submitButton);
+
+  parentDiv.appendChild(commentInput);
+
+  commentContainer = document.createElement('div');
+  commentContainer.id = 'comments';
+
+  parentDiv.appendChild(commentContainer);
   showComments();
 }
 
