@@ -21,3 +21,11 @@ export function wrapInPromise(val) {
 export function div(a, b) {
   return Math.floor(a / b);
 }
+
+/** Build html element of specified type and content */
+export function buildElement(type, content) {
+  let element = document.createElement(type);
+  element.innerText = content;
+
+  return element;
+}
