@@ -1,0 +1,34 @@
+#content {
+  margin-left: auto;
+  margin-right: auto;
+  width: 750px;
+}
+
+.business-card {
+  border: 5px solid silver;
+  border-radius: 20px;
+  max-height: 150px;
+  overflow: hidden;
+  position: relative;
+}
+
+.business-info {
+  font-size: 125%;
+}
+
+.show-more {
+  background-image: linear-gradient(transparent, white);
+  bottom: 0;
+  color: darkgreen;
+  margin: 0;
+  padding: 20px 0px;
+  position: absolute;
+  text-align: center;
+  width: 100%;
+}
+
+.show-more span {
+  background-color: silver;
+  padding: 5px;
+  border-radius: 5px;
+}

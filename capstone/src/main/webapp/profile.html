@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Profile</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/profile.css">
+    <script src="js/profile.js"></script>
+  </head>
+  <body>
+    <nav>
+      <div class="logo">
+        <h1>Support Local Businesses</h1>
+      </div>
+      <ul class="nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="profile.html">Profile</a></li>
+        <li id="logout-button">Log out</li>
+      </ul>
+    </nav>
+
+    <div class="content">
+      <div id="view-profile-section">
+        <button onclick="toggleProfile()">Edit Profile</button>
+        <h1>John Doe</h1>
+        <p>
+          Hello! I'm John and I'm a singer. This pandemic is a rough one and
+          I have personally also been affected by it. My global tour has been
+          cancelled and I'm not sure when I can perform again. 
+
+          Regardless, there are other people - like businesses in my local area
+          (San Francisco) that are getting affected. Feel free to send me a email to
+          chat or connect. 
+
+          A little bit about me: I enjoy swimming and painting. Before the pandemic,
+          I would head off to the nearby beach and take a swim. Painting is a little
+          difficult for me, but I'm getting there! 
+        </p>
+      </div>
+
+      <div id="edit-profile-section">
+        <form id="edit-profile">
+          <label for="fname">First name:</label><br>
+          <input type="text" value="John"><br>
+          <label for="lname">Last name:</label><br>
+          <input type="text" value="Doe"><br><br>
+          <label for="bio">Short bio:</label><br>
+          <textarea name="bio" rows="10" cols="30">
+            Hello! I'm John and I'm a singer. This pandemic is a rough one and
+            I have personally also been affected by it. My global tour has been
+            cancelled and I'm not sure when I can perform again. 
+
+            Regardless, there are other people - like businesses in my local area
+            (San Francisco) that are getting affected. Feel free to send me a email to
+            chat or connect. 
+
+            A little bit about me: I enjoy swimming and painting. Before the pandemic,
+            I would head off to the nearby beach and take a swim. Painting is a little
+            difficult for me, but I'm getting there! 
+          </textarea>
+          <input type="submit" value="Submit" onclick="toggleProfile()">
+        </form> 
+      </div>
+
+      </div class="comment-section">
+        <!-- TODO: Add comment section here. -->
+      </div>
+    </div>
+  </body>
+</html>

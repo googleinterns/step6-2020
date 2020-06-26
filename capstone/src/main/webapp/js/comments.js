@@ -55,8 +55,8 @@ function getReplies(commentId) {
   // TODO (bergmoney@): Request replies from API
   let hash = commentId + 10;
   let replies = [
-    {id: 0 + hash, userId: 0, content: 'Hii' + hash, timestamp: 1},
-    {id: 1 + hash, userId: 1, content: 'I am sorry about what happened to your business' + hash, timestamp: 2}
+    {id: hash, userId: 0, content: 'Hii', timestamp: 1},
+    {id: hash, userId: 1, content: 'I am sorry about what happened to your business', timestamp: 2}
   ]
   return wrapInPromise(replies);
 }
