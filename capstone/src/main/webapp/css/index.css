@@ -1,4 +1,4 @@
-#content {
+#businesses {
   margin-left: auto;
   margin-right: auto;
   width: 750px;
@@ -7,6 +7,7 @@
 .business-card {
   border: 5px solid silver;
   border-radius: 20px;
+  margin-bottom: 10px;
   max-height: 150px;
   overflow: hidden;
   position: relative;
@@ -31,4 +32,8 @@
   background-color: silver;
   padding: 5px;
   border-radius: 5px;
+}
+
+.show-more span:hover {
+  cursor: pointer;
 }
