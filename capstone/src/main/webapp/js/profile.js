@@ -12,7 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Toggle between view and edit profile options.
+import { getLoginStatus } from '/js/util.js';
+
+window.onload = function() {
+    getLoginStatus();
+}
+
+/** Toggle between view and edit profile options. */
 function toggleProfile() {
   var viewProfile = document.getElementById('view-profile-section');
   var editProfile = document.getElementById('edit-profile-section');
@@ -24,23 +30,4 @@ function toggleProfile() {
     editProfile.style.display = 'none';
     viewProfile.style.display = 'block';
   }
-}
-
-/** Update log-in status of users */
-function getLoginStatus() {
-  fetch('/auth').then(response => response.json()).then((user) => {
-    const loginElement = document.getElementById('auth-button');
-    loginElement.appendChild(createUrlElement(user.url, user.isLoggedin));
-  });
-}
-
-function createUrlElement(url, isLoggedin) {    
-  const aElement = document.createElement('a');
-  aElement.setAttribute('href', url);
-  if (isLoggedin) {
-    aElement.innerText = "Logout";
-  } else {
-    aElement.innerText = "Login";
-  }
-  return aElement;
 }

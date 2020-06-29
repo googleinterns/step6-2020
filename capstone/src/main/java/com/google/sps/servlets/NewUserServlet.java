@@ -15,12 +15,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+*  Check if user is a new user signing in or not.
+*  If it's a new user, redirect to questionnaire page to determine whether they're a 
+*  business owner. 
+*  Add new user to database.
+*/
 @WebServlet("/check_new_user")
 public class NewUserServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // TODO: Check if the user is a new user or not. Then redirect accordingly.
+    // Create a key from user sign in ID and check if it's in the database.
     UserService userService = UserServiceFactory.getUserService();
     String userId = userService.getCurrentUser().getUserId();
 
@@ -30,14 +36,16 @@ public class NewUserServlet extends HttpServlet {
     try {
       Entity ent = datastore.get(userKey);
     } catch (EntityNotFoundException e) {
-      System.err.println("Could not find key: " + userKey);
+      // Store new user into database.
       Entity userEntity = new Entity("User", userId);
       datastore.put(userEntity);
-
+      
+      // Redirect to the questionnaire page.
       response.sendRedirect("/questionnaire.html");
       return;
     }
 
+    // If it's a returning user, redirect to home page.
     response.sendRedirect("/index.html");
   }
 }

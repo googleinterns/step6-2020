@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { buildElement } from '/js/util.js';
+import { buildElement, getLoginStatus } from '/js/util.js';
 
 window.onload = function() {
   // Fetches all the businesses to be displayed.
@@ -28,6 +28,8 @@ window.onload = function() {
 
     businesses.appendChild(businessCard);
   }
+
+  getLoginStatus();
 }
 
 function createBusinessLink(index, href) {

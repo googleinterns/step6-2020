@@ -10,6 +10,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+*  Authentication for the webpage. Uses Users API for authentication functionality. 
+*  Create login/logout url links for client side.
+*  When signed in, redirect to a servlet to determine whether it's a new user or not. 
+*/
 @WebServlet("/auth")
 public class AuthenticateServlet extends HttpServlet {
 
@@ -17,6 +22,9 @@ public class AuthenticateServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     UserService userService = UserServiceFactory.getUserService();
     User userData;
+
+    // If user is logged in, redirect to home page. 
+    // Otherwise, redirect to NewUserServlet to determine whether it's a new user signing in or not.
     if (userService.isUserLoggedIn()) {
       String logoutUrl = userService.createLogoutURL("/index.html");
       userData = new User(true, logoutUrl);
