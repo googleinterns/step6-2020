@@ -14,13 +14,13 @@
 
 import { getLoginStatus } from '/js/util.js';
 
-window.onload = function() {
+window.addEventListener('load', function() {
     // Get login status of user to display on nav bar.
     getLoginStatus();
-}
+})
 
 /** Toggle between view and edit profile options. */
-function toggleProfile() {
+window.toggleProfile = function() {
   var viewProfile = document.getElementById('view-profile-section');
   var editProfile = document.getElementById('edit-profile-section');
 

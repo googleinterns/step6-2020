@@ -14,7 +14,7 @@
 
 import { buildElement, getLoginStatus } from '/js/util.js';
 
-window.onload = function() {
+window.addEventListener('load', function() {
   // Fetches all the businesses to be displayed.
   const businesses = document.getElementById('businesses');
   for (let i = 0; i < 2; i++) {
@@ -31,7 +31,7 @@ window.onload = function() {
   
   // Get login status of user to display on nav bar.
   getLoginStatus();
-}
+})
 
 function createBusinessLink(index, href) {
   // Creates a business card header that links to the respective business page.
