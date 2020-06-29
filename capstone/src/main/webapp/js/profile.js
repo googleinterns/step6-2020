@@ -15,6 +15,7 @@
 import { getLoginStatus } from '/js/util.js';
 
 window.onload = function() {
+    // Get login status of user to display on nav bar.
     getLoginStatus();
 }
 
