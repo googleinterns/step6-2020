@@ -15,6 +15,7 @@
 import { buildElement } from '/js/util.js';
 
 window.onload = function() {
+  // Fetches all the businesses to be displayed.
   const businesses = document.getElementById('businesses');
   for (let i = 0; i < 2; i++) {
     // Create new business card for this business.
