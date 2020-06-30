@@ -4,7 +4,7 @@
   "description": "Open Sesame is a platform intended to make contributing to open source less intimidating by matching first-time contributors to experienced mentors.",
   "main": "index.js",
   "scripts": {
-    "eslint:github-action": "eslint webapp/js"
+    "jsx-preprocessor": "npx babel --watch src/main/webapp/js/projects/react/ --out-dir src/main/webapp/js/projects/react/jsx-processed --presets react-app/prod"
   },
   "repository": {
     "type": "git",
@@ -20,10 +20,8 @@
   "dependencies": {
     "babel-cli": "^6.26.0",
     "babel-eslint": "^10.1.0",
+    "eslint": "^6.8.0",
     "eslint-plugin-import": "^2.20.2",
     "eslint-config-google": "^0.7.0"
-  },
-  "devDependencies": {
-    "eslint": "^6.8.0"
   }
 }

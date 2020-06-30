@@ -21,17 +21,8 @@ jobs:
   ESLint:
     runs-on: ubuntu-latest
     steps:
-      
-      # Check out the repository
-      - uses: actions/checkout@v1
-
-      # Install Node.js
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v2
+      - uses: hallee/eslint-action@1.0.3
+        if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }} 
         with:
-          node-version: 12
-
-      # Install your dependencies
-      - run: npm ci
-
-      # Run ESLint
-      - uses: eslint/github-action@v0
+          repo-token: ${{secrets.GITHUB_TOKEN}}
