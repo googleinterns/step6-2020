@@ -14,7 +14,6 @@
 
 package com.google.sps.servlets;
 
-import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
@@ -47,8 +46,9 @@ public class BusinessesServlet extends HttpServlet {
     String businessName = request.getPathInfo().substring(1);
 
     // Retrieve all of the information for a single business to be displayed.
-    Query businessQuery = new Query(TASK_NAME)
-        .setFilter(new FilterPredicate(NAME_PROPERTY, FilterOperator.EQUAL, businessName));
+    Query businessQuery =
+        new Query(TASK_NAME)
+            .setFilter(new FilterPredicate(NAME_PROPERTY, FilterOperator.EQUAL, businessName));
     DataStoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery queryResults = datastore.prepare(businessQuery);
     Entity businessEntity = queryResults.asSingleEntity();
