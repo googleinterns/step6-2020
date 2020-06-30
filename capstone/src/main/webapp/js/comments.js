@@ -14,13 +14,38 @@
 
 import { wrapInPromise, buildElement, buildButton } from '/js/util.js';
 
-var COMMENT_FIELD = undefined;
-var COMMENT_CONTAINER = undefined;
+var commentContainer = undefined;
+var commentField = undefined;
 
-window.onload = () =>{
-  COMMENT_FIELD = document.getElementById('comment-field');
-  COMMENT_CONTAINER = document.getElementById('comments');
+export function loadCommentSection(parentDiv) {
+  commentContainer = document.getElementById('comments');
+
+  parentDiv.innerHTML = '';
   
+  let commentInput = document.createElement('div');
+  commentInput.id = 'comment-input';
+  commentInput.innerHTML = '';
+  
+  commentField = document.createElement('textarea');
+  commentField.cols = 70;
+  commentField.placeholder = 'Write a comment';
+  commentField.rows = 3;
+  
+  commentInput.appendChild(commentField);
+
+  let submitButton = document.createElement('button');
+  submitButton.className = 'submit-button';
+  submitButton.innerText = 'Submit';
+  submitButton.addEventListener('click', () => addUserComment());
+
+  commentInput.appendChild(submitButton);
+
+  parentDiv.appendChild(commentInput);
+
+  commentContainer = document.createElement('div');
+  commentContainer.id = 'comments';
+
+  parentDiv.appendChild(commentContainer);
   showComments();
 }
 
@@ -85,7 +110,7 @@ function addUserComment(textArea, parentId = null) {
   postComment(textArea.value, getUserId(), parentId);
 
   textArea.value = '';
-  COMMENT_CONTAINER.innerHTML = '';
+  commentContainer.innerHTML = '';
   showComments();
 }
 
@@ -96,8 +121,9 @@ async function buildCommentElement(comment) {
   commentElement.id = comment.id;
   commentElement.innerHTML = '';
   commentElement.appendChild(buildElement('small', comment.timeElapsedStr));
-  commentElement.appendChild(buildElement('p', comment.content));
-  
+  commentElement.appendChild(document.createElement('br'));
+  commentElement.innerHTML += comment.content + '\n';
+  commentElement.appendChild(document.createElement('br'));
   let userName = await getUserName(comment.userId);
   commentElement.appendChild(buildElement('small', userName));
   
@@ -172,7 +198,7 @@ function showComments() {
     comments => comments.forEach(
       comment => 
         buildTopLevelCommentElement(comment).then(commentElement =>
-          COMMENT_CONTAINER.appendChild(commentElement)
+          commentContainer.appendChild(commentElement)
         )
     )
   );
