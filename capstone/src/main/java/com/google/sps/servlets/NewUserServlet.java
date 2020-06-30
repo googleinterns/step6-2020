@@ -36,10 +36,6 @@ public class NewUserServlet extends HttpServlet {
     try {
       Entity ent = datastore.get(userKey);
     } catch (EntityNotFoundException e) {
-      // Store new user into database.
-      Entity userEntity = new Entity("User", userId);
-      datastore.put(userEntity);
-      
       // Redirect to the questionnaire page.
       response.sendRedirect("/questionnaire.html");
       return;

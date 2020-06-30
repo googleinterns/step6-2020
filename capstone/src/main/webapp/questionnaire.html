@@ -17,11 +17,15 @@
       </ul>
     </nav>
 
-    <div class="content">
-      <!-- TODO: Edit this HTML page with a form. -->
-      <h1>Are you a business owner?</h1>
-      <p> Yes </p>
-      <p> No </p>
+    <div id="question-section">
+      <form action="/question" method="POST" id="question-container">
+        <h2>Are you a business owner?</h2>
+        <input type="radio" id="yes" name="yes" value="yes">
+        <label for="yes">Yes</label><br>
+        <input type="radio" id="no" name="no" value="no">
+        <label for="no">No</label><br>  
+        <input type="submit"/>
+      </form> 
     </div>
   </body>
 </html>
