@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the 'License');
 // you may not use this file except in compliance with the License.
@@ -17,10 +17,26 @@ export function wrapInPromise(val) {
   return new Promise((resolve, reject) => resolve(val));
 }
 
+/** Perform integer division, rounding the floating point result down. */
+export function div(a, b) {
+  return Math.floor(a / b);
+}
+
 /** Build html element of specified type and content */
 export function buildElement(type, content) {
   let element = document.createElement(type);
   element.innerText = content;
 
   return element;
+}
+
+/** Build button with a given class name, action when clicked, and label */
+export function buildButton(className, clickAction, label) {
+  let button = document.createElement('button');
+
+  button.className = className;
+  button.addEventListener('click', clickAction);
+  button.innerText = label;
+
+  return button;
 }
