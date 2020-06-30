@@ -8,15 +8,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/googleinterns/step06-2020.git"
+    "url": "git+https://github.com/googleinterns/step6-2020.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/googleinterns/step06-2020/issues"
+    "url": "https://github.com/googleinterns/step6-2020/issues"
   },
-  "homepage": "https://github.com/googleinterns/step06-2020#readme",
+  "homepage": "https://github.com/googleinterns/step6-2020#readme",
   "dependencies": {
     "babel-cli": "^6.26.0",
     "babel-eslint": "^10.1.0",
