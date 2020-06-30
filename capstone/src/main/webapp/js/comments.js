@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the 'License');
 // you may not use this file except in compliance with the License.
@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { wrapInPromise, buildElement } from '/js/util.js';
+import { wrapInPromise, buildElement, buildButton } from '/js/util.js';
 
-
-var commentField = undefined;
-var commentContainer = undefined;
+var COMMENT_FIELD = undefined;
+var COMMENT_CONTAINER = undefined;
 
 window.onload = () =>{
-  commentField = document.getElementById('comment-field');
-  commentContainer = document.getElementById('comments');
+  COMMENT_FIELD = document.getElementById('comment-field');
+  COMMENT_CONTAINER = document.getElementById('comments');
   
   showComments();
 }
@@ -55,9 +54,9 @@ function getComments() {
   return wrapInPromise(comments);
 }
 
-function postComment(content, userId) {
+function postComment(content, userId, parentId = null) {
   //TODO (bergmoney@): Post comment to servlet
-  console.log('Post comment \'' + content + '\' by user ' + userId);
+  console.log('Post comment \'' + content + '\' by user ' + userId + ' with parent ' + parentId);
 }
 
 function getUserId() {
@@ -82,12 +81,27 @@ function getReplies(commentId) {
   return wrapInPromise(replies);
 }
 
-function addUserComment() {
-  postComment(commentField.value, getUserId());
+function addUserComment(textArea, parentId = null) {
+  postComment(textArea.value, getUserId(), parentId);
 
-  commentField.value = '';
-  commentContainer.innerHTML = '';
+  textArea.value = '';
+  COMMENT_CONTAINER.innerHTML = '';
   showComments();
+}
+
+async function buildCommentElement(comment) {
+  let commentElement = document.createElement('div');
+  
+  commentElement.className = 'comment'
+  commentElement.id = comment.id;
+  commentElement.innerHTML = '';
+  commentElement.appendChild(buildElement('small', comment.timeElapsedStr));
+  commentElement.appendChild(buildElement('p', comment.content));
+  
+  let userName = await getUserName(comment.userId);
+  commentElement.appendChild(buildElement('small', userName));
+  
+  return commentElement;
 }
 
 function buildShowRepliesElement(commentId) {
@@ -105,32 +119,50 @@ function buildRepliesDiv(commentId) {
 
   div.className = 'replies';
   div.innerHTML = '';
-  div.appendChild(buildShowRepliesElement(commentId));
+  div.appendChild(buildButton('show-replies-button', () => showReplies(commentId), 'Show replies'));
 
   return div;
 }
 
-async function buildCommentElement(comment) {
-  let commentElement = document.createElement('div');
+function showReplyToCommentField(parentId) {
+  let replyToCommentDiv = document.getElementById(parentId).querySelector('.reply-to-comment-div');
+
+  replyToCommentDiv.innerHTML = '';
+
+  let textArea = document.createElement('textArea');
+  textArea.cols = 70;
+  textArea.placeholder = 'Write a comment';
+  textArea.rows = 2;
+
+  replyToCommentDiv.appendChild(textArea);
   
-  commentElement.className = 'comment';
-  commentElement.id = comment.id;
-  commentElement.innerHTML = '';
-  // TODO (bergmoney@): add field that shows how much time has elapsed to the backend comment object
-  commentElement.appendChild(buildElement('small', comment.timeElapsedStr));
-  commentElement.appendChild(buildElement('p', comment.content));
-  
-  let userName = await getUserName(comment.userId);
-  commentElement.appendChild(buildElement('small', userName));
-  
-  return commentElement;
+  replyToCommentDiv.appendChild( 
+    buildButton(
+      'submit-reply-button', 
+      () => addUserComment(textArea, parentId),
+      'Post'
+    )
+  );
+}
+
+function buildReplyToCommentDiv(parentId) {
+  let div = document.createElement('div');
+
+  div.className = 'reply-to-comment-div';
+  div.innerHTML = '';
+  div.appendChild(
+      buildButton('reply-to-comment-button', () => showReplyToCommentField(parentId), 'Reply'));
+
+  return div
 }
 
 async function buildTopLevelCommentElement(comment) {
   let commentElement = await buildCommentElement(comment);
   
   commentElement.appendChild(document.createElement('br'));
+  commentElement.appendChild(buildReplyToCommentDiv(comment.id));
   commentElement.appendChild(buildRepliesDiv(comment.id));
+  
 
   return commentElement;
 }
@@ -140,7 +172,7 @@ function showComments() {
     comments => comments.forEach(
       comment => 
         buildTopLevelCommentElement(comment).then(commentElement =>
-          commentContainer.appendChild(commentElement)
+          COMMENT_CONTAINER.appendChild(commentElement)
         )
     )
   );

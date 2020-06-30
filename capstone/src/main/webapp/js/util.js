@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the 'License');
 // you may not use this file except in compliance with the License.
@@ -28,4 +28,15 @@ export function buildElement(type, content) {
   element.innerText = content;
 
   return element;
+}
+
+/** Build button with a given class name, action when clicked, and label */
+export function buildButton(className, clickAction, label) {
+  let button = document.createElement('button');
+
+  button.className = className;
+  button.addEventListener('click', clickAction);
+  button.innerText = label;
+
+  return button;
 }
