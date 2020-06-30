@@ -14,6 +14,7 @@
 
 package com.google.sps.servlets;
 
+import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
@@ -30,7 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /** Servlet that handles business information. */
 @WebServlet("/business/*")
-public class BusinessesServlet extends HttpServlet {
+public class BusinessServlet extends HttpServlet {
 
   private static final String TASK_NAME = "Business";
   private static final String BUSINESS_NAME = "businessName";
@@ -49,7 +50,7 @@ public class BusinessesServlet extends HttpServlet {
     Query businessQuery =
         new Query(TASK_NAME)
             .setFilter(new FilterPredicate(NAME_PROPERTY, FilterOperator.EQUAL, businessName));
-    DataStoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery queryResults = datastore.prepare(businessQuery);
     Entity businessEntity = queryResults.asSingleEntity();
 
