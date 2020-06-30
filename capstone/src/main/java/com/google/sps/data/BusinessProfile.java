@@ -13,5 +13,4 @@ public final class BusinessProfile {
     this.bio = bio;
     this.location = location;
   }
-
 }
