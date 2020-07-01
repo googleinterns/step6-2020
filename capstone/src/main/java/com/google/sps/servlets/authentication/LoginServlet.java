@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 *  When signed in, redirect to a servlet to determine whether it's a new user or not. 
 */
 @WebServlet("/auth")
-public class AuthenticateServlet extends HttpServlet {
+public class LoginServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
