@@ -1,4 +1,4 @@
-package com.google.sps.servlets;
+package com.google.sps.servlets.authentication;
 
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -26,7 +26,7 @@ public class AuthenticateServlet extends HttpServlet {
     // If user is logged in, redirect to home page. 
     // Otherwise, redirect to NewUserServlet to determine whether it's a new user signing in or not.
     if (userService.isUserLoggedIn()) {
-      String logoutUrl = userService.createLogoutURL("/index.html");
+      String logoutUrl = userService.createLogoutURL("/logout");
       userData = new User(true, logoutUrl);
     } else {
       String loginUrl = userService.createLoginURL("/check_new_user");

@@ -1,4 +1,4 @@
-package com.google.sps.servlets;
+package com.google.sps.servlets.authentication;
 
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.DatastoreService;
