@@ -49,11 +49,12 @@ public class BusinessesServlet extends HttpServlet {
 
     // Construct list of businesses from datastore.
     for (Entity businessEntity : queryResults.asIterable()) {
+      long id = (long) businessEntity.getKey().getId();
       String name = (String) businessEntity.getProperty(NAME_PROPERTY);
       String email = (String) businessEntity.getProperty(EMAIL_PROPERTY);
       String bio = (String) businessEntity.getProperty(BIO_PROPERTY);
       String location = (String) businessEntity.getProperty(LOCATION_PROPERTY);
-      BusinessProfile business = new BusinessProfile(name, email, bio, location);
+      BusinessProfile business = new BusinessProfile(id, name, email, bio, location);
       businesses.add(business);
     }
 
