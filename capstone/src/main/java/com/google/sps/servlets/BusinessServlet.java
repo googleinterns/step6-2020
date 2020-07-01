@@ -50,7 +50,11 @@ public class BusinessServlet extends HttpServlet {
     // Retrieve all of the information for a single business to be displayed.
     Query businessQuery =
         new Query(TASK_NAME)
-            .setFilter(new FilterPredicate(Entity.KEY_RESERVED_PROPERTY, FilterOperator.EQUAL, KeyFactory.createKey(TASK_NAME, businessID)));
+            .setFilter(
+                new FilterPredicate(
+                    Entity.KEY_RESERVED_PROPERTY,
+                    FilterOperator.EQUAL,
+                    KeyFactory.createKey(TASK_NAME, businessID)));
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery queryResults = datastore.prepare(businessQuery);
     Entity businessEntity = queryResults.asSingleEntity();
