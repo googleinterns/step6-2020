@@ -51,7 +51,7 @@ public class LogoutServletTest {
   *  set to zero. This means that the cookie will be removed.
   **/
   @Test
-  public void doGetWithCookiesSetMaxAgeToZero() throws ServletException, IOException  {
+  public void logOutWithCookiesReturnMaxAgeToZero() throws ServletException, IOException  {
     LocalServiceTestHelper helper =
     new LocalServiceTestHelper(new LocalUserServiceTestConfig())
         .setEnvIsAdmin(true).setEnvIsLoggedIn(false);
