@@ -19,7 +19,6 @@ import static org.mockito.Mockito.doReturn;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.gson.Gson;
@@ -49,7 +48,7 @@ public class BusinessesServletTest {
   @Mock private HttpServletResponse response;
   private StringWriter servletResponseWriter;
   private BusinessesServlet servlet;
-  
+
   @Before
   public void setUp() throws IOException {
     MockitoAnnotations.initMocks(this);
@@ -93,7 +92,6 @@ public class BusinessesServletTest {
     datastore.put(business2);
     business2.setProperty("id", business2.getKey().getId());
     businesses.add(business2.getProperties());
-
 
     servlet.doGet(request, response);
     String servletResponse = servletResponseWriter.toString();
