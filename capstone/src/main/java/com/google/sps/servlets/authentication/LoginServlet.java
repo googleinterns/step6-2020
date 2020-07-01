@@ -18,9 +18,16 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
+  UserService userService = UserServiceFactory.getUserService();
+  
+  public LoginServlet() { }
+
+  public LoginServlet(UserService userService) {
+    this.userService = userService;
+  }
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    UserService userService = UserServiceFactory.getUserService();
     String loginUrl = userService.createLoginURL("/index.html");
     String logoutUrl = "/logout";
     User userData;
