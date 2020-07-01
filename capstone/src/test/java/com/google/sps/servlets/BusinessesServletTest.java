@@ -55,7 +55,6 @@ public class BusinessesServletTest {
     helper.setUp();
 
     servletResponseWriter = new StringWriter();
-    // when(response.getWriter()).thenReturn(new PrintWriter(servletResponseWriter));
     doReturn(new PrintWriter(servletResponseWriter)).when(response).getWriter();
     servlet = new BusinessesServlet();
   }
@@ -74,13 +73,19 @@ public class BusinessesServletTest {
   @Test
   public void testBasicdoGet() throws IOException {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+    // This list will help in constructing the expected response.
     List<Map<String, Object>> businesses = new ArrayList();
+
     Entity business1 = new Entity("Business");
     business1.setProperty("name", "Business 1");
     business1.setProperty("email", "work@b1.com");
     business1.setProperty("bio", "This is a bit about our business");
     business1.setProperty("location", "Mountain View, CA");
     datastore.put(business1);
+
+    // Add an "id" property so that the expected response shows id as well.
+    // servletResponse returns "id" from the BusinessProfile
     business1.setProperty("id", business1.getKey().getId());
     businesses.add(business1.getProperties());
 
@@ -90,6 +95,7 @@ public class BusinessesServletTest {
     business2.setProperty("bio", "This is a bit about our business");
     business2.setProperty("location", "New York City, NY");
     datastore.put(business2);
+
     business2.setProperty("id", business2.getKey().getId());
     businesses.add(business2.getProperties());
 
@@ -98,6 +104,8 @@ public class BusinessesServletTest {
     Gson gson = new Gson();
     String expectedResponse = gson.toJson(businesses);
 
+    // expectedResponse and servletResponse strings may differ in json property order.
+    // JsonParser helps to compare two json strings regardless of property order.
     JsonParser parser = new JsonParser();
     Assert.assertEquals(parser.parse(servletResponse), parser.parse(expectedResponse));
   }
