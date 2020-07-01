@@ -35,7 +35,6 @@ import javax.servlet.http.HttpServletResponse;
 public class BusinessServlet extends HttpServlet {
 
   private static final String TASK_NAME = "Business";
-  private static final String BUSINESS_NAME = "businessName";
   private static final String NAME_PROPERTY = "name";
   private static final String EMAIL_PROPERTY = "email";
   private static final String BIO_PROPERTY = "bio";
@@ -45,7 +44,7 @@ public class BusinessServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Retrieve the business ID that is located in place of the * in the URL.
     // request.getPathInfo() returns "/{id}" and substring(1) would return "{id}" without "/".
-    String businessID = request.getPathInfo().substring(1);
+    long businessID = Long.parseLong(request.getPathInfo().substring(1));
 
     // Retrieve all of the information for a single business to be displayed.
     Query businessQuery =
@@ -55,19 +54,22 @@ public class BusinessServlet extends HttpServlet {
                     Entity.KEY_RESERVED_PROPERTY,
                     FilterOperator.EQUAL,
                     KeyFactory.createKey(TASK_NAME, businessID)));
+
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery queryResults = datastore.prepare(businessQuery);
     Entity businessEntity = queryResults.asSingleEntity();
 
-    long id = (long) businessEntity.getKey().getId();
-    String name = (String) businessEntity.getProperty(NAME_PROPERTY);
-    String email = (String) businessEntity.getProperty(EMAIL_PROPERTY);
-    String bio = (String) businessEntity.getProperty(BIO_PROPERTY);
-    String location = (String) businessEntity.getProperty(LOCATION_PROPERTY);
-    BusinessProfile business = new BusinessProfile(id, name, email, bio, location);
-
-    Gson gson = new Gson();
-    String jsonBusiness = gson.toJson(business);
+    String jsonBusiness = "";
+    if (businessEntity != null) {
+      long id = (long) businessEntity.getKey().getId();
+      String name = (String) businessEntity.getProperty(NAME_PROPERTY);
+      String email = (String) businessEntity.getProperty(EMAIL_PROPERTY);
+      String bio = (String) businessEntity.getProperty(BIO_PROPERTY);
+      String location = (String) businessEntity.getProperty(LOCATION_PROPERTY);
+      BusinessProfile business = new BusinessProfile(id, name, email, bio, location);
+      Gson gson = new Gson();
+      jsonBusiness = gson.toJson(business);
+    }
     response.setContentType("application/json");
     response.getWriter().println(jsonBusiness);
   }

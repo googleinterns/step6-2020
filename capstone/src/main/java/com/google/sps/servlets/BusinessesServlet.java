@@ -33,7 +33,6 @@ import javax.servlet.http.HttpServletResponse;
 public class BusinessesServlet extends HttpServlet {
 
   private static final String TASK_NAME = "Business";
-  private static final String BUSINESS_NAME = "businessName";
   private static final String NAME_PROPERTY = "name";
   private static final String EMAIL_PROPERTY = "email";
   private static final String BIO_PROPERTY = "bio";
