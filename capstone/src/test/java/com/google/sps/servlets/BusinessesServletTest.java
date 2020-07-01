@@ -64,6 +64,15 @@ public class BusinessesServletTest {
     helper.tearDown();
   }
 
+  private Entity createBusiness(int businessNo) {
+    Entity newBusiness = new Entity("Business");
+    newBusiness.setProperty("name", "Business " + businessNo);
+    newBusiness.setProperty("email", "work@b" + businessNo + ".com");
+    newBusiness.setProperty("bio", "This is the bio for business " + businessNo);
+    newBusiness.setProperty("location", "Mountain View, CA");
+    return newBusiness;
+  }
+
   @Test
   public void testEmptydoGet() throws IOException {
     servlet.doGet(request, response);
@@ -77,11 +86,7 @@ public class BusinessesServletTest {
     // This list will help in constructing the expected response.
     List<Map<String, Object>> businesses = new ArrayList();
 
-    Entity business1 = new Entity("Business");
-    business1.setProperty("name", "Business 1");
-    business1.setProperty("email", "work@b1.com");
-    business1.setProperty("bio", "This is a bit about our business");
-    business1.setProperty("location", "Mountain View, CA");
+    Entity business1 = createBusiness(1);
     datastore.put(business1);
 
     // Add an "id" property so that the expected response shows id as well.
@@ -89,11 +94,7 @@ public class BusinessesServletTest {
     business1.setProperty("id", business1.getKey().getId());
     businesses.add(business1.getProperties());
 
-    Entity business2 = new Entity("Business");
-    business2.setProperty("name", "Business 2");
-    business2.setProperty("email", "work@b2.com");
-    business2.setProperty("bio", "This is a bit about our business");
-    business2.setProperty("location", "New York City, NY");
+    Entity business2 = createBusiness(2);
     datastore.put(business2);
 
     business2.setProperty("id", business2.getKey().getId());
