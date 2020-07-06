@@ -10,6 +10,8 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 import com.google.sps.data.Profile;
 import java.io.IOException;
@@ -34,18 +36,18 @@ public class ProfilesServlet extends HttpServlet {
     PreparedQuery results = datastore.prepare(query);
 
     // Retreive entities.
-    List<Entity> entities = results.asList();
+    List<Entity> entities = results.asList(FetchOptions.Builder.withDefaults());
 
     // Convert entities to Profile objects.
     List<Profile> profiles = new ArrayList<>();
     for (Entity entity : entities) {
-      String id = entity.getKey().getId();
-      String name = entity.getProperty("name");
-      String location = entity.getProperty("location");
-      String bio = entity.getProperty("bio");
-      String story = entity.getProperty("story");
-      String about = entity.getProperty("about");
-      String support = entity.getProperty("support");
+      long id = entity.getKey().getId();
+      String name = (String) entity.getProperty("name");
+      String location = (String) entity.getProperty("location");
+      String bio = (String) entity.getProperty("bio");
+      String story = (String) entity.getProperty("story");
+      String about = (String) entity.getProperty("about");
+      String support = (String) entity.getProperty("support");
 
       Profile profile = new Profile(id, name, location, bio, story, about, support);
       profiles.add(profile);

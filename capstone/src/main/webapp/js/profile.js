@@ -23,7 +23,7 @@ window.addEventListener('load', function() {
     loadCommentSection(document.getElementById('comment-section'));
 })
 
-/** Toggle between view and edit profile options. */
+// Toggle between view and edit profile options.
 window.toggleProfile = function() {
   var viewProfile = document.getElementById('view-profile-section');
   var editProfile = document.getElementById('edit-profile-section');
@@ -36,3 +36,39 @@ window.toggleProfile = function() {
     viewProfile.style.display = 'block';
   }
 }
+
+// If user answered the first question: whether they are a business user or not,
+// then show appropriate edit profile form.
+window.hasAnswerQuestionnaire = function() {
+  var isBusiness = document.getElementById("yes");
+  var isNotBusiness = document.getElementById("no");
+  
+  var name = document.getElementById("name-section");
+  var location = document.getElementById("location-section");
+  var bio = document.getElementById("bio-section");
+  var story = document.getElementById("story-section");
+  var about = document.getElementById("about-section");
+  var support = document.getElementById("support-section");
+
+  if (isBusiness.checked == true) {
+    name.style.display = 'block';
+    location.style.display = 'block';
+    bio.style.display = 'block';
+    story.style.display = 'block';
+    about.style.display = 'block';
+    support.style.display = 'block';
+  } 
+  if (isNotBusiness.checked == true) {
+    name.style.display = 'block';
+    location.style.display = 'block';
+    bio.style.display = 'block';
+    story.style.display = 'none';
+    about.style.display = 'none';
+    support.style.display = 'none';
+  }
+
+    var submit = document.getElementById("submit-button");
+    submit.style.display = 'block';
+}
+
+// TODO: Fetch specific profile data.

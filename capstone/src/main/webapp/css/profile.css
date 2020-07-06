@@ -1,3 +1,31 @@
 #edit-profile-section {
     display: none;
 }
+
+#name-section {
+    display: none;
+}
+
+#location-section {
+    display: none;
+}
+
+#bio-section {
+    display: none;
+}
+
+#story-section {
+    display: none;
+}
+
+#about-section {
+    display: none;
+}
+
+#support-section {
+    display: none;
+}
+
+#submit-button {
+    display: none;
+}

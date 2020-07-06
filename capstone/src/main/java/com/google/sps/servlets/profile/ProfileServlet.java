@@ -10,6 +10,8 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 import com.google.sps.data.Profile;
 import java.io.IOException;
@@ -47,16 +49,23 @@ public class ProfileServlet extends HttpServlet {
     String userId = idArray[1];
 
     Key userKey = KeyFactory.createKey("Profile", userId);
-    Entity entity = datastore.get(userKey);
+    Entity entity;
+
+    try {
+      entity = datastore.get(userKey);
+    } catch (EntityNotFoundException e) {
+      System.err.println("Could not find key: " + userKey);
+      return;
+    }
 
     // Query all profile properties.
-    String id = entity.getKey().getId();
-    String name = entity.getProperty("name");
-    String location = entity.getProperty("location");
-    String bio = entity.getProperty("bio");
-    String story = entity.getProperty("story");
-    String about = entity.getProperty("about");
-    String support = entity.getProperty("support");
+    long id = entity.getKey().getId();
+    String name = (String) entity.getProperty("name");
+    String location = (String) entity.getProperty("location");
+    String bio = (String) entity.getProperty("bio");
+    String story = (String) entity.getProperty("story");
+    String about = (String) entity.getProperty("about");
+    String support = (String) entity.getProperty("support");
 
     // Create a profile object that contains the properties.
     Profile profile = new Profile(id, name, location, bio, story, about, support);
