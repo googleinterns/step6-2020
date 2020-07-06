@@ -11,16 +11,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
-*  Authentication for the webpage. Uses Users API for authentication functionality. 
-*  Create login/logout url links for client side.
-*  When signed in, redirect to a servlet to determine whether it's a new user or not. 
-*/
+ * Authentication for the webpage. Uses Users API for authentication functionality. Create
+ * login/logout url links for client side. When signed in, redirect to a servlet to determine
+ * whether it's a new user or not.
+ */
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
   UserService userService = UserServiceFactory.getUserService();
-  
-  public LoginServlet() { }
+
+  public LoginServlet() {}
 
   public LoginServlet(UserService userService) {
     this.userService = userService;
