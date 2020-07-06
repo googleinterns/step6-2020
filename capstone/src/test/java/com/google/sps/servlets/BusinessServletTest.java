@@ -33,6 +33,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 /** Unit tests for BusinessServlet. */
@@ -74,8 +75,8 @@ public class BusinessServletTest {
   public void testEmptyDatastoredoGet() throws IOException {
     doReturn("/1").when(request).getPathInfo();
     servlet.doGet(request, response);
-    // response = "\n" before replacing \n
-    Assert.assertTrue(servletResponseWriter.toString().replace("\n", "").isEmpty());
+    // response status is not actually set with mocks so you must check if sendError is called.
+    Mockito.verify(response, Mockito.times(1)).sendError(Mockito.anyInt(), Mockito.anyString());
   }
 
   @Test
@@ -117,8 +118,7 @@ public class BusinessServletTest {
     doReturn("/" + (business1.getKey().getId() + 1)).when(request).getPathInfo();
 
     servlet.doGet(request, response);
-    // servletResponse = "\n" before replacing \n.
-    String servletResponse = servletResponseWriter.toString().replace("\n", "");
-    Assert.assertTrue(servletResponse.isEmpty());
+    // response status is not actually set with mocks so you must check if sendError is called.
+    Mockito.verify(response, Mockito.times(1)).sendError(Mockito.anyInt(), Mockito.anyString());
   }
 }

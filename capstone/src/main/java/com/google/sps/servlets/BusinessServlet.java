@@ -59,7 +59,6 @@ public class BusinessServlet extends HttpServlet {
     PreparedQuery queryResults = datastore.prepare(businessQuery);
     Entity businessEntity = queryResults.asSingleEntity();
 
-    String jsonBusiness = "";
     if (businessEntity != null) {
       long id = (long) businessEntity.getKey().getId();
       String name = (String) businessEntity.getProperty(NAME_PROPERTY);
@@ -67,10 +66,14 @@ public class BusinessServlet extends HttpServlet {
       String bio = (String) businessEntity.getProperty(BIO_PROPERTY);
       String location = (String) businessEntity.getProperty(LOCATION_PROPERTY);
       BusinessProfile business = new BusinessProfile(id, name, email, bio, location);
+
       Gson gson = new Gson();
-      jsonBusiness = gson.toJson(business);
+      String jsonBusiness = gson.toJson(business);
+      response.setContentType("application/json");
+      response.getWriter().println(jsonBusiness);
+    } else {
+      response.sendError(HttpServletResponse.SC_NOT_FOUND,
+          "The business you were looking was not found in our records!");
     }
-    response.setContentType("application/json");
-    response.getWriter().println(jsonBusiness);
   }
 }
