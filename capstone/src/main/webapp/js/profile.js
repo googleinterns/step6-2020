@@ -35,4 +35,7 @@ window.toggleProfile = function() {
     editProfile.style.display = 'none';
     viewProfile.style.display = 'block';
   }
+
+  // fetch the list of user ids
+  // display: profile.html?userid=[item]
 }

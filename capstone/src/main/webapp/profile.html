@@ -9,6 +9,7 @@
     <script src="js/profile.js" type="module"></script>
   </head>
   <body>
+    <!-- Navigation Bar -->
     <nav>
       <div class="logo">
         <h1>Support Local Businesses</h1>
@@ -20,49 +21,58 @@
       </ul>
     </nav>
 
+    <!-- View Profile Page -->
     <div class="content">
       <div id="view-profile-section">
         <button onclick="toggleProfile()">Edit Profile</button>
-        <h1>John Doe</h1>
-        <p>
-          Hello! I'm John and I'm a singer. This pandemic is a rough one and
-          I have personally also been affected by it. My global tour has been
-          cancelled and I'm not sure when I can perform again. 
 
-          Regardless, there are other people - like businesses in my local area
-          (San Francisco) that are getting affected. Feel free to send me a email to
-          chat or connect. 
-
-          A little bit about me: I enjoy swimming and painting. Before the pandemic,
-          I would head off to the nearby beach and take a swim. Painting is a little
-          difficult for me, but I'm getting there! 
-        </p>
+        <h1 id="name"></h1>
+        <h2 id="location"></h2>
+        <h3 id="bio"></h3>
+        <h4 id="story"></h4>
+        <h5 id="about"></h5>
+        <h6 id="support"></h6>
       </div>
-
+      
+      <!-- Edit Profile Page -->
       <div id="edit-profile-section">
-        <form id="edit-profile">
-          <label for="fname">First name:</label><br>
-          <input type="text" value="John"><br>
-          <label for="lname">Last name:</label><br>
-          <input type="text" value="Doe"><br><br>
+        
+        <!-- Is user a business owner questionnaire -->
+        <form action="/profile" method="POST" id="is-business-questionnaire">
+          <label for="isBusiness">Are you a business owner?</label><br>
+
+          <label for="yes"><input type="radio" id="yes" name="isBusiness" value="Yes">
+          Yes</label><br>
+
+          <label for="no"><input type="radio" id="no" name="isBusiness" value="No">
+          No</label><br>
+
+          <label for="name">Name:</label><br>
+          <input type="text" name="name" value="John Doe"><br>
+
+          <label for="location">Location:</label><br>
+          <input type="text" name="location" value="Mountain View, CA"><br>
+
           <label for="bio">Short bio:</label><br>
-          <textarea name="bio" rows="10" cols="30">
-            Hello! I'm John and I'm a singer. This pandemic is a rough one and
-            I have personally also been affected by it. My global tour has been
-            cancelled and I'm not sure when I can perform again. 
+          <textarea name="bio" rows="10" cols="30"></textarea>
 
-            Regardless, there are other people - like businesses in my local area
-            (San Francisco) that are getting affected. Feel free to send me a email to
-            chat or connect. 
+          <!-- Business Owner Additional Questionnaires -->
+          <label for="story">How did the pandemic affect your business?</label><br>
+          <textarea name="story" rows="10" cols="30"></textarea>
 
-            A little bit about me: I enjoy swimming and painting. Before the pandemic,
-            I would head off to the nearby beach and take a swim. Painting is a little
-            difficult for me, but I'm getting there! 
-          </textarea>
+          <label for="about">Share your business.</label><br>
+          <p>You can share your business website, grubhub delivery link, or describe what your business has to offer!</p>
+          <textarea name="about" rows="10" cols="30"></textarea>
+
+          <label for="support">How can we support you?</label><br>
+          <p>You can share your gofundme link, share a transfer giftcard link, your PO box, or simply ask people to post a generous comment :)</p>
+          <textarea name="support" rows="10" cols="30"></textarea>
+
           <input type="submit" value="Submit" onclick="toggleProfile()">
         </form> 
       </div>
-
+    
+      <!-- Comment Section -->
       <div id="comment-section">
         <!-- TODO: Add comment section here. -->
       </div>
