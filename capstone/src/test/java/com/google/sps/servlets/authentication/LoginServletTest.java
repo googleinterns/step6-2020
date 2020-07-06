@@ -1,4 +1,4 @@
-package com.google.sps;
+package com.google.sps.servlets.authentication;
 
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.atLeast;
@@ -99,9 +99,9 @@ public class LoginServletTest {
     StringWriter stringWriter = new StringWriter();
     PrintWriter printWriter = new PrintWriter(stringWriter);
     when(response.getWriter()).thenReturn(printWriter);
-    
+
     String loginUrl = "loginUrl";
-    when(userService.createLoginURL("/index.html")).thenReturn(loginUrl);
+    when(userService.createLoginURL("/check_new_user")).thenReturn(loginUrl);
 
     LoginServlet userServlet = new LoginServlet(userService);
     userServlet.doGet(request, response);
@@ -116,7 +116,7 @@ public class LoginServletTest {
 
     JsonObject responseJsonObject = responseJsonElement.getAsJsonObject();
     JsonObject userJsonObject = userJsonElement.getAsJsonObject();
-    
+
     Assert.assertEquals(responseJsonObject, userJsonObject);
     helper.tearDown();
   }

@@ -28,7 +28,7 @@ public class LoginServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String loginUrl = userService.createLoginURL("/index.html");
+    String loginUrl = userService.createLoginURL("/check_new_user");
     String logoutUrl = "/logout";
     User userData;
 

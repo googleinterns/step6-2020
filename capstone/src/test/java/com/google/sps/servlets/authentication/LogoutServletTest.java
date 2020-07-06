@@ -1,4 +1,4 @@
-package com.google.sps;
+package com.google.sps.servlets.authentication;
 
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.atLeast;
