@@ -72,7 +72,8 @@ public class BusinessServlet extends HttpServlet {
       response.setContentType("application/json");
       response.getWriter().println(jsonBusiness);
     } else {
-      response.sendError(HttpServletResponse.SC_NOT_FOUND,
+      response.sendError(
+          HttpServletResponse.SC_NOT_FOUND,
           "The business you were looking was not found in our records!");
     }
   }
