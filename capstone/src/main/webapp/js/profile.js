@@ -13,11 +13,18 @@
 // limitations under the License.
 
 import { loadCommentSection } from '/js/comments.js'
-
-window.onload = () => loadCommentSection(document.getElementById('comment-section'));
+import { getLoginStatus } from '/js/util.js';
 
 // Toggle between view and edit profile options.
-function toggleProfile() {
+window.addEventListener('load', function() {
+    // Get login status of user to display on nav bar.
+    getLoginStatus();
+
+    loadCommentSection(document.getElementById('comment-section'));
+})
+
+/** Toggle between view and edit profile options. */
+window.toggleProfile = function() {
   var viewProfile = document.getElementById('view-profile-section');
   var editProfile = document.getElementById('edit-profile-section');
 
