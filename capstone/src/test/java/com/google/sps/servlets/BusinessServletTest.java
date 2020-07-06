@@ -76,7 +76,8 @@ public class BusinessServletTest {
     doReturn("/1").when(request).getPathInfo();
     servlet.doGet(request, response);
     // response status is not actually set with mocks so you must check if sendError is called.
-    Mockito.verify(response, Mockito.times(1)).sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
+    Mockito.verify(response, Mockito.times(1))
+        .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
   }
 
   @Test
@@ -119,6 +120,7 @@ public class BusinessServletTest {
 
     servlet.doGet(request, response);
     // response status is not actually set with mocks so you must check if sendError is called.
-    Mockito.verify(response, Mockito.times(1)).sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
+    Mockito.verify(response, Mockito.times(1))
+        .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
   }
 }
