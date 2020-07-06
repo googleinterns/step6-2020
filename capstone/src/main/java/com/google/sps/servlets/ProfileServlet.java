@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 /** Servlet responsible for showing a profile. */
 @WebServlet("/profile/*")
 public class ProfileServlet extends HttpServlet {
+  
   UserService userService = UserServiceFactory.getUserService();
 
   DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -37,11 +38,18 @@ public class ProfileServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String userId;
-    Key userKey = KeyFactory.createKey("Profile", userId);
+    // Obtain userId from param URL.
+    String[] idArray = request.getPathInfo().split("/");
+    if (idArray.length < 2) {
+        return;
+    }
 
+    String userId = idArray[1];
+
+    Key userKey = KeyFactory.createKey("Profile", userId);
     Entity entity = datastore.get(userKey);
 
+    // Query all profile properties.
     String id = entity.getKey().getId();
     String name = entity.getProperty("name");
     String location = entity.getProperty("location");
@@ -50,8 +58,10 @@ public class ProfileServlet extends HttpServlet {
     String about = entity.getProperty("about");
     String support = entity.getProperty("support");
 
+    // Create a profile object that contains the properties.
     Profile profile = new Profile(id, name, location, bio, story, about, support);
 
+    // Send it back to client side as a JSON file.
     response.setContentType("application/json;");
     Gson gson = new Gson();
     response.getWriter().println(gson.toJson(profile));
@@ -59,6 +69,7 @@ public class ProfileServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // When user edits their profile page, fetch the data from the edit profile form.
     String id = userService.getCurrentUser().getUserId();
     String isBusiness = request.getParameter("isBusiness");
     String name = request.getParameter("name");
@@ -68,6 +79,7 @@ public class ProfileServlet extends HttpServlet {
     String about = request.getParameter("about");
     String support = request.getParameter("support");
 
+    // Update properties in datastore.
     Entity profileEntity = new Entity("Profile", id);
     profileEntity.setProperty("isBusiness", isBusiness);
     profileEntity.setProperty("name", name);
@@ -77,6 +89,7 @@ public class ProfileServlet extends HttpServlet {
     profileEntity.setProperty("about", about);
     profileEntity.setProperty("support", support);
 
+    // Put entity in datastore.
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(profileEntity);
 

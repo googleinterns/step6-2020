@@ -21,13 +21,38 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** Servlet responsible for showing a profile. */
+/** Servlet responsible for listing all profiles. */
 @WebServlet("/profiles")
 public class ProfilesServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // datastore generate a list of user ids
-    // json file of list of user ids
+    // Query profile entities from datastore.
+    Query query = new Query("Profile");
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    PreparedQuery results = datastore.prepare(query);
+
+    // Retreive entities.
+    List<Entity> entities = results.asList();
+
+    // Convert entities to Profile objects.
+    List<Profile> profiles = new ArrayList<>();
+    for (Entity entity : entities) {
+      String id = entity.getKey().getId();
+      String name = entity.getProperty("name");
+      String location = entity.getProperty("location");
+      String bio = entity.getProperty("bio");
+      String story = entity.getProperty("story");
+      String about = entity.getProperty("about");
+      String support = entity.getProperty("support");
+
+      Profile profile = new Profile(id, name, location, bio, story, about, support);
+      profiles.add(profile);
+    }
+
+    response.setContentType("application/json;");
+    Gson gson = new Gson();
+    response.getWriter().println(gson.toJson(profiles));
   }
 }
