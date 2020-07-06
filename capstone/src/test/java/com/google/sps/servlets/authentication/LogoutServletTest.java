@@ -33,6 +33,10 @@ import org.mockito.MockitoAnnotations;
 
 @RunWith(JUnit4.class)
 public class LogoutServletTest {
+  
+  private final LocalServiceTestHelper helper =
+    new LocalServiceTestHelper(new LocalUserServiceTestConfig())
+        .setEnvIsAdmin(true).setEnvIsLoggedIn(false);
 
   @Mock
   private HttpServletRequest request;
@@ -43,6 +47,16 @@ public class LogoutServletTest {
   @Before
   public void setUp() throws Exception  {
     MockitoAnnotations.initMocks(this);
+    helper.setUp();
+
+    StringWriter stringWriter = new StringWriter();
+    PrintWriter printWriter = new PrintWriter(stringWriter);
+    when(response.getWriter()).thenReturn(printWriter);
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    helper.tearDown();
   }
   
   /* 
@@ -52,15 +66,6 @@ public class LogoutServletTest {
   **/
   @Test
   public void logOutWithCookiesReturnMaxAgeToZero() throws ServletException, IOException  {
-    LocalServiceTestHelper helper =
-    new LocalServiceTestHelper(new LocalUserServiceTestConfig())
-        .setEnvIsAdmin(true).setEnvIsLoggedIn(false);
-    helper.setUp();
-
-    StringWriter stringWriter = new StringWriter();
-    PrintWriter printWriter = new PrintWriter(stringWriter);
-    when(response.getWriter()).thenReturn(printWriter);
-    
     Cookie cookie = new Cookie("SACSID", "testValue");
     Cookie[] cookies = new Cookie[] {cookie};
     when(request.getCookies()).thenReturn(cookies);
@@ -75,7 +80,5 @@ public class LogoutServletTest {
 
     Assert.assertTrue(responseCookies.size() == 1);
     Assert.assertEquals(responseCookies.get(0).getMaxAge(), 0);
-    
-    helper.tearDown();
   }
 } 

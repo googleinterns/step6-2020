@@ -37,6 +37,10 @@ import org.mockito.MockitoAnnotations;
 
 @RunWith(JUnit4.class)
 public class LoginServletTest {
+  
+  private LocalServiceTestHelper helper =
+    new LocalServiceTestHelper(new LocalUserServiceTestConfig())
+        .setEnvIsAdmin(true).setEnvIsLoggedIn(true);
 
   @Mock
   private HttpServletRequest request;
@@ -50,6 +54,12 @@ public class LoginServletTest {
   @Before
   public void setUp() throws Exception  {
     MockitoAnnotations.initMocks(this);
+    helper.setUp();
+  }
+
+  @After
+  public void tearDown() throws Exception  {
+    helper.tearDown();
   }
   
   /* 
@@ -58,15 +68,10 @@ public class LoginServletTest {
   **/
   @Test
   public void loggedInUserReturnsLogOutUrl() throws ServletException, IOException  {
-    LocalServiceTestHelper helper =
-    new LocalServiceTestHelper(new LocalUserServiceTestConfig())
-        .setEnvIsAdmin(true).setEnvIsLoggedIn(true);
-    helper.setUp();
-
     StringWriter stringWriter = new StringWriter();
     PrintWriter printWriter = new PrintWriter(stringWriter);
     when(response.getWriter()).thenReturn(printWriter);
-
+    
     LoginServlet userServlet = new LoginServlet();
     userServlet.doGet(request, response);
 
@@ -82,7 +87,6 @@ public class LoginServletTest {
     JsonObject userJsonObject = userJsonElement.getAsJsonObject();
     
     Assert.assertEquals(responseJsonObject, userJsonObject);
-    helper.tearDown();
   }
   
   /* 
@@ -91,10 +95,9 @@ public class LoginServletTest {
   **/
   @Test
   public void loggedOutUserReturnsLogInUrl() throws ServletException, IOException  {
-    LocalServiceTestHelper helper =
+    helper =
     new LocalServiceTestHelper(new LocalUserServiceTestConfig())
         .setEnvIsAdmin(true).setEnvIsLoggedIn(false);
-    helper.setUp();
 
     StringWriter stringWriter = new StringWriter();
     PrintWriter printWriter = new PrintWriter(stringWriter);
@@ -118,6 +121,5 @@ public class LoginServletTest {
     JsonObject userJsonObject = userJsonElement.getAsJsonObject();
 
     Assert.assertEquals(responseJsonObject, userJsonObject);
-    helper.tearDown();
   }
 } 

@@ -45,6 +45,10 @@ import org.mockito.MockitoAnnotations;
 
 @RunWith(JUnit4.class)
 public class NewUserServletTest {
+  
+  private final LocalServiceTestHelper helper =
+    new LocalServiceTestHelper(new LocalUserServiceTestConfig())
+        .setEnvIsAdmin(true).setEnvIsLoggedIn(true);
 
   @Mock
   private HttpServletRequest request;
@@ -61,14 +65,16 @@ public class NewUserServletTest {
   @Before
   public void setUp() throws Exception  {
     MockitoAnnotations.initMocks(this);
-    LocalServiceTestHelper helper =
-    new LocalServiceTestHelper(new LocalUserServiceTestConfig())
-        .setEnvIsAdmin(true).setEnvIsLoggedIn(true);
     helper.setUp();
 
     StringWriter stringWriter = new StringWriter();
     PrintWriter printWriter = new PrintWriter(stringWriter);
     when(response.getWriter()).thenReturn(printWriter);
+  }
+
+  @After
+  public void tearDown() throws Exception  {
+    helper.tearDown();
   }
   
   /* 

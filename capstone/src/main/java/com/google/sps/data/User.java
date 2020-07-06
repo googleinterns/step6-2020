@@ -2,7 +2,10 @@ package com.google.sps.data;
 
 /** Individual user login data. */
 public final class User {
+  // Whether the user is logged in or not.
   private final boolean isLoggedin;
+
+  // The logged-in or logged-out URL links.
   private final String url;
 
   /**
