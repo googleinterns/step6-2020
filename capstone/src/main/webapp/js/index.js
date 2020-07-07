@@ -38,7 +38,7 @@ function createCard(business) {
 function createBusinessLink(id, name) {
   // Creates a business card header that links to the respective business page.
   let businessLink = buildElement('a', '');
-  businessLink.href = 'business.html';
+  businessLink.href = 'business.html?id=' + id;
   businessLink.appendChild(buildElement('h2', name));
   return businessLink;
 }
