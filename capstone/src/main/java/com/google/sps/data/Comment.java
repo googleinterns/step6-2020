@@ -32,8 +32,8 @@ public final class Comment {
   private final long businessId;
   private final long parentId;
 
-  public Comment(long id, String content, long timestamp, long userId, long businessId, 
-                 long parentId) {
+  public Comment(
+      long id, String content, long timestamp, long userId, long businessId, long parentId) {
     this.id = id;
     this.content = content;
     this.timestamp = timestamp;

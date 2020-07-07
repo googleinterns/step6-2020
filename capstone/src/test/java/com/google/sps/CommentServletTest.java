@@ -18,6 +18,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doReturn;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -28,17 +29,21 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
-import com.google.appengine.api.datastore.Query.Filter;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.sps.servlets.CommentServlet;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.sps.data.DatastoreNames;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -59,7 +64,6 @@ public class CommentServletTest {
   private final long MOCK_USER_ID = 1;
   private final long MOCK_BUSINESS_ID = 2;
   private final long MOCK_PARENT_ID = 3;
-  
 
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), 
@@ -95,35 +99,37 @@ public class CommentServletTest {
       when(userService.getCurrentUser()).thenReturn(new User("", "", String.valueOf(mockId)));
   }
 
-  private void setMockRequestParameters(HttpServletRequest request, String contentStr, 
-                                        long userId, long businessId, long parentId) {
+  private void setMockRequestParameters(
+      HttpServletRequest request, String contentStr, long userId, long businessId, long parentId) {
 
     doReturn(contentStr).when(request).getParameter(DatastoreNames.CONTENT_PROPERTY);
     doReturn(Long.toString(userId)).when(request).getParameter(DatastoreNames.USER_ID_PROPERTY);
-    doReturn(Long.toString(businessId)).when(request)
-                                       .getParameter(DatastoreNames.BUSINESS_ID_PROPERTY);
+    doReturn(Long.toString(businessId))
+        .when(request)
+        .getParameter(DatastoreNames.BUSINESS_ID_PROPERTY);
     doReturn(Long.toString(parentId)).when(request).getParameter(DatastoreNames.PARENT_ID_PROPERTY);
-    
   }
 
-  private Query queryComment(String content, long userId, 
-                                     long businessId, long parentId) {
+  private Query queryComment(String content, long userId, long businessId, long parentId) {
     return new Query(DatastoreNames.COMMENT_ENTITY_NAME)
-                .setFilter(new CompositeFilter(CompositeFilterOperator.AND, Arrays.asList(
-                    new FilterPredicate(DatastoreNames.CONTENT_PROPERTY, FilterOperator.EQUAL,
-                                        content),
-                    new FilterPredicate(DatastoreNames.USER_ID_PROPERTY, FilterOperator.EQUAL,
-                                        userId),
-                    new FilterPredicate(DatastoreNames.BUSINESS_ID_PROPERTY, FilterOperator.EQUAL,
-                                        businessId),
-                    new FilterPredicate(DatastoreNames.PARENT_ID_PROPERTY, FilterOperator.EQUAL,
-                                        parentId))));
+        .setFilter(
+            new CompositeFilter(
+                CompositeFilterOperator.AND,
+                Arrays.asList(
+                    new FilterPredicate(
+                        DatastoreNames.CONTENT_PROPERTY, FilterOperator.EQUAL, content),
+                    new FilterPredicate(
+                        DatastoreNames.USER_ID_PROPERTY, FilterOperator.EQUAL, userId),
+                    new FilterPredicate(
+                        DatastoreNames.BUSINESS_ID_PROPERTY, FilterOperator.EQUAL, businessId),
+                    new FilterPredicate(
+                        DatastoreNames.PARENT_ID_PROPERTY, FilterOperator.EQUAL, parentId))));
   }
 
-  private int countCommentOccurences(DatastoreService ds, String content, 
-                                     long userId, long businessId, long parentId) {
+  private int countCommentOccurences(
+      DatastoreService ds, String content, long userId, long businessId, long parentId) {
     return ds.prepare(queryComment(content, userId, businessId, parentId))
-                                          .countEntities(withLimit(COUNTING_LIMIT));
+        .countEntities(withLimit(COUNTING_LIMIT));
   }
 
   // Check if we can add a comment
@@ -141,17 +147,33 @@ public class CommentServletTest {
   // Make sure that when we add two comments with the same properties we still save two seperate 
   // entities
   @Test 
+    DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+
+    setMockRequestParameters(request, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, MOCK_PARENT_ID);
+
+    assertEquals(
+        0,
+        countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, MOCK_PARENT_ID));
+
+    servlet.doPost(request, response);
+
+    assertEquals(
+        1,
+        countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, MOCK_PARENT_ID));
+  }
+
+  @Test
   public void testSameCommentTwice() throws IOException {
-
-    assertEquals(0, countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, 
-                                           MOCK_PARENT_ID));
+    assertEquals(
+        0,
+        countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, MOCK_PARENT_ID));
 
     servlet.doPost(request, response);
     servlet.doPost(request, response);
 
-    assertEquals(2, countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, 
-                                           MOCK_PARENT_ID));
-
+    assertEquals(
+        2,
+        countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, MOCK_PARENT_ID));
   }
 
   // Make requests where one parameter is missing, we expect that to lead to an error
@@ -159,13 +181,15 @@ public class CommentServletTest {
   public void testInvalidRequests() throws IOException {
     DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
-    Map<String, String> parameterMap  = new HashMap<String, String>();
+    Map<String, String> parameterMap = new HashMap<String, String>();
 
     parameterMap.put(DatastoreNames.CONTENT_PROPERTY, MOCK_CONTENT);
     parameterMap.put(DatastoreNames.USER_ID_PROPERTY, String.valueOf(MOCK_USER_ID));
     parameterMap.put(DatastoreNames.BUSINESS_ID_PROPERTY, String.valueOf(MOCK_BUSINESS_ID));
     parameterMap.put(DatastoreNames.PARENT_ID_PROPERTY, String.valueOf(MOCK_PARENT_ID));
-    
+
+    setMockRequestParameters(request, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, MOCK_PARENT_ID);
+
     // Test behavior while excluding any of the parameters
     for (String excludedParameterName : parameterMap.keySet()) {
       // Remove excluded parameter
@@ -175,13 +199,18 @@ public class CommentServletTest {
 
       // Check that the server rejected the request
       Mockito.verify(response, Mockito.times(1))
-          .sendError(Mockito.eq(HttpServletResponse.SC_BAD_REQUEST), 
-                     ArgumentMatchers.eq("Parameter \'" + excludedParameterName + 
-                                         "\' missing in request."));
-      
+
+          .sendError(
+              Mockito.eq(HttpServletResponse.SC_BAD_REQUEST),
+              ArgumentMatchers.eq(
+                  "java.io.IOException: Parameter \'"
+                      + excludedParameterName
+                      + "\' missing in request."));
+
       // Add parameter again
-      doReturn(parameterMap.get(excludedParameterName)).when(request)
-                                                       .getParameter(excludedParameterName);
+      doReturn(parameterMap.get(excludedParameterName))
+          .when(request)
+          .getParameter(excludedParameterName);
     }
   }
 

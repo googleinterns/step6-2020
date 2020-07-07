@@ -17,6 +17,10 @@ package com.google.sps.servlets;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.sps.data.DatastoreNames;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +34,7 @@ import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.api.users.User;
 
-/** Servlet that manages indidual comments*/
+/** Servlet that manages indidual comments */
 @WebServlet("/comment/*")
 public class CommentServlet extends HttpServlet {
   
@@ -70,12 +74,11 @@ public class CommentServlet extends HttpServlet {
                          "User must be logged in to post comment");
       return;
     }
-    
 
     datastore.put(buildCommentEntity(request));   
   }
 
-  private Entity buildCommentEntity (HttpServletRequest request) {
+  private Entity buildCommentEntity(HttpServletRequest request) {
     Entity commentEntity = new Entity("Comment");
 
     REQUIRED_PARAMETERS.forEach(parameter -> 
