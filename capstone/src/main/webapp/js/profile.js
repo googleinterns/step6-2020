@@ -17,10 +17,11 @@ import { getLoginStatus } from '/js/util.js';
 
 // Toggle between view and edit profile options.
 window.addEventListener('load', function() {
-    // Get login status of user to display on nav bar.
-    getLoginStatus();
+  // Get login status of user to display on nav bar.
+  getLoginStatus();
+  displayProfile();
 
-    loadCommentSection(document.getElementById('comment-section'));
+  loadCommentSection(document.getElementById('comment-section'));
 })
 
 // Toggle between view and edit profile options.
@@ -71,4 +72,36 @@ window.hasAnswerQuestionnaire = function() {
     submit.style.display = 'block';
 }
 
-// TODO: Fetch specific profile data.
+// Display the correct profile information.
+function displayProfile() {
+  var id = getId();
+  fetch('/profile/'+id, {method:"GET"})
+    .then(response => response.json())
+    .then((user_profile) => {
+      createProfile(user_profile.name, user_profile.location, user_profile.bio, user_profile.story, user_profile.about, user_profile.support);
+    });
+}
+
+// Obtain the ID from the URL params.
+function getId() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const id = urlParams.get('id'); 
+  return id;
+}
+
+// Add correct text to each HTML element of profile page.
+function createProfile(name, location, bio, story, about, support) {
+  var name_section = document.getElementById("name");
+  var location_section = document.getElementById("location");
+  var bio_section = document.getElementById("bio");
+  var story_section = document.getElementById("story");
+  var about_section = document.getElementById("about");
+  var support_section = document.getElementById("support");
+
+  name_section.innerText = name;
+  location_section.innerText = location;
+  bio_section.innerText = bio;
+  story_section.innerText = story;
+  about_section.innerText = about;
+  support_section.innerText = support;
+}
