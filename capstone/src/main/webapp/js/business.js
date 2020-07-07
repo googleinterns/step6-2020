@@ -14,4 +14,20 @@
 
 import { loadCommentSection } from '/js/comments.js';
 
-window.onload = () => loadCommentSection(document.getElementById('comment-section'));
+window.onload = function() {
+  const url = new URLSearchParams(window.location.search);
+  let businessId = url.get('id');
+  constructBusinessProfile(businessId);
+  loadCommentSection(document.getElementById('comment-section'));
+}
+
+function constructBusinessProfile(id) {
+  const profileInfo = document.getElementById('view-profile-section');
+  fetch('/business/' + id).then(response => response.json()).then(info => {
+    document.getElementById("profile-name").innerText = info.name;
+    document.getElementById("profile-location").innerText = info.location;
+    document.getElementById("profile-bio").innerText = info.bio;
+    // Opens a draft of the email to the business.
+    document.getElementById("profile-email").href = 'mailto:' + info.email;
+  })
+}
