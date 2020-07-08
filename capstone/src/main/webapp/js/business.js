@@ -15,6 +15,8 @@
 import { loadCommentSection } from '/js/comments.js';
 
 window.onload = function() {
+  // window.location.search returns the search string of the URL.
+  // In this case, window.location.search = ?id={businessID}
   const url = new URLSearchParams(window.location.search);
   let businessId = url.get('id');
   constructBusinessProfile(businessId);
