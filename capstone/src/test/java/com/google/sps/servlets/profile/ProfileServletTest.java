@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockitoAnnotations;
 
@@ -53,8 +54,8 @@ public class ProfileServletTest {
   private static final String NAME = "John Doe";
   private static final String LOCATION = "Mountain View, CA";
   private static final String BIO = "This is my bio.";
-  private static final String USERID = "12345";
-  private static final String INVALID_USERID = null;
+  private static final String USER_ID = "12345";
+  private static final String INVALID_USER_ID = null;
   private static final String EMAIL = "abc@gmail.com";
   private static final String AUTHDOMAIN = "gmail.com";
   private static final String PATHINFO = "profile/12345";
@@ -73,7 +74,7 @@ public class ProfileServletTest {
   }
 
   /*
-   *  Test doGet() for when user enters an invalid URL param. It will return an error.
+   *  Test doGet() for when user enters an invalid URL param. It should return an error.
    **/
   @Test
   public void invalidUrlParamReturnError() throws ServletException, IOException {
@@ -83,8 +84,8 @@ public class ProfileServletTest {
     userServlet.doGet(request, response);
 
     // verify if a sendError() was performed with the expected values.
-    verify(response).sendError(HttpServletResponse.SC_NOT_FOUND,
-            "The profile you were looking for was not found in our records!");
+    Mockito.verify(response, Mockito.times(1))
+        .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
   }
 
   /*
@@ -97,8 +98,8 @@ public class ProfileServletTest {
 
     // Create an entity with this userId=12345 and set it's property "isBusiness" to "Yes".
     // Then add this to datastore.
-    Key userKey = KeyFactory.createKey("UserProfile", USERID);
-    Entity ent = new Entity("UserProfile", USERID);
+    Key userKey = KeyFactory.createKey("UserProfile", USER_ID);
+    Entity ent = new Entity("UserProfile", USER_ID);
 
     when(datastore.get(userKey)).thenThrow(EntityNotFoundException.class);
   
@@ -106,8 +107,8 @@ public class ProfileServletTest {
     userServlet.doGet(request, response);
 
     // verify if a sendError() was performed with the expected values.
-    verify(response).sendError(HttpServletResponse.SC_NOT_FOUND,
-            "The profile you were looking for was not found in our records!");
+    Mockito.verify(response, Mockito.times(1))
+        .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
   }
 
   /*
@@ -119,8 +120,8 @@ public class ProfileServletTest {
 
     // Create an entity with this userId=12345 and set it's property "isBusiness" to "Yes".
     // Then add this to datastore.
-    Key userKey = KeyFactory.createKey("UserProfile", USERID);
-    Entity ent = new Entity("UserProfile", USERID);
+    Key userKey = KeyFactory.createKey("UserProfile", USER_ID);
+    Entity ent = new Entity("UserProfile", USER_ID);
 
     String isBusiness = "Yes";
 
@@ -140,8 +141,8 @@ public class ProfileServletTest {
     userServlet.doGet(request, response);
 
     // verify if a sendError() was performed with the expected values.
-    verify(response).sendError(HttpServletResponse.SC_NOT_FOUND,
-            "The profile you were looking for was not found in our records!");
+    Mockito.verify(response, Mockito.times(1))
+        .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
   }
 
   /*
@@ -154,10 +155,10 @@ public class ProfileServletTest {
     when(response.getWriter()).thenReturn(printWriter);
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
-    // Create an entity with this userId=12345 and set it's property "isBusiness" to "Yes".
+    // Create an entity with this userId=USER_ID and set it's property "isBusiness" to "Yes".
     // Then add this to datastore.
-    Key userKey = KeyFactory.createKey("UserProfile", USERID);
-    Entity ent = new Entity("UserProfile", USERID);
+    Key userKey = KeyFactory.createKey("UserProfile", USER_ID);
+    Entity ent = new Entity("UserProfile", USER_ID);
 
     String isBusiness = "No";
     boolean isCurrentUser = true;
@@ -178,7 +179,7 @@ public class ProfileServletTest {
     userServlet.doGet(request, response);
 
     // verify that it sends a JSON file to response.
-    UserProfile profile = new UserProfile(USERID, NAME, LOCATION, BIO, isCurrentUser);
+    UserProfile profile = new UserProfile(USER_ID, NAME, LOCATION, BIO, isCurrentUser);
 
     String responseString = stringWriter.getBuffer().toString().trim();
     JsonElement responseJsonElement = new JsonParser().parse(responseString);
@@ -197,15 +198,15 @@ public class ProfileServletTest {
    **/
   @Test
   public void editProfileUserNotFoundReturnError() throws ServletException, IOException, EntityNotFoundException {
-    User user = new User(EMAIL, AUTHDOMAIN, INVALID_USERID);
+    User user = new User(EMAIL, AUTHDOMAIN, INVALID_USER_ID);
     when(userService.getCurrentUser()).thenReturn(user);
 
     ProfileServlet userServlet = new ProfileServlet(userService, datastore);
     userServlet.doPost(request, response);
 
     // verify if a sendError() was performed with the expected values.
-    verify(response).sendError(HttpServletResponse.SC_NOT_FOUND,
-            "You don't have permission to perform this action!");
+    Mockito.verify(response, Mockito.times(1))
+        .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
   }
 
   /*
@@ -213,7 +214,7 @@ public class ProfileServletTest {
    **/
   @Test
   public void userEditProfileAddToDatastore() throws ServletException, IOException {
-    User user = new User(EMAIL, AUTHDOMAIN, USERID);
+    User user = new User(EMAIL, AUTHDOMAIN, USER_ID);
     when(userService.getCurrentUser()).thenReturn(user);
 
     String isBusiness = "No";
@@ -223,8 +224,8 @@ public class ProfileServletTest {
     when(request.getParameter("location")).thenReturn(LOCATION);
     when(request.getParameter("bio")).thenReturn(BIO);
 
-    Key userKey = KeyFactory.createKey("UserProfile", USERID);
-    Entity ent = new Entity("UserProfile", USERID);
+    Key userKey = KeyFactory.createKey("UserProfile", USER_ID);
+    Entity ent = new Entity("UserProfile", USER_ID);
 
     ProfileServlet userServlet = new ProfileServlet(userService, datastore);
     userServlet.doPost(request, response);

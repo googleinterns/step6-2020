@@ -91,12 +91,7 @@ public class ProfileServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // When user edits their profile page, fetch the data from the edit profile form.
     String id = userService.getCurrentUser().getUserId();
-    String isBusiness = request.getParameter("isBusiness");
-    String name = request.getParameter("name");
-    String location = request.getParameter("location");
-    String bio = request.getParameter("bio");
 
     // Check if user is logged in.
     if (id == null) {
@@ -107,10 +102,10 @@ public class ProfileServlet extends HttpServlet {
     }
     // Update properties in datastore.
     Entity profileEntity = new Entity("UserProfile", id);
-    profileEntity.setProperty("isBusiness", isBusiness);
-    profileEntity.setProperty("name", name);
-    profileEntity.setProperty("location", location);
-    profileEntity.setProperty("bio", bio);
+    profileEntity.setProperty("isBusiness", request.getParameter("isBusiness"));
+    profileEntity.setProperty("name", request.getParameter("name"));
+    profileEntity.setProperty("location", request.getParameter("location"));
+    profileEntity.setProperty("bio", request.getParameter("bio"));
 
     // Put entity in datastore.
     datastore.put(profileEntity);
