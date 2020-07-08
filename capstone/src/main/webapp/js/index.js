@@ -22,6 +22,7 @@ window.onload = function() {
       businessList.appendChild(createCard(business));
     })
   })
+
   // Get login status of user to display on nav bar.
   getLoginStatus();
 }
