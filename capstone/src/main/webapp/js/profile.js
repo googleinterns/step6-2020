@@ -44,38 +44,26 @@ window.hasAnswerQuestionnaire = function() {
   let isBusiness = document.getElementById("yes");
   let isNotBusiness = document.getElementById("no");
   
-  let name = document.getElementById("name-section");
-  let location = document.getElementById("location-section");
-  let bio = document.getElementById("bio-section");
-  let story = document.getElementById("story-section");
-  let about = document.getElementById("about-section");
-  let support = document.getElementById("support-section");
+  let basicQuesionnaire = document.getElementById("basic-questionnaire");
+  let businessQuesionnaire = document.getElementById("business-questionnaire");
 
   if (isBusiness.checked == true) {
-    name.style.display = 'block';
-    location.style.display = 'block';
-    bio.style.display = 'block';
-    story.style.display = 'block';
-    about.style.display = 'block';
-    support.style.display = 'block';
+    basicQuesionnaire.style.display = 'block';
+    businessQuesionnaire.style.display = 'block';
   } 
   if (isNotBusiness.checked == true) {
-    name.style.display = 'block';
-    location.style.display = 'block';
-    bio.style.display = 'block';
-    story.style.display = 'none';
-    about.style.display = 'none';
-    support.style.display = 'none';
+    basicQuesionnaire.style.display = 'block';
+    businessQuesionnaire.style.display = 'none';
   }
 
-    let submit = document.getElementById("submit-button");
-    submit.style.display = 'block';
+  let submit = document.getElementById("submit-button");
+  submit.style.display = 'block';
 }
 
 // Display the correct profile information.
 function displayProfile() {
   let id = getId();
-  fetch('/profile/'+id, {method:"GET"})
+  fetch('/profile/'+id)
     .then(response => response.json())
     .then((userProfile) => {
       createProfile(userProfile.name, userProfile.location, userProfile.bio);

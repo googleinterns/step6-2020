@@ -2,34 +2,14 @@
     display: none;
 }
 
-#name-section {
+#basic-questionnaire {
     display: none;
 }
 
-#location-section {
+#business-questionnaire {
     display: none;
 }
 
-#bio-section {
-    display: none;
-}
-
-#story-section {
-    display: none;
-}
-
-#about-section {
-    display: none;
-}
-
-#support-section {
-    display: none;
-}
-
-#edit-button {
-    display: none;
-}
-
-#submit-button {
-    display: none;
+#first-question {
+    display: block;
 }

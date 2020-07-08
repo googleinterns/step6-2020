@@ -35,45 +35,51 @@
       <div id="edit-profile-section">
         
         <form action="/profile" method="POST" id="edit-profile">
-          <label for="isBusiness">Are you a business owner?</label><br>
+          <div id="first-question">
+            <label for="isBusiness">Are you a business owner?</label><br>
 
-          <label for="yes"><input type="radio" id="yes" name="isBusiness" value="Yes" onclick="hasAnswerQuestionnaire()">
-          Yes</label><br>
+            <label for="yes"><input type="radio" id="yes" name="isBusiness" value="Yes" onclick="hasAnswerQuestionnaire()">
+            Yes</label><br>
 
-          <label for="no"><input type="radio" id="no" name="isBusiness" value="No" onclick="hasAnswerQuestionnaire()">
-          No</label><br>
-          
-          <div id="name-section">
-            <label for="name">Name:</label><br>
-            <input type="text" name="name" value="John Doe" required><br>
+            <label for="no"><input type="radio" id="no" name="isBusiness" value="No" onclick="hasAnswerQuestionnaire()">
+            No</label><br>
           </div>
           
-          <div id="location-section">
-            <label for="location">Location:</label><br>
-            <input type="text" name="location" value="Mountain View, CA"><br>
-          </div>
+          <div id="basic-questionnaire">
+            <div id="name-section">
+              <label for="name">Name:</label><br>
+              <input type="text" name="name" value="John Doe" required><br>
+            </div>
           
-          <div id="bio-section">
-            <label for="bio">Short bio:</label><br>
-            <textarea name="bio" rows="10" cols="30"></textarea>
+            <div id="location-section">
+              <label for="location">Location:</label><br>
+              <input type="text" name="location" value="Mountain View, CA"><br>
+            </div>
+          
+            <div id="bio-section">
+              <label for="bio">Short bio:</label><br>
+              <textarea name="bio" rows="10" cols="30"></textarea>
+            </div>
           </div>
 
           <!-- Business Owner Additional Questionnaires -->
-          <div id="story-section">
-            <label for="story">How did the pandemic affect your business?</label><br>
-            <textarea name="story" rows="10" cols="30"></textarea>
-          </div>
+          <div id="business-questionnaire">
+            <div id="story-section">
+              <label for="story">How did the pandemic affect your business?</label><br>
+              <textarea name="story" rows="10" cols="30"></textarea>
+            </div>
 
-          <div id="about-section">
-            <label for="about">Share your business.</label><br>
-            <p>You can share your business website, grubhub delivery link, or describe what your business has to offer!</p>
-            <textarea name="about" rows="10" cols="30"></textarea>
-          </div>
+            <div id="about-section">
+              <label for="about">Share your business.</label><br>
+              <p>You can share your business website, grubhub delivery link, or describe what your business has to offer!</p>
+              <textarea name="about" rows="10" cols="30"></textarea>
+            </div>
 
-          <div id="support-section">
-            <label for="support">How can we support you?</label><br>
-            <p>You can share your gofundme link, share a transfer giftcard link, your PO box, or simply ask people to post a generous comment :)</p>
-            <textarea name="support" rows="10" cols="30"></textarea>
+            <div id="support-section">
+              <label for="support">How can we support you?</label><br>
+              <p>You can share your gofundme link, share a transfer giftcard link, your PO box, or simply ask people to post a generous comment :)</p>
+              <textarea name="support" rows="10" cols="30"></textarea>
+            </div>
           </div>
 
           <input type="submit" value="Submit" id="submit-button" onclick="toggleProfile()">

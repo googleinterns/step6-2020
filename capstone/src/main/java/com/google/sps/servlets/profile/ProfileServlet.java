@@ -100,6 +100,7 @@ public class ProfileServlet extends HttpServlet {
           "You don't have permission to perform this action!");
       return;
     }
+    
     // Update properties in datastore.
     Entity profileEntity = new Entity("UserProfile", id);
     profileEntity.setProperty("isBusiness", request.getParameter("isBusiness"));
