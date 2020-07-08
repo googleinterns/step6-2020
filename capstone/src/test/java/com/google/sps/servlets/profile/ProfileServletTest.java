@@ -54,9 +54,11 @@ public class ProfileServletTest {
   private static final String LOCATION = "Mountain View, CA";
   private static final String BIO = "This is my bio.";
   private static final String USERID = "12345";
+  private static final String INVALID_USERID = null;
   private static final String EMAIL = "abc@gmail.com";
   private static final String AUTHDOMAIN = "gmail.com";
   private static final String PATHINFO = "profile/12345";
+  private static final String INVALID_PATHINFO = "profile";
 
 
   @Before
@@ -68,6 +70,44 @@ public class ProfileServletTest {
   @After
   public void tearDown() throws Exception {
     helper.tearDown();
+  }
+
+  /*
+   *  Test doGet() for when user enters an invalid URL param. It will return an error.
+   **/
+  @Test
+  public void invalidUrlParamReturnError() throws ServletException, IOException {
+    when(request.getPathInfo()).thenReturn(INVALID_PATHINFO);
+
+    ProfileServlet userServlet = new ProfileServlet(userService, datastore);
+    userServlet.doGet(request, response);
+
+    // verify if a sendError() was performed with the expected values.
+    verify(response).sendError(HttpServletResponse.SC_NOT_FOUND,
+            "The profile you were looking for was not found in our records!");
+  }
+
+  /*
+   *  Test doGet() for when datastore cannot find entity key. User does not exist in datastore.
+   *  It should return an error.
+   **/
+  @Test
+  public void userNotInDatastoreReturnError() throws ServletException, IOException, EntityNotFoundException {
+    when(request.getPathInfo()).thenReturn(PATHINFO);
+
+    // Create an entity with this userId=12345 and set it's property "isBusiness" to "Yes".
+    // Then add this to datastore.
+    Key userKey = KeyFactory.createKey("UserProfile", USERID);
+    Entity ent = new Entity("UserProfile", USERID);
+
+    when(datastore.get(userKey)).thenThrow(EntityNotFoundException.class);
+  
+    ProfileServlet userServlet = new ProfileServlet(userService, datastore);
+    userServlet.doGet(request, response);
+
+    // verify if a sendError() was performed with the expected values.
+    verify(response).sendError(HttpServletResponse.SC_NOT_FOUND,
+            "The profile you were looking for was not found in our records!");
   }
 
   /*
@@ -150,6 +190,22 @@ public class ProfileServletTest {
     JsonObject userJsonObject = userJsonElement.getAsJsonObject();
 
     Assert.assertEquals(responseJsonObject, userJsonObject);
+  }
+
+  /*
+   *  Test doPost() for when the user does not exist and they want to edit a profile. It should return error.
+   **/
+  @Test
+  public void editProfileUserNotFoundReturnError() throws ServletException, IOException, EntityNotFoundException {
+    User user = new User(EMAIL, AUTHDOMAIN, INVALID_USERID);
+    when(userService.getCurrentUser()).thenReturn(user);
+
+    ProfileServlet userServlet = new ProfileServlet(userService, datastore);
+    userServlet.doPost(request, response);
+
+    // verify if a sendError() was performed with the expected values.
+    verify(response).sendError(HttpServletResponse.SC_NOT_FOUND,
+            "You don't have permission to perform this action!");
   }
 
   /*
