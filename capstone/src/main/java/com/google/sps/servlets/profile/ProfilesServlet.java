@@ -13,7 +13,7 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
-import com.google.sps.data.Profile;
+import com.google.sps.data.UserProfile;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -39,9 +39,9 @@ public class ProfilesServlet extends HttpServlet {
     List<Entity> entities = results.asList(FetchOptions.Builder.withDefaults());
 
     // Convert entities to Profile objects.
-    List<Profile> profiles = new ArrayList<>();
+    List<UserProfile> profiles = new ArrayList<>();
     for (Entity entity : entities) {
-      long id = entity.getKey().getId();
+      String id = entity.getKey().getName();
       String name = (String) entity.getProperty("name");
       String location = (String) entity.getProperty("location");
       String bio = (String) entity.getProperty("bio");
@@ -49,7 +49,7 @@ public class ProfilesServlet extends HttpServlet {
       String about = (String) entity.getProperty("about");
       String support = (String) entity.getProperty("support");
 
-      Profile profile = new Profile(id, name, location, bio, story, about, support);
+      UserProfile profile = new UserProfile(id, name, location, bio, false);
       profiles.add(profile);
     }
 

@@ -77,9 +77,11 @@ function displayProfile() {
   var id = getId();
   fetch('/profile/'+id, {method:"GET"})
     .then(response => response.json())
-    .then((user_profile) => {
-      createProfile(user_profile.name, user_profile.location, user_profile.bio, user_profile.story, user_profile.about, user_profile.support);
+    .then((userProfile) => {
+      createProfile(userProfile.name, userProfile.location, userProfile.bio);
+      displayEditButton(userProfile.isCurrentUser);
     });
+  ;
 }
 
 // Obtain the ID from the URL params.
@@ -89,19 +91,23 @@ function getId() {
   return id;
 }
 
+// Determine whether to display the edit button depends if user is viewing its profile page.
+function displayEditButton(isCurrentUser) {
+  var editButton =  document.getElementById("edit-button");
+  if (isCurrentUser) {
+    editButton.style.display = 'block';
+  } else {
+    editButton.style.display = 'none';
+  }
+}
+
 // Add correct text to each HTML element of profile page.
-function createProfile(name, location, bio, story, about, support) {
+function createProfile(name, location, bio) {
   var name_section = document.getElementById("name");
   var location_section = document.getElementById("location");
   var bio_section = document.getElementById("bio");
-  var story_section = document.getElementById("story");
-  var about_section = document.getElementById("about");
-  var support_section = document.getElementById("support");
 
   name_section.innerText = name;
   location_section.innerText = location;
   bio_section.innerText = bio;
-  story_section.innerText = story;
-  about_section.innerText = about;
-  support_section.innerText = support;
 }

@@ -70,11 +70,11 @@ public class NewUserServletTest {
     User user = new User(email, authDomain, userId);
     when(userService.getCurrentUser()).thenReturn(user);
 
-    Key userKey = KeyFactory.createKey("User", userId);
+    Key userKey = KeyFactory.createKey("UserProfile", userId);
 
     when(datastore.get(userKey)).thenThrow(EntityNotFoundException.class);
 
-    Entity ent = new Entity("User", userId);
+    Entity ent = new Entity("UserProfile", userId);
 
     NewUserServlet userServlet = new NewUserServlet(userService, datastore);
     userServlet.doGet(request, response);
@@ -95,8 +95,8 @@ public class NewUserServletTest {
     User user = new User(email, authDomain, userId);
     when(userService.getCurrentUser()).thenReturn(user);
 
-    Key userKey = KeyFactory.createKey("User", userId);
-    Entity ent = new Entity("User", userId);
+    Key userKey = KeyFactory.createKey("UserProfile", userId);
+    Entity ent = new Entity("UserProfile", userId);
 
     when(datastore.get(userKey)).thenReturn(ent);
 

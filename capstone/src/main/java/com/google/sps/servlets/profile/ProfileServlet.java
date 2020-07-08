@@ -13,7 +13,7 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
-import com.google.sps.data.Profile;
+import com.google.sps.data.UserProfile;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** Servlet responsible for showing a profile. */
+/** Servlet responsible for showing a non-business user profile. */
 @WebServlet("/profile/*")
 public class ProfileServlet extends HttpServlet {
   
@@ -48,7 +48,7 @@ public class ProfileServlet extends HttpServlet {
 
     String userId = idArray[1];
 
-    Key userKey = KeyFactory.createKey("Profile", userId);
+    Key userKey = KeyFactory.createKey("UserProfile", userId);
     Entity entity;
 
     try {
@@ -58,17 +58,24 @@ public class ProfileServlet extends HttpServlet {
       return;
     }
 
+    // Check if user is a non-business user. If user is a business owner, redirect to "profile not found" page.
+    String isBusiness = entity.hasProperty("isBusiness") ? (String) entity.getProperty("isBusiness") : "";
+    if (isBusiness.equals("Yes")) {
+      response.sendError(
+          HttpServletResponse.SC_NOT_FOUND,
+          "The profile you were looking for was not found in our records!");
+      return;
+    }
+
     // Query all profile properties.
-    long id = entity.getKey().getId();
-    String name = (String) entity.getProperty("name");
-    String location = (String) entity.getProperty("location");
-    String bio = (String) entity.getProperty("bio");
-    String story = (String) entity.getProperty("story");
-    String about = (String) entity.getProperty("about");
-    String support = (String) entity.getProperty("support");
+    String id = entity.getKey().getName();
+    String name = entity.hasProperty("name") ? (String) entity.getProperty("name") : "";
+    String location = entity.hasProperty("location") ? (String) entity.getProperty("location") : "";
+    String bio = entity.hasProperty("bio") ? (String) entity.getProperty("bio") : "";
+    boolean isCurrentUser = checkIsCurrentUser(userId, id);
 
     // Create a profile object that contains the properties.
-    Profile profile = new Profile(id, name, location, bio, story, about, support);
+    UserProfile profile = new UserProfile(id, name, location, bio, isCurrentUser);
 
     // Send it back to client side as a JSON file.
     response.setContentType("application/json;");
@@ -84,24 +91,23 @@ public class ProfileServlet extends HttpServlet {
     String name = request.getParameter("name");
     String location = request.getParameter("location");
     String bio = request.getParameter("bio");
-    String story = request.getParameter("story");
-    String about = request.getParameter("about");
-    String support = request.getParameter("support");
 
     // Update properties in datastore.
-    Entity profileEntity = new Entity("Profile", id);
+    Entity profileEntity = new Entity("UserProfile", id);
     profileEntity.setProperty("isBusiness", isBusiness);
     profileEntity.setProperty("name", name);
     profileEntity.setProperty("location", location);
     profileEntity.setProperty("bio", bio);
-    profileEntity.setProperty("story", story);
-    profileEntity.setProperty("about", about);
-    profileEntity.setProperty("support", support);
 
     // Put entity in datastore.
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(profileEntity);
 
-    response.sendRedirect("/profile.html");
+    response.sendRedirect("/index.html");
+  }
+  
+  // Check if the current user is the same as the fetched user profile data.
+  public boolean checkIsCurrentUser(String currentUserId, String fetchId) {
+    return currentUserId.equals(fetchId);
   }
 }

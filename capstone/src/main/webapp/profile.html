@@ -24,14 +24,11 @@
     <!-- View Profile Page -->
     <div class="content">
       <div id="view-profile-section">
-        <button onclick="toggleProfile()">Edit Profile</button>
+        <button onclick="toggleProfile()" id="edit-button">Edit Profile</button>
 
         <h1 id="name"></h1>
         <h2 id="location"></h2>
         <h3 id="bio"></h3>
-        <h4 id="story"></h4>
-        <h5 id="about"></h5>
-        <h6 id="support"></h6>
       </div>
       
       <!-- Edit Profile Page -->
@@ -60,7 +57,7 @@
             <label for="bio">Short bio:</label><br>
             <textarea name="bio" rows="10" cols="30"></textarea>
           </div>
-        
+
           <!-- Business Owner Additional Questionnaires -->
           <div id="story-section">
             <label for="story">How did the pandemic affect your business?</label><br>
