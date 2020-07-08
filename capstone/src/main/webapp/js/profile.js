@@ -81,7 +81,6 @@ function displayProfile() {
       createProfile(userProfile.name, userProfile.location, userProfile.bio);
       displayEditButton(userProfile.isCurrentUser);
     });
-  ;
 }
 
 // Obtain the ID from the URL params.

@@ -1,4 +1,4 @@
-package com.google.sps.servlets;
+package com.google.sps.servlets.profile;
 
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.DatastoreService;
@@ -58,7 +58,7 @@ public class ProfileServlet extends HttpServlet {
       return;
     }
 
-    // Check if user is a non-business user. If user is a business owner, redirect to "profile not found" page.
+    // If userId is a business owner id, redirect to "profile not found" page.
     String isBusiness = entity.hasProperty("isBusiness") ? (String) entity.getProperty("isBusiness") : "";
     if (isBusiness.equals("Yes")) {
       response.sendError(
@@ -100,7 +100,6 @@ public class ProfileServlet extends HttpServlet {
     profileEntity.setProperty("bio", bio);
 
     // Put entity in datastore.
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(profileEntity);
 
     response.sendRedirect("/index.html");
