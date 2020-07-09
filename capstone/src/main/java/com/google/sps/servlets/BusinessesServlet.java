@@ -14,52 +14,66 @@
 
 package com.google.sps.servlets;
 
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.gson.Gson;
 import com.google.sps.data.BusinessProfile;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** Servlet that handles business information. */
+/** Servlet responsible for listing all business profiles. */
 @WebServlet("/businesses")
 public class BusinessesServlet extends HttpServlet {
 
-//   private static final String TASK_NAME = "Business";
-//   private static final String NAME_PROPERTY = "name";
-//   private static final String EMAIL_PROPERTY = "email";
-//   private static final String BIO_PROPERTY = "bio";
-//   private static final String LOCATION_PROPERTY = "location";
+  DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-//   @Override
-//   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-//     // Retrieve the name and bio of all businesses to be displayed on the page.
-//     Query businessQuery = new Query(TASK_NAME);
-//     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-//     PreparedQuery queryResults = datastore.prepare(businessQuery);
-//     ArrayList<BusinessProfile> businesses = new ArrayList();
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // Query profile entities from datastore.
+    Query query = new Query("UserProfile");
 
-//     // Construct list of businesses from datastore.
-//     for (Entity businessEntity : queryResults.asIterable()) {
-//       long id = (long) businessEntity.getKey().getId();
-//       String name = (String) businessEntity.getProperty(NAME_PROPERTY);
-//       String email = (String) businessEntity.getProperty(EMAIL_PROPERTY);
-//       String bio = (String) businessEntity.getProperty(BIO_PROPERTY);
-//       String location = (String) businessEntity.getProperty(LOCATION_PROPERTY);
-//       BusinessProfile business = new BusinessProfile(id, name, email, bio, location);
-//       businesses.add(business);
-//     }
+    PreparedQuery results = datastore.prepare(query);
 
-//     Gson gson = new Gson();
-//     String jsonBusinesses = gson.toJson(businesses);
-//     response.setContentType("application/json");
-//     response.getWriter().println(jsonBusinesses);
-//   }
+    // Retreive entities with a filter on business users.
+    List<Entity> entities = results.asList(FetchOptions.Builder.withDefaults());
+
+    // Convert entities to Profile objects.
+    List<BusinessProfile> profiles = new ArrayList<>();
+    for (Entity entity : entities) {
+      String id = (String) entity.getKey().getName();
+      String name = (String) entity.getProperty("name");
+      String location = (String) entity.getProperty("location");
+      String bio = (String) entity.getProperty("bio");
+      String story = (String) entity.getProperty("story");
+      String about = (String) entity.getProperty("about");
+      String support = (String) entity.getProperty("support");
+      
+      System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+      System.out.println("id is " + id);
+      System.out.println("name is " + name);
+      System.out.println("location is " + location);
+
+
+      BusinessProfile profile = new BusinessProfile(id, name, location, bio, story, about, support, false);
+      profiles.add(profile);
+    }
+
+    response.setContentType("application/json;");
+    Gson gson = new Gson();
+    response.getWriter().println(gson.toJson(profiles));
+  }
 }

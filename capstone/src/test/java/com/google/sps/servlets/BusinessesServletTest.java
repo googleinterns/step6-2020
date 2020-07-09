@@ -14,100 +14,134 @@
 
 package com.google.sps.servlets;
 
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doReturn;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserService;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import com.google.sps.data.BusinessProfile;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.io.*;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 /** Unit tests for BusinessesServlet. */
 public class BusinessesServletTest {
 
-//   private final LocalServiceTestHelper helper =
-//       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
+  private LocalServiceTestHelper helper =
+      new LocalServiceTestHelper(new LocalUserServiceTestConfig())
+          .setEnvIsAdmin(true)
+          .setEnvIsLoggedIn(false);
 
-//   @Mock private HttpServletRequest request;
-//   @Mock private HttpServletResponse response;
-//   private StringWriter servletResponseWriter;
-//   private BusinessesServlet servlet;
+  @Mock private HttpServletRequest request;
 
-//   @Before
-//   public void setUp() throws IOException {
-//     MockitoAnnotations.initMocks(this);
-//     helper.setUp();
+  @Mock private HttpServletResponse response;
 
-//     servletResponseWriter = new StringWriter();
-//     doReturn(new PrintWriter(servletResponseWriter)).when(response).getWriter();
-//     servlet = new BusinessesServlet();
-//   }
+  private StringWriter servletResponseWriter;
 
-//   @After
-//   public void tearDown() {
-//     helper.tearDown();
-//   }
+  private BusinessesServlet servlet;
 
-//   private Entity createBusiness(int businessNo) {
-//     Entity newBusiness = new Entity("Business");
-//     newBusiness.setProperty("name", "Business " + businessNo);
-//     newBusiness.setProperty("email", "work@b" + businessNo + ".com");
-//     newBusiness.setProperty("bio", "This is the bio for business " + businessNo);
-//     newBusiness.setProperty("location", "Mountain View, CA");
-//     return newBusiness;
-//   }
+  private static final String USER_ID_1 = "12345";
+  private static final String USER_ID_2 = "6789";
+  private static final String NAME = "Pizzeria";
+  private static final String LOCATION = "Mountain View, CA";
+  private static final String BIO = "This is my business bio.";
+  private static final String STORY = "The pandemic has affected my business in X many ways.";
+  private static final String ABOUT = "Here is the Pizzeria's menu.";
+  private static final String SUPPORT = "Please donate at X website."; 
 
-//   @Test
-//   public void testEmptydoGet() throws IOException {
-//     servlet.doGet(request, response);
-//     Assert.assertEquals(servletResponseWriter.toString().replace("\n", ""), "[]");
-//   }
+  @Before
+  public void setUp() throws IOException {
+    MockitoAnnotations.initMocks(this);
+    helper.setUp();
 
-//   @Test
-//   public void testBasicdoGet() throws IOException {
-//     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    servletResponseWriter = new StringWriter();
+    doReturn(new PrintWriter(servletResponseWriter)).when(response).getWriter();
+    servlet = new BusinessesServlet();
+  }
 
-//     // This list will help in constructing the expected response.
-//     List<Map<String, Object>> businesses = new ArrayList();
+  @After
+  public void tearDown() {
+    helper.tearDown();
+  }
 
-//     Entity business1 = createBusiness(1);
-//     datastore.put(business1);
+  private Entity createBusiness(int businessNo, String id) {
+    Entity newBusiness = new Entity("UserProfile", id);
+    newBusiness.setProperty("name", NAME);
+    newBusiness.setProperty("location", LOCATION);
+    newBusiness.setProperty("bio", BIO);
+    newBusiness.setProperty("story", STORY);
+    newBusiness.setProperty("about", ABOUT);
+    newBusiness.setProperty("support", SUPPORT);
+    
+    return newBusiness;
+  }
 
-//     // Add an "id" property so that the expected response shows id as well.
-//     // servletResponse returns "id" from the BusinessProfile
-//     business1.setProperty("id", business1.getKey().getId());
-//     businesses.add(business1.getProperties());
+  private BusinessProfile createBusinessProfile(String id) {
+    return new BusinessProfile(id, NAME, LOCATION, BIO, STORY, ABOUT, SUPPORT, false);
+  }
 
-//     Entity business2 = createBusiness(2);
-//     datastore.put(business2);
+  @Test
+  public void testEmptydoGet() throws IOException {
+    servlet.doGet(request, response);
+    Assert.assertEquals(servletResponseWriter.toString().replace("\n", ""), "[]");
+  }
 
-//     business2.setProperty("id", business2.getKey().getId());
-//     businesses.add(business2.getProperties());
+  @Test
+  public void testBasicdoGet() throws IOException {
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    // This list will help in constructing the expected response.
+    List<BusinessProfile> businesses = new ArrayList();
 
-//     servlet.doGet(request, response);
-//     String servletResponse = servletResponseWriter.toString();
-//     Gson gson = new Gson();
-//     String expectedResponse = gson.toJson(businesses);
+    Entity business1 = createBusiness(1, USER_ID_1);
+    datastore.put(business1);
 
-//     // expectedResponse and servletResponse strings may differ in json property order.
-//     // JsonParser helps to compare two json strings regardless of property order.
-//     JsonParser parser = new JsonParser();
-//     Assert.assertEquals(parser.parse(servletResponse), parser.parse(expectedResponse));
-//   }
+    Entity business2 = createBusiness(2, USER_ID_2);
+    datastore.put(business2);
+
+    BusinessProfile profile1 = createBusinessProfile(USER_ID_1);
+    businesses.add(profile1);
+
+    BusinessProfile profile2 = createBusinessProfile(USER_ID_2);
+    businesses.add(profile2);
+
+    servlet.doGet(request, response);
+
+    String servletResponse = servletResponseWriter.toString();
+    Gson gson = new Gson();
+    String expectedResponse = gson.toJson(businesses);
+
+    // expectedResponse and servletResponse strings may differ in json property order.
+    // JsonParser helps to compare two json strings regardless of property order.
+    JsonParser parser = new JsonParser();
+    Assert.assertEquals(parser.parse(servletResponse), parser.parse(expectedResponse));
+  }
 }
