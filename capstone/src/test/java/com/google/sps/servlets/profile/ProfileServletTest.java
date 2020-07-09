@@ -96,8 +96,7 @@ public class ProfileServletTest {
   public void userNotInDatastoreReturnError() throws ServletException, IOException, EntityNotFoundException {
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
-    // Create an entity with this userId=12345 and set it's property "isBusiness" to "Yes".
-    // Then add this to datastore.
+    // Create an entity with this USER_ID.
     Key userKey = KeyFactory.createKey("UserProfile", USER_ID);
     Entity ent = new Entity("UserProfile", USER_ID);
 
@@ -118,7 +117,7 @@ public class ProfileServletTest {
   public void businessUserReturnError() throws ServletException, IOException, EntityNotFoundException {
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
-    // Create an entity with this userId=12345 and set it's property "isBusiness" to "Yes".
+    // Create an entity with this USER_ID and set it's property "isBusiness" to "Yes".
     // Then add this to datastore.
     Key userKey = KeyFactory.createKey("UserProfile", USER_ID);
     Entity ent = new Entity("UserProfile", USER_ID);
@@ -155,7 +154,7 @@ public class ProfileServletTest {
     when(response.getWriter()).thenReturn(printWriter);
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
-    // Create an entity with this userId=USER_ID and set it's property "isBusiness" to "Yes".
+    // Create an entity with this USER_ID and set it's property "isBusiness" to "No".
     // Then add this to datastore.
     Key userKey = KeyFactory.createKey("UserProfile", USER_ID);
     Entity ent = new Entity("UserProfile", USER_ID);
