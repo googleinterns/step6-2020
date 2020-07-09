@@ -52,6 +52,7 @@ public class ProfileServletTest {
   @Mock private DatastoreService datastore;
 
   private static final String NAME = "John Doe";
+  private static final String NO_NAME = null;
   private static final String LOCATION = "Mountain View, CA";
   private static final String BIO = "This is my bio.";
   private static final String USER_ID = "12345";
@@ -200,6 +201,32 @@ public class ProfileServletTest {
   public void editProfileUserNotFoundReturnError() throws ServletException, IOException, EntityNotFoundException {
     User user = new User(EMAIL, AUTHDOMAIN, INVALID_USER_ID);
     when(userService.getCurrentUser()).thenReturn(user);
+
+    ProfileServlet userServlet = new ProfileServlet(userService, datastore);
+    userServlet.doPost(request, response);
+
+    // verify if a sendError() was performed with the expected values.
+    Mockito.verify(response, Mockito.times(1))
+        .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
+  }
+
+  /*
+   *  Test doPost() for when the user did not fill out the name section. It should return error.
+   **/
+  @Test
+  public void editProfileNameNotFilledReturnError() throws ServletException, IOException, EntityNotFoundException {
+    User user = new User(EMAIL, AUTHDOMAIN, INVALID_USER_ID);
+    when(userService.getCurrentUser()).thenReturn(user);
+
+    String isBusiness = "No";
+
+    when(request.getParameter("isBusiness")).thenReturn(isBusiness);
+    when(request.getParameter("name")).thenReturn(NO_NAME);
+    when(request.getParameter("location")).thenReturn(LOCATION);
+    when(request.getParameter("bio")).thenReturn(BIO);
+
+    Key userKey = KeyFactory.createKey("UserProfile", USER_ID);
+    Entity ent = new Entity("UserProfile", USER_ID);
 
     ProfileServlet userServlet = new ProfileServlet(userService, datastore);
     userServlet.doPost(request, response);

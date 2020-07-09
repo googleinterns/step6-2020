@@ -101,6 +101,14 @@ public class ProfileServlet extends HttpServlet {
           "You don't have permission to perform this action!");
       return;
     }
+
+    // Mandatory property "name" needs to be filled out. If not, send an error.
+    if (request.getParameter("name") == null) {
+      response.sendError(
+          HttpServletResponse.SC_NOT_FOUND,
+          "Required field: name was not filled out.");
+      return;
+    }
     
     // Update properties in datastore.
     Entity profileEntity = new Entity("UserProfile", id);
