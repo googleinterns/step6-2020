@@ -97,7 +97,8 @@ public class ProfileServletTest {
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
     // Create an entity with this USER_ID.
-    Key userKey = KeyFactory.createKey("UserProfile", USER_ID);
+    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
+    Key userKey = KeyFactory.stringToKey(keyString);
     Entity ent = new Entity("UserProfile", USER_ID);
 
     when(datastore.get(userKey)).thenThrow(EntityNotFoundException.class);

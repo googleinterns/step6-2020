@@ -51,7 +51,8 @@ public class ProfileServlet extends HttpServlet {
 
     String userId = pathSegments[1];
 
-    Key userKey = KeyFactory.createKey("UserProfile", userId);
+    String keyString = KeyFactory.createKeyString("UserProfile", userId);
+    Key userKey = KeyFactory.stringToKey(keyString);
     Entity entity;
 
     try {

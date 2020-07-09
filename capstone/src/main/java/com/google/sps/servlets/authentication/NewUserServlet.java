@@ -34,7 +34,8 @@ public class NewUserServlet extends HttpServlet {
     // Create a key from user sign in ID and check if it's in the database.
     String userId = userService.getCurrentUser().getUserId();
 
-    Key userKey = KeyFactory.createKey("UserProfile", userId);
+    String keyString = KeyFactory.createKeyString("UserProfile", userId);
+    Key userKey = KeyFactory.stringToKey(keyString);
 
     try {
       Entity entity = datastore.get(userKey);
