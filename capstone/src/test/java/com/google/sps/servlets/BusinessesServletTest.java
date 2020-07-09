@@ -26,8 +26,8 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
+import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -56,10 +56,8 @@ import org.mockito.MockitoAnnotations;
 /** Unit tests for BusinessesServlet. */
 public class BusinessesServletTest {
 
-  private LocalServiceTestHelper helper =
-      new LocalServiceTestHelper(new LocalUserServiceTestConfig())
-          .setEnvIsAdmin(true)
-          .setEnvIsLoggedIn(false);
+  private final LocalServiceTestHelper helper =
+      new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
 
   @Mock private HttpServletRequest request;
 
@@ -84,7 +82,7 @@ public class BusinessesServletTest {
   public void setUp() throws IOException {
     MockitoAnnotations.initMocks(this);
     helper.setUp();
-
+    
     servletResponseWriter = new StringWriter();
     doReturn(new PrintWriter(servletResponseWriter)).when(response).getWriter();
     servlet = new BusinessesServlet();
@@ -93,6 +91,15 @@ public class BusinessesServletTest {
   @After
   public void tearDown() {
     helper.tearDown();
+  }
+  
+  /*
+   *  Test doGet() for response returning the correct empty list of businesses.
+   **/
+  @Test
+  public void testEmptydoGet() throws IOException {
+    servlet.doGet(request, response);
+    Assert.assertEquals(servletResponseWriter.toString().replace("\n", ""), "[]");
   }
 
   /*
