@@ -1,80 +1,115 @@
-// Copyright 2020 Google LLC
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package com.google.sps.servlets;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
-import com.google.sps.data.BusinessProfile;
+import com.google.sps.data.UserProfile;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** Servlet that handles business information. */
+/** Servlet responsible for showing a business user profile. */
 @WebServlet("/business/*")
 public class BusinessServlet extends HttpServlet {
 
-  private static final String TASK_NAME = "Business";
-  private static final String NAME_PROPERTY = "name";
-  private static final String EMAIL_PROPERTY = "email";
-  private static final String BIO_PROPERTY = "bio";
-  private static final String LOCATION_PROPERTY = "location";
+  UserService userService = UserServiceFactory.getUserService();
+
+  DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+  public ProfileServlet() {}
+
+  public ProfileServlet(UserService userService, DatastoreService datastore) {
+    this.userService = userService;
+    this.datastore = datastore;
+  }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // Retrieve the business ID that is located in place of the * in the URL.
-    // request.getPathInfo() returns "/{id}" and substring(1) would return "{id}" without "/".
-    long businessID = Long.parseLong(request.getPathInfo().substring(1));
-
-    // Retrieve all of the information for a single business to be displayed.
-    Query businessQuery =
-        new Query(TASK_NAME)
-            .setFilter(
-                new FilterPredicate(
-                    Entity.KEY_RESERVED_PROPERTY,
-                    FilterOperator.EQUAL,
-                    KeyFactory.createKey(TASK_NAME, businessID)));
-
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    PreparedQuery queryResults = datastore.prepare(businessQuery);
-    Entity businessEntity = queryResults.asSingleEntity();
-
-    if (businessEntity != null) {
-      long id = (long) businessEntity.getKey().getId();
-      String name = (String) businessEntity.getProperty(NAME_PROPERTY);
-      String email = (String) businessEntity.getProperty(EMAIL_PROPERTY);
-      String bio = (String) businessEntity.getProperty(BIO_PROPERTY);
-      String location = (String) businessEntity.getProperty(LOCATION_PROPERTY);
-      BusinessProfile business = new BusinessProfile(id, name, email, bio, location);
-
-      Gson gson = new Gson();
-      String jsonBusiness = gson.toJson(business);
-      response.setContentType("application/json");
-      response.getWriter().println(jsonBusiness);
-    } else {
+    // Obtain userId from param URL.
+    String[] idArray = request.getPathInfo().split("/");
+    if (idArray.length < 2) {
       response.sendError(
           HttpServletResponse.SC_NOT_FOUND,
-          "The business you were looking was not found in our records!");
+          "The profile you were looking for was not found in our records!");
+      return;
     }
+
+    String userId = idArray[1];
+
+    Key userKey = KeyFactory.createKey("UserProfile", userId);
+    Entity entity;
+
+    try {
+      entity = datastore.get(userKey);
+    } catch (EntityNotFoundException e) {
+      System.err.println("Could not find key: " + userKey);
+      response.sendError(
+          HttpServletResponse.SC_NOT_FOUND,
+          "The profile you were looking for was not found in our records!");
+      return;
+    }
+
+    // If userId is not a business owner id, redirect to "profile not found" page.
+    String isBusiness =
+        entity.hasProperty("isBusiness") ? (String) entity.getProperty("isBusiness") : "";
+    if (isBusiness.equals("No")) {
+      response.sendError(
+          HttpServletResponse.SC_NOT_FOUND,
+          "The profile you were looking for was not found in our records!");
+      return;
+    }
+
+    // Query all profile properties.
+    String id = entity.getKey().getName();
+    String name = entity.hasProperty("name") ? (String) entity.getProperty("name") : "Anonymous";
+    String location = entity.hasProperty("location") ? (String) entity.getProperty("location") : "";
+    String bio = entity.hasProperty("bio") ? (String) entity.getProperty("bio") : "";
+    String story = entity.hasProperty("story") ? (String) entity.getProperty("story") : "";
+    String about = entity.hasProperty("about") ? (String) entity.getProperty("about") : "";
+    String support = entity.hasProperty("support") ? (String) entity.getProperty("support") : "";
+    boolean isCurrentUser = userId.equals(id);
+
+    // Create a profile object that contains the properties.
+    BusinessProfile profile = new BusinessProfile(id, name, location, bio, story, about, support, isCurrentUser);
+
+    // Send it back to client side as a JSON file.
+    response.setContentType("application/json;");
+    Gson gson = new Gson();
+    response.getWriter().println(gson.toJson(profile));
+  }
+
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String id = userService.getCurrentUser().getUserId();
+
+    // Check if user is logged in.
+    if (id == null) {
+      response.sendError(
+          HttpServletResponse.SC_NOT_FOUND, "You don't have permission to perform this action!");
+      return;
+    }
+
+    // Update properties in datastore.
+    Entity businessEntity = new Entity("UserProfile", id);
+    businessEntity.setProperty("isBusiness", request.getParameter("isBusiness"));
+    businessEntity.setProperty("name", request.getParameter("name"));
+    businessEntity.setProperty("location", request.getParameter("location"));
+    businessEntity.setProperty("bio", request.getParameter("bio"));
+    businessEntity.setProperty("story", request.getParameter("story"));
+    businessEntity.setProperty("about", request.getParameter("about"));
+    businessEntity.setProperty("support", request.getParameter("support"));
+
+    // Put entity in datastore.
+    datastore.put(businessEntity);
+
+    response.sendRedirect("/business.html?id=" + id);
   }
 }

@@ -1,126 +1,257 @@
-// Copyright 2020 Google LLC
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package com.google.sps.servlets;
 
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserService;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import com.google.sps.data.BusinessProfile;
+import java.io.*;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-/** Unit tests for BusinessServlet. */
+@RunWith(JUnit4.class)
 public class BusinessServletTest {
 
-  private final LocalServiceTestHelper helper =
-      new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
+  private LocalServiceTestHelper helper =
+      new LocalServiceTestHelper(new LocalUserServiceTestConfig())
+          .setEnvIsAdmin(true)
+          .setEnvIsLoggedIn(true);
 
   @Mock private HttpServletRequest request;
+
   @Mock private HttpServletResponse response;
-  private StringWriter servletResponseWriter;
-  private BusinessServlet servlet;
+
+  @Mock private UserService userService;
+
+  @Mock private DatastoreService datastore;
+
+  private static final String NAME = "Pizzeria";
+  private static final String LOCATION = "Mountain View, CA";
+  private static final String BIO = "This is my business bio.";
+  private static final String STORY = "The pandemic has affected my business in X many ways.";
+  private static final String ABOUT = "Here is the Pizzeria's menu.";
+  private static final String SUPPORT = "Please donate at X website.";
+  private static final String USER_ID = "12345";
+  private static final String INVALID_USER_ID = null;
+  private static final String EMAIL = "abc@gmail.com";
+  private static final String AUTHDOMAIN = "gmail.com";
+  private static final String PATHINFO = "business/12345";
+  private static final String INVALID_PATHINFO = "business";
 
   @Before
-  public void setUp() throws IOException {
+  public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     helper.setUp();
-
-    servletResponseWriter = new StringWriter();
-    doReturn(new PrintWriter(servletResponseWriter)).when(response).getWriter();
-    servlet = new BusinessServlet();
   }
 
   @After
-  public void tearDown() {
+  public void tearDown() throws Exception {
     helper.tearDown();
   }
 
-  private Entity createBusiness(int businessNo) {
-    Entity newBusiness = new Entity("Business");
-    newBusiness.setProperty("name", "Business " + businessNo);
-    newBusiness.setProperty("email", "work@b" + businessNo + ".com");
-    newBusiness.setProperty("bio", "This is the bio for business " + businessNo);
-    newBusiness.setProperty("location", "Mountain View, CA");
-    return newBusiness;
-  }
-
+  /*
+   *  Test doGet() for when user enters an invalid URL param. It should return an error.
+   **/
   @Test
-  public void testEmptyDatastoredoGet() throws IOException {
-    doReturn("/1").when(request).getPathInfo();
-    servlet.doGet(request, response);
-    // response status is not actually set with mocks so you must check if sendError is called.
+  public void invalidUrlParamReturnError() throws ServletException, IOException {
+    when(request.getPathInfo()).thenReturn(INVALID_PATHINFO);
+
+    BusinessServlet userServlet = new BusinessServlet(userService, datastore);
+    userServlet.doGet(request, response);
+
+    // verify if a sendError() was performed with the expected values.
     Mockito.verify(response, Mockito.times(1))
         .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
   }
 
+  /*
+   *  Test doGet() for when datastore cannot find entity key. User does not exist in datastore.
+   *  It should return an error.
+   **/
   @Test
-  public void testBasicdoGet() throws IOException {
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+  public void userNotInDatastoreReturnError()
+      throws ServletException, IOException, EntityNotFoundException {
+    when(request.getPathInfo()).thenReturn(PATHINFO);
 
-    Entity business1 = createBusiness(1);
-    datastore.put(business1);
+    // Create an entity with this USER_ID.
+    Key userKey = KeyFactory.createKey("BusinessProfile", USER_ID);
+    Entity ent = new Entity("BusinessProfile", USER_ID);
 
-    // Add an "id" property so that the expected response shows id as well.
-    // servletResponse returns "id" from the BusinessProfile
-    business1.setProperty("id", business1.getKey().getId());
+    when(datastore.get(userKey)).thenThrow(EntityNotFoundException.class);
 
-    Entity business2 = createBusiness(2);
-    datastore.put(business2);
+    BusinessServlet userServlet = new BusinessServlet(userService, datastore);
+    userServlet.doGet(request, response);
 
-    // Return the path "/business/{business1 ID}".
-    doReturn("/" + business1.getKey().getId()).when(request).getPathInfo();
-
-    servlet.doGet(request, response);
-    String servletResponse = servletResponseWriter.toString();
-    Gson gson = new Gson();
-    String expectedResponse = gson.toJson(business1.getProperties());
-
-    // expectedResponse and servletResponse strings may differ in json property order.
-    // JsonParser helps to compare two json strings regardless of property order.
-    JsonParser parser = new JsonParser();
-    Assert.assertEquals(parser.parse(servletResponse), parser.parse(expectedResponse));
-  }
-
-  @Test
-  public void testInvalidId() throws IOException {
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
-    Entity business1 = createBusiness(1);
-    datastore.put(business1);
-
-    // Try to search for a business using an invalid/unregistered ID.
-    doReturn("/" + (business1.getKey().getId() + 1)).when(request).getPathInfo();
-
-    servlet.doGet(request, response);
-    // response status is not actually set with mocks so you must check if sendError is called.
+    // verify if a sendError() was performed with the expected values.
     Mockito.verify(response, Mockito.times(1))
         .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
+  }
+
+  /*
+   *  Test doGet() for when user is not a business owner, it should return a response error.
+   **/
+  @Test
+  public void nonBusinessUserReturnError()
+      throws ServletException, IOException, EntityNotFoundException {
+    when(request.getPathInfo()).thenReturn(PATHINFO);
+
+    // Create an entity with this USER_ID and set it's property "isBusiness" to "No".
+    // Then add this to datastore.
+    Key userKey = KeyFactory.createKey("BusinessProfile", USER_ID);
+    Entity ent = new Entity("BusinessProfile", USER_ID);
+
+    String isBusiness = "No";
+
+    ent.setProperty("isBusiness", isBusiness);
+    ent.setProperty("name", NAME);
+    ent.setProperty("location", LOCATION);
+    ent.setProperty("bio", BIO);
+    ent.setProperty("story", STORY);
+    ent.setProperty("about", ABOUT);
+    ent.setProperty("support", SUPPORT);
+
+    try {
+      when(datastore.get(userKey)).thenReturn(ent);
+    } catch (EntityNotFoundException e) {
+      System.out.println("Could not find key: " + userKey);
+      return;
+    }
+
+    BusinessServlet userServlet = new BusinessServlet(userService, datastore);
+    userServlet.doGet(request, response);
+
+    // verify if a sendError() was performed with the expected values.
+    Mockito.verify(response, Mockito.times(1))
+        .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
+  }
+
+  /*
+   *  Test doGet() for when user a business owner, it should return a JSON file of business profile page information.
+   **/
+  @Test
+  public void BusinessUserReturnJsonFile() throws ServletException, IOException {
+    StringWriter stringWriter = new StringWriter();
+    PrintWriter printWriter = new PrintWriter(stringWriter);
+    when(response.getWriter()).thenReturn(printWriter);
+    when(request.getPathInfo()).thenReturn(PATHINFO);
+
+    // Create an entity with this USER_ID and set it's property "isBusiness" to "Yes".
+    // Then add this to datastore.
+    Key userKey = KeyFactory.createKey("BusinessProfile", USER_ID);
+    Entity ent = new Entity("BusinessProfile", USER_ID);
+
+    String isBusiness = "Yes";
+    boolean isCurrentUser = true;
+
+    ent.setProperty("isBusiness", isBusiness);
+    ent.setProperty("name", NAME);
+    ent.setProperty("location", LOCATION);
+    ent.setProperty("bio", BIO);
+    ent.setProperty("story", STORY);
+    ent.setProperty("about", ABOUT);
+    ent.setProperty("support", SUPPORT);
+
+    try {
+      when(datastore.get(userKey)).thenReturn(ent);
+    } catch (EntityNotFoundException e) {
+      System.out.println("Could not find key: " + userKey);
+      return;
+    }
+
+    BusinessServlet userServlet = new BusinessServlet(userService, datastore);
+    userServlet.doGet(request, response);
+
+    // verify that it sends a JSON file to response.
+    BusinessProfile profile = new BusinessProfile(USER_ID, NAME, LOCATION, BIO, STORY, ABOUT, SUPPORT, isCurrentUser);
+
+    String responseString = stringWriter.getBuffer().toString().trim();
+    JsonElement responseJsonElement = new JsonParser().parse(responseString);
+
+    Gson gson = new GsonBuilder().create();
+    JsonElement userJsonElement = gson.toJsonTree(profile);
+
+    JsonObject responseJsonObject = responseJsonElement.getAsJsonObject();
+    JsonObject userJsonObject = userJsonElement.getAsJsonObject();
+
+    Assert.assertEquals(responseJsonObject, userJsonObject);
+  }
+
+  /*
+   *  Test doPost() for when the user does not exist and they want to edit a profile. It should return error.
+   **/
+  @Test
+  public void editProfileUserNotFoundReturnError()
+      throws ServletException, IOException, EntityNotFoundException {
+    User user = new User(EMAIL, AUTHDOMAIN, INVALID_USER_ID);
+    when(userService.getCurrentUser()).thenReturn(user);
+
+    BusinessServlet userServlet = new BusinessServlet(userService, datastore);
+    userServlet.doPost(request, response);
+
+    // verify if a sendError() was performed with the expected values.
+    Mockito.verify(response, Mockito.times(1))
+        .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
+  }
+
+  /*
+   *  Test doPost() for when user is editing their profile page, it should put correct information into datastore.
+   **/
+  @Test
+  public void userEditProfileAddToDatastore() throws ServletException, IOException {
+    User user = new User(EMAIL, AUTHDOMAIN, USER_ID);
+    when(userService.getCurrentUser()).thenReturn(user);
+
+    String isBusiness = "Yes";
+
+    when(request.getParameter("isBusiness")).thenReturn(isBusiness);
+    when(request.getParameter("name")).thenReturn(NAME);
+    when(request.getParameter("location")).thenReturn(LOCATION);
+    when(request.getParameter("bio")).thenReturn(BIO);
+    when(request.getParameter("story")).thenReturn(STORY);
+    when(request.getParameter("about")).thenReturn(ABOUT);
+    when(request.getParameter("support")).thenReturn(SUPPORT);
+
+    Key userKey = KeyFactory.createKey("BusinessProfile", USER_ID);
+    Entity ent = new Entity("BusinessProfile", USER_ID);
+
+    BusinessServlet userServlet = new BusinessServlet(userService, datastore);
+    userServlet.doPost(request, response);
+
+    ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
+    verify(datastore).put(captor.capture());
+
+    Entity capEntity = captor.getValue();
+
+    Assert.assertEquals(capEntity.getProperty("isBusiness"), isBusiness);
+    Assert.assertEquals(capEntity.getProperty("name"), NAME);
+    Assert.assertEquals(capEntity.getProperty("location"), LOCATION);
+    Assert.assertEquals(capEntity.getProperty("bio"), BIO);
+    Assert.assertEquals(capEntity.getProperty("story"), STORY);
+    Assert.assertEquals(capEntity.getProperty("about"), ABOUT);
+    Assert.assertEquals(capEntity.getProperty("support"), SUPPORT);
   }
 }
