@@ -41,15 +41,15 @@ public class ProfileServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Obtain userId from param URL.
-    String[] idArray = request.getPathInfo().split("/");
-    if (idArray.length < 2) {
+    String[] pathSegments = request.getPathInfo().split("/");
+    if (pathSegments.length < 2) {
         response.sendError(
           HttpServletResponse.SC_NOT_FOUND,
           "The profile you were looking for was not found in our records!");
         return;
     }
 
-    String userId = idArray[1];
+    String userId = pathSegments[1];
 
     Key userKey = KeyFactory.createKey("UserProfile", userId);
     Entity entity;
