@@ -17,16 +17,17 @@ import { getLoginStatus } from '/js/util.js';
 
 // Toggle between view and edit profile options.
 window.addEventListener('load', function() {
-    // Get login status of user to display on nav bar.
-    getLoginStatus();
+  // Get login status of user to display on nav bar.
+  getLoginStatus();
+  displayProfile();
 
-    loadCommentSection(document.getElementById('comment-section'));
+  loadCommentSection(document.getElementById('comment-section'));
 })
 
-/** Toggle between view and edit profile options. */
+// Toggle between view and edit profile options.
 window.toggleProfile = function() {
-  var viewProfile = document.getElementById('view-profile-section');
-  var editProfile = document.getElementById('edit-profile-section');
+  let viewProfile = document.getElementById('view-profile-section');
+  let editProfile = document.getElementById('edit-profile-section');
 
   if (viewProfile.style.display == 'block') {
     viewProfile.style.display = 'none';
@@ -35,4 +36,65 @@ window.toggleProfile = function() {
     editProfile.style.display = 'none';
     viewProfile.style.display = 'block';
   }
+}
+
+// If user answered the first question: whether they are a business user or not,
+// then show appropriate edit profile form.
+window.hasAnswerQuestionnaire = function() {
+  let isBusiness = document.getElementById("yes");
+  let isNotBusiness = document.getElementById("no");
+  
+  let basicQuesionnaire = document.getElementById("basic-questionnaire");
+  let businessQuesionnaire = document.getElementById("business-questionnaire");
+
+  if (isBusiness.checked == true) {
+    basicQuesionnaire.style.display = 'block';
+    businessQuesionnaire.style.display = 'block';
+  } 
+  if (isNotBusiness.checked == true) {
+    basicQuesionnaire.style.display = 'block';
+    businessQuesionnaire.style.display = 'none';
+  }
+
+  let submit = document.getElementById("submit-button");
+  submit.style.display = 'block';
+}
+
+// Display the correct profile information.
+function displayProfile() {
+  let id = getId();
+  fetch('/profile/'+id)
+    .then(response => response.json())
+    .then((userProfile) => {
+      createProfile(userProfile.name, userProfile.location, userProfile.bio);
+      displayEditButton(userProfile.isCurrentUser);
+    });
+}
+
+// Obtain the ID from the URL params.
+function getId() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const id = urlParams.get('id'); 
+  return id;
+}
+
+// Determine whether to display the edit button depends if user is viewing its profile page.
+function displayEditButton(isCurrentUser) {
+  let editButton =  document.getElementById("edit-button");
+  if (isCurrentUser) {
+    editButton.style.display = 'block';
+  } else {
+    editButton.style.display = 'none';
+  }
+}
+
+// Add correct text to each HTML element of profile page.
+function createProfile(name, location, bio) {
+  let name_section = document.getElementById("name");
+  let location_section = document.getElementById("location");
+  let bio_section = document.getElementById("bio");
+
+  name_section.innerText = name;
+  location_section.innerText = location;
+  bio_section.innerText = bio;
 }

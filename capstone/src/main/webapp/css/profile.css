@@ -1,3 +1,15 @@
 #edit-profile-section {
     display: none;
 }
+
+#basic-questionnaire {
+    display: block;
+}
+
+#business-questionnaire {
+    display: none;
+}
+
+#first-question {
+    display: block;
+}
