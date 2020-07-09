@@ -1,7 +1,5 @@
 package com.google.sps.servlets.profile;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,9 +28,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.ArgumentCaptor;
 import org.mockito.MockitoAnnotations;
 
 @RunWith(JUnit4.class)
@@ -61,7 +59,6 @@ public class ProfileServletTest {
   private static final String AUTHDOMAIN = "gmail.com";
   private static final String PATHINFO = "profile/12345";
   private static final String INVALID_PATHINFO = "profile";
-
 
   @Before
   public void setUp() throws Exception {
@@ -94,7 +91,8 @@ public class ProfileServletTest {
    *  It should return an error.
    **/
   @Test
-  public void userNotInDatastoreReturnError() throws ServletException, IOException, EntityNotFoundException {
+  public void userNotInDatastoreReturnError()
+      throws ServletException, IOException, EntityNotFoundException {
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
     // Create an entity with this USER_ID.
@@ -103,7 +101,7 @@ public class ProfileServletTest {
     Entity ent = new Entity("UserProfile", USER_ID);
 
     when(datastore.get(userKey)).thenThrow(EntityNotFoundException.class);
-  
+
     ProfileServlet userServlet = new ProfileServlet(userService, datastore);
     userServlet.doGet(request, response);
 
@@ -116,7 +114,8 @@ public class ProfileServletTest {
    *  Test doGet() for when user is a business owner, it should return a response error.
    **/
   @Test
-  public void businessUserReturnError() throws ServletException, IOException, EntityNotFoundException {
+  public void businessUserReturnError()
+      throws ServletException, IOException, EntityNotFoundException {
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
     // Create an entity with this USER_ID and set it's property "isBusiness" to "Yes".
@@ -131,7 +130,7 @@ public class ProfileServletTest {
     ent.setProperty("location", LOCATION);
     ent.setProperty("bio", BIO);
 
-    try {    
+    try {
       when(datastore.get(userKey)).thenReturn(ent);
     } catch (EntityNotFoundException e) {
       System.out.println("Could not find key: " + userKey);
@@ -169,7 +168,7 @@ public class ProfileServletTest {
     ent.setProperty("location", LOCATION);
     ent.setProperty("bio", BIO);
 
-    try {    
+    try {
       when(datastore.get(userKey)).thenReturn(ent);
     } catch (EntityNotFoundException e) {
       System.out.println("Could not find key: " + userKey);
@@ -198,7 +197,8 @@ public class ProfileServletTest {
    *  Test doPost() for when the user does not exist and they want to edit a profile. It should return error.
    **/
   @Test
-  public void editProfileUserNotFoundReturnError() throws ServletException, IOException, EntityNotFoundException {
+  public void editProfileUserNotFoundReturnError()
+      throws ServletException, IOException, EntityNotFoundException {
     User user = new User(EMAIL, AUTHDOMAIN, INVALID_USER_ID);
     when(userService.getCurrentUser()).thenReturn(user);
 
@@ -214,7 +214,8 @@ public class ProfileServletTest {
    *  Test doPost() for when the user did not fill out the name section. It should return error.
    **/
   @Test
-  public void editProfileNameNotFilledReturnError() throws ServletException, IOException, EntityNotFoundException {
+  public void editProfileNameNotFilledReturnError()
+      throws ServletException, IOException, EntityNotFoundException {
     User user = new User(EMAIL, AUTHDOMAIN, INVALID_USER_ID);
     when(userService.getCurrentUser()).thenReturn(user);
 
