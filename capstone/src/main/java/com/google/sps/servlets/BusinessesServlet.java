@@ -23,6 +23,9 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.gson.Gson;
 import com.google.sps.data.BusinessProfile;
@@ -44,7 +47,9 @@ public class BusinessesServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Query profile entities from datastore.
-    Query query = new Query("UserProfile");
+    Filter propertyFilter =
+        new FilterPredicate("isBusiness", FilterOperator.EQUAL, "Yes");
+    Query query = new Query("UserProfile").setFilter(propertyFilter);
 
     PreparedQuery results = datastore.prepare(query);
 
@@ -61,12 +66,6 @@ public class BusinessesServlet extends HttpServlet {
       String story = (String) entity.getProperty("story");
       String about = (String) entity.getProperty("about");
       String support = (String) entity.getProperty("support");
-      
-      System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-      System.out.println("id is " + id);
-      System.out.println("name is " + name);
-      System.out.println("location is " + location);
-
 
       BusinessProfile profile = new BusinessProfile(id, name, location, bio, story, about, support, false);
       profiles.add(profile);

@@ -71,6 +71,8 @@ public class BusinessesServletTest {
 
   private static final String USER_ID_1 = "12345";
   private static final String USER_ID_2 = "6789";
+  private static final String NOT_A_BUSINESS = "No";
+  private static final String A_BUSINESS = "Yes";
   private static final String NAME = "Pizzeria";
   private static final String LOCATION = "Mountain View, CA";
   private static final String BIO = "This is my business bio.";
@@ -93,7 +95,40 @@ public class BusinessesServletTest {
     helper.tearDown();
   }
 
-  private Entity createBusiness(int businessNo, String id) {
+  /*
+   *  Test doGet() for response returning the correct list of businesses.
+   **/
+  @Test
+  public void testDoGetReturnCorrectList() throws IOException {
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+    // This list will help in constructing the expected response.
+    List<BusinessProfile> businesses = new ArrayList();
+
+    Entity aBusiness = createBusiness(USER_ID_1);
+    aBusiness.setProperty("isBusiness", A_BUSINESS);
+    datastore.put(aBusiness);
+
+    Entity notABusiness = createBusiness(USER_ID_2);
+    notABusiness.setProperty("isBusiness", NOT_A_BUSINESS);
+    datastore.put(notABusiness);
+
+    BusinessProfile businessProfile = createBusinessProfile(USER_ID_1);
+    businesses.add(businessProfile);
+
+    servlet.doGet(request, response);
+
+    String servletResponse = servletResponseWriter.toString();
+    Gson gson = new Gson();
+    String expectedResponse = gson.toJson(businesses);
+
+    // expectedResponse and servletResponse strings may differ in json property order.
+    // JsonParser helps to compare two json strings regardless of property order.
+    JsonParser parser = new JsonParser();
+    Assert.assertEquals(parser.parse(servletResponse), parser.parse(expectedResponse));
+  }
+
+  private Entity createBusiness(String id) {
     Entity newBusiness = new Entity("UserProfile", id);
     newBusiness.setProperty("name", NAME);
     newBusiness.setProperty("location", LOCATION);
@@ -107,35 +142,5 @@ public class BusinessesServletTest {
 
   private BusinessProfile createBusinessProfile(String id) {
     return new BusinessProfile(id, NAME, LOCATION, BIO, STORY, ABOUT, SUPPORT, false);
-  }
-
-  @Test
-  public void testBasicdoGet() throws IOException {
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    // This list will help in constructing the expected response.
-    List<BusinessProfile> businesses = new ArrayList();
-
-    Entity business1 = createBusiness(1, USER_ID_1);
-    datastore.put(business1);
-
-    Entity business2 = createBusiness(2, USER_ID_2);
-    datastore.put(business2);
-
-    BusinessProfile profile1 = createBusinessProfile(USER_ID_1);
-    businesses.add(profile1);
-
-    BusinessProfile profile2 = createBusinessProfile(USER_ID_2);
-    businesses.add(profile2);
-
-    servlet.doGet(request, response);
-
-    String servletResponse = servletResponseWriter.toString();
-    Gson gson = new Gson();
-    String expectedResponse = gson.toJson(businesses);
-
-    // expectedResponse and servletResponse strings may differ in json property order.
-    // JsonParser helps to compare two json strings regardless of property order.
-    JsonParser parser = new JsonParser();
-    Assert.assertEquals(parser.parse(servletResponse), parser.parse(expectedResponse));
   }
 }
