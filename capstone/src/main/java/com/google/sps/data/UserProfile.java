@@ -16,7 +16,7 @@ public final class UserProfile {
   * @param  name the user's name.
   * @param  location the user's location.
   * @param  bio the user's bio.
-  * @param  isCurrentUser whether this user is the loggedin current user.
+  * @param  isCurrentUser determines whether the user's profile is the current logged-in user.
   */
   public UserProfile(String id, String name, String location, String bio, boolean isCurrentUser) {
     this.id = id;
