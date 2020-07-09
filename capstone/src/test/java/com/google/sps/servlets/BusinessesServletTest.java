@@ -110,12 +110,6 @@ public class BusinessesServletTest {
   }
 
   @Test
-  public void testEmptydoGet() throws IOException {
-    servlet.doGet(request, response);
-    Assert.assertEquals(servletResponseWriter.toString().replace("\n", ""), "[]");
-  }
-
-  @Test
   public void testBasicdoGet() throws IOException {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     // This list will help in constructing the expected response.

@@ -50,6 +50,7 @@ public class BusinessServletTest {
   @Mock private DatastoreService datastore;
 
   private static final String NAME = "Pizzeria";
+  private static final String NO_NAME = null;
   private static final String LOCATION = "Mountain View, CA";
   private static final String BIO = "This is my business bio.";
   private static final String STORY = "The pandemic has affected my business in X many ways.";
@@ -62,10 +63,14 @@ public class BusinessServletTest {
   private static final String PATHINFO = "business/12345";
   private static final String INVALID_PATHINFO = "business";
 
+  private BusinessServlet userServlet;
+
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     helper.setUp();
+
+    userServlet = new BusinessServlet(userService, datastore);
   }
 
   @After
@@ -80,7 +85,6 @@ public class BusinessServletTest {
   public void invalidUrlParamReturnError() throws ServletException, IOException {
     when(request.getPathInfo()).thenReturn(INVALID_PATHINFO);
 
-    BusinessServlet userServlet = new BusinessServlet(userService, datastore);
     userServlet.doGet(request, response);
 
     // verify if a sendError() was performed with the expected values.
@@ -97,13 +101,12 @@ public class BusinessServletTest {
       throws ServletException, IOException, EntityNotFoundException {
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
-    // Create an entity with this USER_ID.
-    Key userKey = KeyFactory.createKey("UserProfile", USER_ID);
-    Entity ent = new Entity("UserProfile", USER_ID);
+    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
+    Key userKey = KeyFactory.stringToKey(keyString);
+    Entity ent =  new Entity("UserProfile", USER_ID);
 
     when(datastore.get(userKey)).thenThrow(EntityNotFoundException.class);
 
-    BusinessServlet userServlet = new BusinessServlet(userService, datastore);
     userServlet.doGet(request, response);
 
     // verify if a sendError() was performed with the expected values.
@@ -119,20 +122,12 @@ public class BusinessServletTest {
       throws ServletException, IOException, EntityNotFoundException {
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
-    // Create an entity with this USER_ID and set it's property "isBusiness" to "No".
-    // Then add this to datastore.
-    Key userKey = KeyFactory.createKey("UserProfile", USER_ID);
-    Entity ent = new Entity("UserProfile", USER_ID);
+    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
+    Key userKey = KeyFactory.stringToKey(keyString);
+    Entity ent =  setEntity();
 
     String isBusiness = "No";
-
     ent.setProperty("isBusiness", isBusiness);
-    ent.setProperty("name", NAME);
-    ent.setProperty("location", LOCATION);
-    ent.setProperty("bio", BIO);
-    ent.setProperty("story", STORY);
-    ent.setProperty("about", ABOUT);
-    ent.setProperty("support", SUPPORT);
 
     try {
       when(datastore.get(userKey)).thenReturn(ent);
@@ -141,7 +136,6 @@ public class BusinessServletTest {
       return;
     }
 
-    BusinessServlet userServlet = new BusinessServlet(userService, datastore);
     userServlet.doGet(request, response);
 
     // verify if a sendError() was performed with the expected values.
@@ -159,21 +153,13 @@ public class BusinessServletTest {
     when(response.getWriter()).thenReturn(printWriter);
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
-    // Create an entity with this USER_ID and set it's property "isBusiness" to "Yes".
-    // Then add this to datastore.
-    Key userKey = KeyFactory.createKey("UserProfile", USER_ID);
-    Entity ent = new Entity("UserProfile", USER_ID);
+    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
+    Key userKey = KeyFactory.stringToKey(keyString);
+    Entity ent =  setEntity();
 
     String isBusiness = "Yes";
     boolean isCurrentUser = true;
-
     ent.setProperty("isBusiness", isBusiness);
-    ent.setProperty("name", NAME);
-    ent.setProperty("location", LOCATION);
-    ent.setProperty("bio", BIO);
-    ent.setProperty("story", STORY);
-    ent.setProperty("about", ABOUT);
-    ent.setProperty("support", SUPPORT);
 
     try {
       when(datastore.get(userKey)).thenReturn(ent);
@@ -182,7 +168,6 @@ public class BusinessServletTest {
       return;
     }
 
-    BusinessServlet userServlet = new BusinessServlet(userService, datastore);
     userServlet.doGet(request, response);
 
     // verify that it sends a JSON file to response.
@@ -209,7 +194,30 @@ public class BusinessServletTest {
     User user = new User(EMAIL, AUTHDOMAIN, INVALID_USER_ID);
     when(userService.getCurrentUser()).thenReturn(user);
 
-    BusinessServlet userServlet = new BusinessServlet(userService, datastore);
+    userServlet.doPost(request, response);
+
+    // verify if a sendError() was performed with the expected values.
+    Mockito.verify(response, Mockito.times(1))
+        .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
+  }
+
+  /*
+   *  Test doPost() for when the user did not fill out the name section. It should return error.
+   **/
+  @Test
+  public void editProfileNameNotFilledReturnError() throws ServletException, IOException, EntityNotFoundException {
+    User user = new User(EMAIL, AUTHDOMAIN, USER_ID);
+    when(userService.getCurrentUser()).thenReturn(user);
+
+    String isBusiness = "Yes";
+
+    when(request.getParameter("isBusiness")).thenReturn(isBusiness);
+    when(request.getParameter("name")).thenReturn(NO_NAME);
+    when(request.getParameter("location")).thenReturn(LOCATION);
+    when(request.getParameter("bio")).thenReturn(BIO);
+
+    Entity ent = createEntity();
+
     userServlet.doPost(request, response);
 
     // verify if a sendError() was performed with the expected values.
@@ -235,10 +243,8 @@ public class BusinessServletTest {
     when(request.getParameter("about")).thenReturn(ABOUT);
     when(request.getParameter("support")).thenReturn(SUPPORT);
 
-    Key userKey = KeyFactory.createKey("UserProfile", USER_ID);
-    Entity ent = new Entity("UserProfile", USER_ID);
+    Entity ent = createEntity();
 
-    BusinessServlet userServlet = new BusinessServlet(userService, datastore);
     userServlet.doPost(request, response);
 
     ArgumentCaptor<Entity> captor = ArgumentCaptor.forClass(Entity.class);
@@ -253,5 +259,25 @@ public class BusinessServletTest {
     Assert.assertEquals(capEntity.getProperty("story"), STORY);
     Assert.assertEquals(capEntity.getProperty("about"), ABOUT);
     Assert.assertEquals(capEntity.getProperty("support"), SUPPORT);
+  }
+
+  // Create an entity with USERID.
+  public Entity createEntity() {
+    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
+    Key userKey = KeyFactory.stringToKey(keyString);
+    return new Entity("UserProfile", USER_ID);
+  }
+  
+  // Set static variables to entity.
+  public Entity setEntity() {
+    Entity ent = new Entity("UserProfile", USER_ID);
+    ent.setProperty("name", NAME);
+    ent.setProperty("location", LOCATION);
+    ent.setProperty("bio", BIO);
+    ent.setProperty("story", STORY);
+    ent.setProperty("about", ABOUT);
+    ent.setProperty("support", SUPPORT);
+
+    return ent;
   }
 }

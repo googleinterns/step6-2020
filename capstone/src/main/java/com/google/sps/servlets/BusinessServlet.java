@@ -34,17 +34,18 @@ public class BusinessServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Obtain userId from param URL.
-    String[] idArray = request.getPathInfo().split("/");
-    if (idArray.length < 2) {
+    String[] pathSegments = request.getPathInfo().split("/");
+    if (pathSegments.length < 2) {
       response.sendError(
           HttpServletResponse.SC_NOT_FOUND,
           "The profile you were looking for was not found in our records!");
       return;
     }
 
-    String userId = idArray[1];
+    String userId = pathSegments[1];
 
-    Key userKey = KeyFactory.createKey("UserProfile", userId);
+    String keyString = KeyFactory.createKeyString("UserProfile", userId);
+    Key userKey = KeyFactory.stringToKey(keyString);
     Entity entity;
 
     try {
@@ -94,6 +95,14 @@ public class BusinessServlet extends HttpServlet {
     if (id == null) {
       response.sendError(
           HttpServletResponse.SC_NOT_FOUND, "You don't have permission to perform this action!");
+      return;
+    }
+
+    // Mandatory property "name" needs to be filled out. If not, send an error.
+    if (request.getParameter("name") == null) {
+      response.sendError(
+          HttpServletResponse.SC_NOT_FOUND,
+          "Required field: name was not filled out.");
       return;
     }
 
