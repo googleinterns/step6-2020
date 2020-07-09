@@ -32,34 +32,34 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/businesses")
 public class BusinessesServlet extends HttpServlet {
 
-  private static final String TASK_NAME = "Business";
-  private static final String NAME_PROPERTY = "name";
-  private static final String EMAIL_PROPERTY = "email";
-  private static final String BIO_PROPERTY = "bio";
-  private static final String LOCATION_PROPERTY = "location";
+//   private static final String TASK_NAME = "Business";
+//   private static final String NAME_PROPERTY = "name";
+//   private static final String EMAIL_PROPERTY = "email";
+//   private static final String BIO_PROPERTY = "bio";
+//   private static final String LOCATION_PROPERTY = "location";
 
-  @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // Retrieve the name and bio of all businesses to be displayed on the page.
-    Query businessQuery = new Query(TASK_NAME);
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    PreparedQuery queryResults = datastore.prepare(businessQuery);
-    ArrayList<BusinessProfile> businesses = new ArrayList();
+//   @Override
+//   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//     // Retrieve the name and bio of all businesses to be displayed on the page.
+//     Query businessQuery = new Query(TASK_NAME);
+//     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+//     PreparedQuery queryResults = datastore.prepare(businessQuery);
+//     ArrayList<BusinessProfile> businesses = new ArrayList();
 
-    // Construct list of businesses from datastore.
-    for (Entity businessEntity : queryResults.asIterable()) {
-      long id = (long) businessEntity.getKey().getId();
-      String name = (String) businessEntity.getProperty(NAME_PROPERTY);
-      String email = (String) businessEntity.getProperty(EMAIL_PROPERTY);
-      String bio = (String) businessEntity.getProperty(BIO_PROPERTY);
-      String location = (String) businessEntity.getProperty(LOCATION_PROPERTY);
-      BusinessProfile business = new BusinessProfile(id, name, email, bio, location);
-      businesses.add(business);
-    }
+//     // Construct list of businesses from datastore.
+//     for (Entity businessEntity : queryResults.asIterable()) {
+//       long id = (long) businessEntity.getKey().getId();
+//       String name = (String) businessEntity.getProperty(NAME_PROPERTY);
+//       String email = (String) businessEntity.getProperty(EMAIL_PROPERTY);
+//       String bio = (String) businessEntity.getProperty(BIO_PROPERTY);
+//       String location = (String) businessEntity.getProperty(LOCATION_PROPERTY);
+//       BusinessProfile business = new BusinessProfile(id, name, email, bio, location);
+//       businesses.add(business);
+//     }
 
-    Gson gson = new Gson();
-    String jsonBusinesses = gson.toJson(businesses);
-    response.setContentType("application/json");
-    response.getWriter().println(jsonBusinesses);
-  }
+//     Gson gson = new Gson();
+//     String jsonBusinesses = gson.toJson(businesses);
+//     response.setContentType("application/json");
+//     response.getWriter().println(jsonBusinesses);
+//   }
 }

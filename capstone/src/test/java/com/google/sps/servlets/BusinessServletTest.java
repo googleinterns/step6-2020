@@ -98,8 +98,8 @@ public class BusinessServletTest {
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
     // Create an entity with this USER_ID.
-    Key userKey = KeyFactory.createKey("BusinessProfile", USER_ID);
-    Entity ent = new Entity("BusinessProfile", USER_ID);
+    Key userKey = KeyFactory.createKey("UserProfile", USER_ID);
+    Entity ent = new Entity("UserProfile", USER_ID);
 
     when(datastore.get(userKey)).thenThrow(EntityNotFoundException.class);
 
@@ -121,8 +121,8 @@ public class BusinessServletTest {
 
     // Create an entity with this USER_ID and set it's property "isBusiness" to "No".
     // Then add this to datastore.
-    Key userKey = KeyFactory.createKey("BusinessProfile", USER_ID);
-    Entity ent = new Entity("BusinessProfile", USER_ID);
+    Key userKey = KeyFactory.createKey("UserProfile", USER_ID);
+    Entity ent = new Entity("UserProfile", USER_ID);
 
     String isBusiness = "No";
 
@@ -161,8 +161,8 @@ public class BusinessServletTest {
 
     // Create an entity with this USER_ID and set it's property "isBusiness" to "Yes".
     // Then add this to datastore.
-    Key userKey = KeyFactory.createKey("BusinessProfile", USER_ID);
-    Entity ent = new Entity("BusinessProfile", USER_ID);
+    Key userKey = KeyFactory.createKey("UserProfile", USER_ID);
+    Entity ent = new Entity("UserProfile", USER_ID);
 
     String isBusiness = "Yes";
     boolean isCurrentUser = true;
@@ -235,8 +235,8 @@ public class BusinessServletTest {
     when(request.getParameter("about")).thenReturn(ABOUT);
     when(request.getParameter("support")).thenReturn(SUPPORT);
 
-    Key userKey = KeyFactory.createKey("BusinessProfile", USER_ID);
-    Entity ent = new Entity("BusinessProfile", USER_ID);
+    Key userKey = KeyFactory.createKey("UserProfile", USER_ID);
+    Entity ent = new Entity("UserProfile", USER_ID);
 
     BusinessServlet userServlet = new BusinessServlet(userService, datastore);
     userServlet.doPost(request, response);

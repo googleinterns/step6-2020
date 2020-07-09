@@ -9,7 +9,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
-import com.google.sps.data.UserProfile;
+import com.google.sps.data.BusinessProfile;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -24,9 +24,9 @@ public class BusinessServlet extends HttpServlet {
 
   DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-  public ProfileServlet() {}
+  public BusinessServlet() {}
 
-  public ProfileServlet(UserService userService, DatastoreService datastore) {
+  public BusinessServlet(UserService userService, DatastoreService datastore) {
     this.userService = userService;
     this.datastore = datastore;
   }
