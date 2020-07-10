@@ -61,9 +61,9 @@ public class CommentServletTest {
   private final int COUNTING_LIMIT = 10;
 
   private final String MOCK_CONTENT = "This is my comment content.";
-  private final long MOCK_USER_ID = 1;
-  private final long MOCK_BUSINESS_ID = 2;
-  private final long MOCK_PARENT_ID = 3;
+  private final String MOCK_USER_ID = "1";
+  private final String MOCK_BUSINESS_ID = "2";
+  private final String MOCK_PARENT_ID = "3";
 
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), 
@@ -86,8 +86,6 @@ public class CommentServletTest {
     servlet = new CommentServlet(userService, ds);
     setMockUserId(MOCK_USER_ID);
     setMockRequestParameters(request, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, MOCK_PARENT_ID);
-
-  
   }
 
   @After
@@ -95,22 +93,22 @@ public class CommentServletTest {
     helper.tearDown();
   }
 
-  private void setMockUserId(long mockId) {
-      when(userService.getCurrentUser()).thenReturn(new User("", "", String.valueOf(mockId)));
+  private void setMockUserId(String mockId) {
+      when(userService.getCurrentUser()).thenReturn(new User("", "", mockId));
   }
 
   private void setMockRequestParameters(
-      HttpServletRequest request, String contentStr, long userId, long businessId, long parentId) {
+      HttpServletRequest request, String contentStr, String userId, String businessId, String parentId) {
 
     doReturn(contentStr).when(request).getParameter(DatastoreNames.CONTENT_PROPERTY);
-    doReturn(Long.toString(userId)).when(request).getParameter(DatastoreNames.USER_ID_PROPERTY);
-    doReturn(Long.toString(businessId))
+    doReturn(userId).when(request).getParameter(DatastoreNames.USER_ID_PROPERTY);
+    doReturn(businessId)
         .when(request)
         .getParameter(DatastoreNames.BUSINESS_ID_PROPERTY);
-    doReturn(Long.toString(parentId)).when(request).getParameter(DatastoreNames.PARENT_ID_PROPERTY);
+    doReturn(parentId).when(request).getParameter(DatastoreNames.PARENT_ID_PROPERTY);
   }
 
-  private Query queryComment(String content, long userId, long businessId, long parentId) {
+  private Query queryComment(String content, String userId, String businessId, String parentId) {
     return new Query(DatastoreNames.COMMENT_ENTITY_NAME)
         .setFilter(
             new CompositeFilter(
@@ -127,7 +125,7 @@ public class CommentServletTest {
   }
 
   private int countCommentOccurences(
-      DatastoreService ds, String content, long userId, long businessId, long parentId) {
+      DatastoreService ds, String content, String userId, String businessId, String parentId) {
     return ds.prepare(queryComment(content, userId, businessId, parentId))
         .countEntities(withLimit(COUNTING_LIMIT));
   }
@@ -146,22 +144,6 @@ public class CommentServletTest {
 
   // Make sure that when we add two comments with the same properties we still save two seperate 
   // entities
-  @Test 
-    DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-
-    setMockRequestParameters(request, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, MOCK_PARENT_ID);
-
-    assertEquals(
-        0,
-        countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, MOCK_PARENT_ID));
-
-    servlet.doPost(request, response);
-
-    assertEquals(
-        1,
-        countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, MOCK_PARENT_ID));
-  }
-
   @Test
   public void testSameCommentTwice() throws IOException {
     assertEquals(
@@ -203,7 +185,7 @@ public class CommentServletTest {
           .sendError(
               Mockito.eq(HttpServletResponse.SC_BAD_REQUEST),
               ArgumentMatchers.eq(
-                  "java.io.IOException: Parameter \'"
+                  "Parameter \'"
                       + excludedParameterName
                       + "\' missing in request."));
 
