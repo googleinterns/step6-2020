@@ -34,11 +34,6 @@ public class BusinessServlet extends HttpServlet {
 
   public BusinessServlet() {}
 
-  public BusinessServlet(UserService userService, DatastoreService datastore) {
-    this.userService = userService;
-    this.datastore = datastore;
-  }
-
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Obtain userId from param URL.
@@ -78,12 +73,12 @@ public class BusinessServlet extends HttpServlet {
 
     // Query all profile properties.
     String id = entity.getKey().getName();
-    String name = (String) entity.getProperty(NAME_PROPERTY);
-    String location = (String) entity.getProperty(LOCATION_PROPERTY);
-    String bio = (String) entity.getProperty(BIO_PROPERTY);
-    String story = (String) entity.getProperty(STORY_PROPERTY);
-    String about = (String) entity.getProperty(ABOUT_PROPERTY);
-    String support = (String) entity.getProperty(SUPPORT_PROPERTY);
+    String name = entity.hasProperty(NAME_PROPERTY) ? (String) entity.getProperty(NAME_PROPERTY) : "";
+    String location = entity.hasProperty(LOCATION_PROPERTY) ? (String) entity.getProperty(LOCATION_PROPERTY) : "";
+    String bio = entity.hasProperty(BIO_PROPERTY) ? (String) entity.getProperty(BIO_PROPERTY) : "";
+    String story = entity.hasProperty(STORY_PROPERTY) ? (String) entity.getProperty(STORY_PROPERTY) : "";
+    String about = entity.hasProperty(ABOUT_PROPERTY) ? (String) entity.getProperty(ABOUT_PROPERTY) : "";
+    String support = entity.hasProperty(SUPPORT_PROPERTY) ? (String) entity.getProperty(SUPPORT_PROPERTY) : "";
     boolean isCurrentUser = userId.equals(id);
 
     // Create a profile object that contains the properties.
@@ -114,14 +109,7 @@ public class BusinessServlet extends HttpServlet {
       return;
     }
 
-    // Put entity in datastore.
-    datastore.put(setBusinessEntity(request, id));
-
-    response.sendRedirect("/business.html?id=" + id);
-  }
-  
-  // Update properties in datastore.
-  public Entity setBusinessEntity(HttpServletRequest request, String id) {
+    // Update properties in datastore.
     Entity businessEntity = new Entity("UserProfile", id);
 
     businessEntity.setProperty(IS_BUSINESS_PROPERTY, getParam(IS_BUSINESS_PROPERTY, request));
@@ -132,7 +120,10 @@ public class BusinessServlet extends HttpServlet {
     businessEntity.setProperty(ABOUT_PROPERTY, getParam(ABOUT_PROPERTY, request));
     businessEntity.setProperty(SUPPORT_PROPERTY, getParam(SUPPORT_PROPERTY, request));
 
-    return businessEntity;
+    // Put entity in datastore.
+    datastore.put(businessEntity);
+
+    response.sendRedirect("/business.html?id=" + id);
   }
 
   public String getParam(String property, HttpServletRequest request) {
