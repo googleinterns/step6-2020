@@ -32,8 +32,6 @@ public class BusinessServlet extends HttpServlet {
 
   DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-  public BusinessServlet() {}
-
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Obtain userId from param URL.
