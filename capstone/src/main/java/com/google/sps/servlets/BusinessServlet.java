@@ -97,16 +97,14 @@ public class BusinessServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String id;
-
     // Check if user is logged in.
-    try {
-      id = userService.getCurrentUser().getUserId();
-    } catch (NullPointerException e) {
+    if (userService.getCurrentUser() == null) {
       response.sendError(
           HttpServletResponse.SC_NOT_FOUND, "You don't have permission to perform this action!");
       return;
     }
+
+    String id = userService.getCurrentUser().getUserId();
 
     // Mandatory property "name" needs to be filled out. If not, send an error.
     if (request.getParameter(NAME_PROPERTY) == null) {
