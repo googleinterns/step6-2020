@@ -53,12 +53,9 @@ public class BusinessesServlet extends HttpServlet {
 
     PreparedQuery results = datastore.prepare(query);
 
-    // Retreive entities with a filter on business users.
-    List<Entity> entities = results.asList(FetchOptions.Builder.withDefaults());
-
     // Convert entities to Profile objects.
     List<BusinessProfile> profiles = new ArrayList<>();
-    for (Entity entity : entities) {
+    for (Entity entity : results.asIterable()) {
       String id = (String) entity.getKey().getName();
       String name = (String) entity.getProperty("name");
       String location = (String) entity.getProperty("location");

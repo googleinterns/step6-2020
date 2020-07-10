@@ -20,6 +20,14 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/business/*")
 public class BusinessServlet extends HttpServlet {
 
+  private static final String IS_BUSINESS_PROPERTY = "isBusiness";
+  private static final String NAME_PROPERTY = "name";
+  private static final String LOCATION_PROPERTY = "location";
+  private static final String BIO_PROPERTY = "bio";
+  private static final String STORY_PROPERTY = "story";
+  private static final String ABOUT_PROPERTY = "about";
+  private static final String SUPPORT_PROPERTY = "support";
+
   UserService userService = UserServiceFactory.getUserService();
 
   DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -60,7 +68,7 @@ public class BusinessServlet extends HttpServlet {
 
     // If userId is not a business owner id, redirect to "profile not found" page.
     String isBusiness =
-        entity.hasProperty("isBusiness") ? (String) entity.getProperty("isBusiness") : "";
+        entity.hasProperty(IS_BUSINESS_PROPERTY) ? (String) entity.getProperty(IS_BUSINESS_PROPERTY) : "";
     if (isBusiness.equals("No")) {
       response.sendError(
           HttpServletResponse.SC_NOT_FOUND,
@@ -70,12 +78,12 @@ public class BusinessServlet extends HttpServlet {
 
     // Query all profile properties.
     String id = entity.getKey().getName();
-    String name = entity.hasProperty("name") ? (String) entity.getProperty("name") : "Anonymous";
-    String location = entity.hasProperty("location") ? (String) entity.getProperty("location") : "";
-    String bio = entity.hasProperty("bio") ? (String) entity.getProperty("bio") : "";
-    String story = entity.hasProperty("story") ? (String) entity.getProperty("story") : "";
-    String about = entity.hasProperty("about") ? (String) entity.getProperty("about") : "";
-    String support = entity.hasProperty("support") ? (String) entity.getProperty("support") : "";
+    String name = entity.hasProperty(NAME_PROPERTY) ? (String) entity.getProperty(NAME_PROPERTY) : "Anonymous";
+    String location = entity.hasProperty(LOCATION_PROPERTY) ? (String) entity.getProperty(LOCATION_PROPERTY) : "";
+    String bio = entity.hasProperty(BIO_PROPERTY) ? (String) entity.getProperty(BIO_PROPERTY) : "";
+    String story = entity.hasProperty(STORY_PROPERTY) ? (String) entity.getProperty(STORY_PROPERTY) : "";
+    String about = entity.hasProperty(ABOUT_PROPERTY) ? (String) entity.getProperty(ABOUT_PROPERTY) : "";
+    String support = entity.hasProperty(SUPPORT_PROPERTY) ? (String) entity.getProperty(SUPPORT_PROPERTY) : "";
     boolean isCurrentUser = userId.equals(id);
 
     // Create a profile object that contains the properties.
@@ -89,17 +97,19 @@ public class BusinessServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String id = userService.getCurrentUser().getUserId();
+    String id;
 
     // Check if user is logged in.
-    if (id == null) {
+    try {
+      id = userService.getCurrentUser().getUserId();
+    } catch (NullPointerException e) {
       response.sendError(
           HttpServletResponse.SC_NOT_FOUND, "You don't have permission to perform this action!");
       return;
     }
 
     // Mandatory property "name" needs to be filled out. If not, send an error.
-    if (request.getParameter("name") == null) {
+    if (request.getParameter(NAME_PROPERTY) == null) {
       response.sendError(
           HttpServletResponse.SC_NOT_FOUND,
           "Required field: name was not filled out.");
@@ -108,13 +118,13 @@ public class BusinessServlet extends HttpServlet {
 
     // Update properties in datastore.
     Entity businessEntity = new Entity("UserProfile", id);
-    businessEntity.setProperty("isBusiness", request.getParameter("isBusiness"));
-    businessEntity.setProperty("name", request.getParameter("name"));
-    businessEntity.setProperty("location", request.getParameter("location"));
-    businessEntity.setProperty("bio", request.getParameter("bio"));
-    businessEntity.setProperty("story", request.getParameter("story"));
-    businessEntity.setProperty("about", request.getParameter("about"));
-    businessEntity.setProperty("support", request.getParameter("support"));
+    businessEntity.setProperty(IS_BUSINESS_PROPERTY, request.getParameter(IS_BUSINESS_PROPERTY));
+    businessEntity.setProperty(NAME_PROPERTY, request.getParameter(NAME_PROPERTY));
+    businessEntity.setProperty(LOCATION_PROPERTY, request.getParameter(LOCATION_PROPERTY));
+    businessEntity.setProperty(BIO_PROPERTY, request.getParameter(BIO_PROPERTY));
+    businessEntity.setProperty(STORY_PROPERTY, request.getParameter(STORY_PROPERTY));
+    businessEntity.setProperty(ABOUT_PROPERTY, request.getParameter(ABOUT_PROPERTY));
+    businessEntity.setProperty(SUPPORT_PROPERTY, request.getParameter(SUPPORT_PROPERTY));
 
     // Put entity in datastore.
     datastore.put(businessEntity);
