@@ -78,12 +78,12 @@ public class BusinessServlet extends HttpServlet {
 
     // Query all profile properties.
     String id = entity.getKey().getName();
-    String name = entity.hasProperty(NAME_PROPERTY) ? (String) entity.getProperty(NAME_PROPERTY) : "Anonymous";
-    String location = entity.hasProperty(LOCATION_PROPERTY) ? (String) entity.getProperty(LOCATION_PROPERTY) : "";
-    String bio = entity.hasProperty(BIO_PROPERTY) ? (String) entity.getProperty(BIO_PROPERTY) : "";
-    String story = entity.hasProperty(STORY_PROPERTY) ? (String) entity.getProperty(STORY_PROPERTY) : "";
-    String about = entity.hasProperty(ABOUT_PROPERTY) ? (String) entity.getProperty(ABOUT_PROPERTY) : "";
-    String support = entity.hasProperty(SUPPORT_PROPERTY) ? (String) entity.getProperty(SUPPORT_PROPERTY) : "";
+    String name = (String) entity.getProperty(NAME_PROPERTY);
+    String location = (String) entity.getProperty(LOCATION_PROPERTY);
+    String bio = (String) entity.getProperty(BIO_PROPERTY);
+    String story = (String) entity.getProperty(STORY_PROPERTY);
+    String about = (String) entity.getProperty(ABOUT_PROPERTY);
+    String support = (String) entity.getProperty(SUPPORT_PROPERTY);
     boolean isCurrentUser = userId.equals(id);
 
     // Create a profile object that contains the properties.
@@ -116,19 +116,32 @@ public class BusinessServlet extends HttpServlet {
       return;
     }
 
-    // Update properties in datastore.
-    Entity businessEntity = new Entity("UserProfile", id);
-    businessEntity.setProperty(IS_BUSINESS_PROPERTY, request.getParameter(IS_BUSINESS_PROPERTY));
-    businessEntity.setProperty(NAME_PROPERTY, request.getParameter(NAME_PROPERTY));
-    businessEntity.setProperty(LOCATION_PROPERTY, request.getParameter(LOCATION_PROPERTY));
-    businessEntity.setProperty(BIO_PROPERTY, request.getParameter(BIO_PROPERTY));
-    businessEntity.setProperty(STORY_PROPERTY, request.getParameter(STORY_PROPERTY));
-    businessEntity.setProperty(ABOUT_PROPERTY, request.getParameter(ABOUT_PROPERTY));
-    businessEntity.setProperty(SUPPORT_PROPERTY, request.getParameter(SUPPORT_PROPERTY));
-
     // Put entity in datastore.
-    datastore.put(businessEntity);
+    datastore.put(setBusinessEntity(request, id));
 
     response.sendRedirect("/business.html?id=" + id);
+  }
+  
+  // Update properties in datastore.
+  public Entity setBusinessEntity(HttpServletRequest request, String id) {
+    Entity businessEntity = new Entity("UserProfile", id);
+
+    businessEntity.setProperty(IS_BUSINESS_PROPERTY, getParam(IS_BUSINESS_PROPERTY, request));
+    businessEntity.setProperty(NAME_PROPERTY, getParam(NAME_PROPERTY, request));
+    businessEntity.setProperty(LOCATION_PROPERTY, getParam(LOCATION_PROPERTY, request));
+    businessEntity.setProperty(BIO_PROPERTY, getParam(BIO_PROPERTY, request));
+    businessEntity.setProperty(STORY_PROPERTY, getParam(STORY_PROPERTY, request));
+    businessEntity.setProperty(ABOUT_PROPERTY, getParam(ABOUT_PROPERTY, request));
+    businessEntity.setProperty(SUPPORT_PROPERTY, getParam(SUPPORT_PROPERTY, request));
+
+    return businessEntity;
+  }
+
+  public String getParam(String property, HttpServletRequest request) {
+    if (request.getParameter(property) == null) {
+      return "";
+    }
+
+    return request.getParameter(property);
   }
 }
