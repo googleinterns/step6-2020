@@ -14,25 +14,23 @@
 
 package com.google.sps.servlets;
 
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserService;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
 import com.google.sps.data.DatastoreNames;
 import java.io.IOException;
 import java.util.Arrays;
@@ -47,14 +45,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.ArgumentMatchers;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.HashMap;
-import java.io.IOException;
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.UserServiceFactory;
-import com.google.appengine.api.users.User;
 
 public class CommentServletTest {
 
@@ -66,17 +56,16 @@ public class CommentServletTest {
   private final String MOCK_PARENT_ID = "3";
 
   private final LocalServiceTestHelper helper =
-      new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig(), 
-                                 new LocalUserServiceTestConfig());
+      new LocalServiceTestHelper(
+          new LocalDatastoreServiceTestConfig(), new LocalUserServiceTestConfig());
 
   @Mock private HttpServletRequest request;
   @Mock private HttpServletResponse response;
   @Mock private UserService userService;
-  
 
   private CommentServlet servlet;
   private DatastoreService ds;
-  
+
   @Before
   public void setUp() throws IOException {
     MockitoAnnotations.initMocks(this);
@@ -94,17 +83,19 @@ public class CommentServletTest {
   }
 
   private void setMockUserId(String mockId) {
-      when(userService.getCurrentUser()).thenReturn(new User("", "", mockId));
+    when(userService.getCurrentUser()).thenReturn(new User("", "", mockId));
   }
 
   private void setMockRequestParameters(
-      HttpServletRequest request, String contentStr, String userId, String businessId, String parentId) {
+      HttpServletRequest request,
+      String contentStr,
+      String userId,
+      String businessId,
+      String parentId) {
 
     doReturn(contentStr).when(request).getParameter(DatastoreNames.CONTENT_PROPERTY);
     doReturn(userId).when(request).getParameter(DatastoreNames.USER_ID_PROPERTY);
-    doReturn(businessId)
-        .when(request)
-        .getParameter(DatastoreNames.BUSINESS_ID_PROPERTY);
+    doReturn(businessId).when(request).getParameter(DatastoreNames.BUSINESS_ID_PROPERTY);
     doReturn(parentId).when(request).getParameter(DatastoreNames.PARENT_ID_PROPERTY);
   }
 
@@ -133,16 +124,18 @@ public class CommentServletTest {
   // Check if we can add a comment
   @Test
   public void testBasicDoPost() throws IOException {
-    assertEquals(0, countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, 
-                                           MOCK_PARENT_ID));
+    assertEquals(
+        0,
+        countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, MOCK_PARENT_ID));
 
     servlet.doPost(request, response);
 
-    assertEquals(1, countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID,
-                                           MOCK_PARENT_ID));   
+    assertEquals(
+        1,
+        countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, MOCK_PARENT_ID));
   }
 
-  // Make sure that when we add two comments with the same properties we still save two seperate 
+  // Make sure that when we add two comments with the same properties we still save two seperate
   // entities
   @Test
   public void testSameCommentTwice() throws IOException {
@@ -181,13 +174,10 @@ public class CommentServletTest {
 
       // Check that the server rejected the request
       Mockito.verify(response, Mockito.times(1))
-
           .sendError(
               Mockito.eq(HttpServletResponse.SC_BAD_REQUEST),
               ArgumentMatchers.eq(
-                  "Parameter \'"
-                      + excludedParameterName
-                      + "\' missing in request."));
+                  "Parameter \'" + excludedParameterName + "\' missing in request."));
 
       // Add parameter again
       doReturn(parameterMap.get(excludedParameterName))
@@ -204,7 +194,7 @@ public class CommentServletTest {
     servlet.doPost(request, response);
 
     Mockito.verify(response, Mockito.times(1))
-           .sendError(Mockito.eq(HttpServletResponse.SC_UNAUTHORIZED), Mockito.anyString());
+        .sendError(Mockito.eq(HttpServletResponse.SC_UNAUTHORIZED), Mockito.anyString());
   }
 
   // Make sure it's impossible to post comment under a different name
@@ -214,6 +204,6 @@ public class CommentServletTest {
     servlet.doPost(request, response);
 
     Mockito.verify(response, Mockito.times(1))
-           .sendError(Mockito.eq(HttpServletResponse.SC_UNAUTHORIZED), Mockito.anyString());
+        .sendError(Mockito.eq(HttpServletResponse.SC_UNAUTHORIZED), Mockito.anyString());
   }
 }

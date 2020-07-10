@@ -15,17 +15,19 @@
 package com.google.sps.data;
 
 public final class Comment {
-  /** 
-  * Represents a user's comment.
-  * @param id         the comments identifier
-  * @param content    the content of the comment
-  * @param timestamp  when the comment was posted
-  * @param userId     the user who posted the comment
-  * @param businessId the business on who's page the comment was posted
-  * @param parentId   if the comment is a reply this specifies the id of the comment it is replying 
-  *                   to
-  */
+  /**
+   * Represents a user's comment.
+   *
+   * @param id the comments identifier
+   * @param content the content of the comment
+   * @param timestamp when the comment was posted
+   * @param userId the user who posted the comment
+   * @param businessId the business on who's page the comment was posted
+   * @param parentId if the comment is a reply this specifies the id of the comment it is replying
+   *     to
+   */
   private final long id;
+
   private final String content;
   private final long timestamp;
   private final long userId;

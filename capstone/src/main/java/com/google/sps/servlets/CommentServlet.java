@@ -17,33 +17,30 @@ package com.google.sps.servlets;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.sps.data.DatastoreNames;
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import com.google.sps.data.DatastoreNames;
-import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.UserServiceFactory;
-import com.google.appengine.api.users.User;
 
 /** Servlet that manages indidual comments */
 @WebServlet("/comment/*")
 public class CommentServlet extends HttpServlet {
-  
-  private final List<String> REQUIRED_PARAMETERS = new ArrayList<>(Arrays.asList(
-        DatastoreNames.CONTENT_PROPERTY, 
-        DatastoreNames.USER_ID_PROPERTY,
-        DatastoreNames.BUSINESS_ID_PROPERTY,
-        DatastoreNames.PARENT_ID_PROPERTY
-    ));
+
+  private final List<String> REQUIRED_PARAMETERS =
+      new ArrayList<>(
+          Arrays.asList(
+              DatastoreNames.CONTENT_PROPERTY,
+              DatastoreNames.USER_ID_PROPERTY,
+              DatastoreNames.BUSINESS_ID_PROPERTY,
+              DatastoreNames.PARENT_ID_PROPERTY));
 
   private UserService userService = UserServiceFactory.getUserService();
   private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -61,28 +58,29 @@ public class CommentServlet extends HttpServlet {
     for (String parameter : REQUIRED_PARAMETERS) {
       // Check if parameter is in the request
       if (request.getParameter(parameter) == null) {
-        response.sendError(HttpServletResponse.SC_BAD_REQUEST, 
-                           "Parameter \'" + parameter + "\' missing in request.");
+        response.sendError(
+            HttpServletResponse.SC_BAD_REQUEST,
+            "Parameter \'" + parameter + "\' missing in request.");
         return;
       }
     }
 
     // Verify that the user posting the comment is the user is who's logged in
     User currentUser = userService.getCurrentUser();
-    if (currentUser == null || ! currentUser.getUserId().equals(request.getParameter("userId"))) {
-      response.sendError(HttpServletResponse.SC_UNAUTHORIZED, 
-                         "User must be logged in to post comment");
+    if (currentUser == null || !currentUser.getUserId().equals(request.getParameter("userId"))) {
+      response.sendError(
+          HttpServletResponse.SC_UNAUTHORIZED, "User must be logged in to post comment");
       return;
     }
 
-    datastore.put(buildCommentEntity(request));   
+    datastore.put(buildCommentEntity(request));
   }
 
   private Entity buildCommentEntity(HttpServletRequest request) {
     Entity commentEntity = new Entity("Comment");
 
-    REQUIRED_PARAMETERS.forEach(parameter -> 
-        commentEntity.setProperty(parameter, request.getParameter(parameter)));
+    REQUIRED_PARAMETERS.forEach(
+        parameter -> commentEntity.setProperty(parameter, request.getParameter(parameter)));
 
     commentEntity.setProperty("timestamp", System.currentTimeMillis());
 
