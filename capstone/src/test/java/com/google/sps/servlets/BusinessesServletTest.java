@@ -65,9 +65,9 @@ public class BusinessesServletTest {
   }
 
   private Entity createBusiness(int businessNo) {
-    Entity newBusiness = new Entity("Business");
+    Entity newBusiness = new Entity("UserProfile");
     newBusiness.setProperty("name", "Business " + businessNo);
-    newBusiness.setProperty("email", "work@b" + businessNo + ".com");
+    newBusiness.setProperty("calendarEmail", "work@b" + businessNo + ".com");
     newBusiness.setProperty("bio", "This is the bio for business " + businessNo);
     newBusiness.setProperty("location", "Mountain View, CA");
     return newBusiness;
@@ -89,15 +89,10 @@ public class BusinessesServletTest {
     Entity business1 = createBusiness(1);
     datastore.put(business1);
 
-    // Add an "id" property so that the expected response shows id as well.
-    // servletResponse returns "id" from the BusinessProfile
-    business1.setProperty("id", business1.getKey().getId());
-    businesses.add(business1.getProperties());
-
     Entity business2 = createBusiness(2);
     datastore.put(business2);
 
-    business2.setProperty("id", business2.getKey().getId());
+    businesses.add(business1.getProperties());
     businesses.add(business2.getProperties());
 
     servlet.doGet(request, response);

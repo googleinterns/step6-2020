@@ -63,11 +63,12 @@ public class BusinessServletTest {
   }
 
   private Entity createBusiness(int businessNo) {
-    Entity newBusiness = new Entity("Business");
+    Entity newBusiness = new Entity("UserProfile", String.valueOf(businessNo));
     newBusiness.setProperty("name", "Business " + businessNo);
-    newBusiness.setProperty("email", "work@b" + businessNo + ".com");
+    newBusiness.setProperty("calendarEmail", "work@b" + businessNo + ".com");
     newBusiness.setProperty("bio", "This is the bio for business " + businessNo);
     newBusiness.setProperty("location", "Mountain View, CA");
+    newBusiness.setProperty("isBusiness", "Yes");
     return newBusiness;
   }
 
@@ -89,17 +90,20 @@ public class BusinessServletTest {
 
     // Add an "id" property so that the expected response shows id as well.
     // servletResponse returns "id" from the BusinessProfile
-    business1.setProperty("id", business1.getKey().getId());
+    business1.setProperty("id", business1.getKey().getName());
 
     Entity business2 = createBusiness(2);
     datastore.put(business2);
 
-    // Return the path "/business/{business1 ID}".
-    doReturn("/" + business1.getKey().getId()).when(request).getPathInfo();
+    // Return the path "/{business ID}" from "/business/{business1 ID}".
+    doReturn("/" + business1.getKey().getName()).when(request).getPathInfo();
 
     servlet.doGet(request, response);
     String servletResponse = servletResponseWriter.toString();
     Gson gson = new Gson();
+
+    // Expected response does not contain "isBusiness" as a property.
+    business1.removeProperty("isBusiness");
     String expectedResponse = gson.toJson(business1.getProperties());
 
     // expectedResponse and servletResponse strings may differ in json property order.
@@ -116,7 +120,7 @@ public class BusinessServletTest {
     datastore.put(business1);
 
     // Try to search for a business using an invalid/unregistered ID.
-    doReturn("/" + (business1.getKey().getId() + 1)).when(request).getPathInfo();
+    doReturn("/" + (business1.getKey().getName() + "1")).when(request).getPathInfo();
 
     servlet.doGet(request, response);
     // response status is not actually set with mocks so you must check if sendError is called.

@@ -41,22 +41,22 @@ window.toggleProfile = function() {
 // If user answered the first question: whether they are a business user or not,
 // then show appropriate edit profile form.
 window.hasAnswerQuestionnaire = function() {
-  let isBusiness = document.getElementById("yes");
-  let isNotBusiness = document.getElementById("no");
-  
-  let basicQuesionnaire = document.getElementById("basic-questionnaire");
-  let businessQuesionnaire = document.getElementById("business-questionnaire");
+  let isBusiness = document.getElementById('yes');
+  let isNotBusiness = document.getElementById('no');
+
+  let profileForm = document.getElementById('edit-profile');
+  let businessQuesionnaire = document.getElementById('business-questionnaire');
 
   if (isBusiness.checked == true) {
-    basicQuesionnaire.style.display = 'block';
     businessQuesionnaire.style.display = 'block';
+    profileForm.action = '/business';
   } 
   if (isNotBusiness.checked == true) {
-    basicQuesionnaire.style.display = 'block';
     businessQuesionnaire.style.display = 'none';
+    profileForm.action = '/profile';
   }
 
-  let submit = document.getElementById("submit-button");
+  let submit = document.getElementById('submit-button');
   submit.style.display = 'block';
 }
 
@@ -80,7 +80,7 @@ function getId() {
 
 // Determine whether to display the edit button depends if user is viewing its profile page.
 function displayEditButton(isCurrentUser) {
-  let editButton =  document.getElementById("edit-button");
+  let editButton =  document.getElementById('edit-button');
   if (isCurrentUser) {
     editButton.style.display = 'block';
   } else {
@@ -90,11 +90,11 @@ function displayEditButton(isCurrentUser) {
 
 // Add correct text to each HTML element of profile page.
 function createProfile(name, location, bio) {
-  let name_section = document.getElementById("name");
-  let location_section = document.getElementById("location");
-  let bio_section = document.getElementById("bio");
+  let nameSection = document.getElementById('name');
+  let locationSection = document.getElementById('location');
+  let bioSection = document.getElementById('bio');
 
-  name_section.innerText = name;
-  location_section.innerText = location;
-  bio_section.innerText = bio;
+  nameSection.innerText = name;
+  locationSection.innerText = location;
+  bioSection.innerText = bio;
 }
