@@ -1,6 +1,7 @@
 package com.google.sps.servlets.profile;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -20,7 +21,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sps.data.UserProfile;
-import java.io.*;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -253,5 +255,25 @@ public class ProfileServletTest {
     Assert.assertEquals(capEntity.getProperty("name"), NAME);
     Assert.assertEquals(capEntity.getProperty("location"), LOCATION);
     Assert.assertEquals(capEntity.getProperty("bio"), BIO);
+  }
+
+  /*
+   *  Test doPost() for when user is editing their profile page, they decided to change to business profile.
+   *  Return error.
+   **/
+  @Test
+  public void nonBusinessUserEditProfileAddToDatastore() throws Exception {
+    String isBusiness = "Yes";
+
+    when(request.getParameter("isBusiness")).thenReturn(isBusiness);
+    when(request.getParameter("name")).thenReturn(NAME);
+    when(request.getParameter("location")).thenReturn(LOCATION);
+    when(request.getParameter("bio")).thenReturn(BIO);
+
+    profileServlet.doPost(request, response);
+
+    // verify if a sendError() was performed with the expected values.
+    Mockito.verify(response, Mockito.times(1))
+        .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
   }
 }
