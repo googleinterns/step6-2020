@@ -38,20 +38,6 @@
 
     <dependency>
         <groupId>com.google.appengine</groupId>
-        <artifactId>appengine-testing</artifactId>
-        <version>1.9.64</version>
-        <scope>test</scope>
-    </dependency>
-
-    <dependency>
-        <groupId>com.google.appengine</groupId>
-        <artifactId>appengine-api-stubs</artifactId>
-        <version>1.9.64</version>
-        <scope>test</scope>
-    </dependency>
-
-    <dependency>
-        <groupId>com.google.appengine</groupId>
         <artifactId>appengine-tools-sdk</artifactId>
         <version>1.9.64</version>
         <scope>test</scope>
@@ -65,9 +51,9 @@
     </dependency>
 
     <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>3.3.3</version>
+      <groupId>com.google.appengine</groupId>
+      <artifactId>appengine-api-stubs</artifactId>
+      <version>1.9.64</version>
       <scope>test</scope>
     </dependency>
 
@@ -76,6 +62,13 @@
       <artifactId>libraries-bom</artifactId>
       <version>3.0.0</version>
       <type>pom</type>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>3.3.3</version>
+      <scope>test</scope>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.google.cloud/google-cloud-datastore -->
@@ -95,13 +88,6 @@
     <dependency>
       <groupId>com.google.appengine</groupId>
       <artifactId>appengine-api-labs</artifactId>
-      <version>1.9.60</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>com.google.appengine</groupId>
-      <artifactId>appengine-api-stubs</artifactId>
       <version>1.9.60</version>
       <scope>test</scope>
     </dependency>

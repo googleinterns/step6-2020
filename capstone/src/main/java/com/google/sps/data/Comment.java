@@ -26,21 +26,30 @@ public final class Comment {
    * @param parentId if the comment is a reply this specifies the id of the comment it is replying
    *     to
    */
-  private final long id;
+  private final String id;
 
   private final String content;
   private final long timestamp;
-  private final long userId;
-  private final long businessId;
-  private final long parentId;
+  private final String userId;
+  private final String businessId;
+  private final String parentId;
 
   public Comment(
-      long id, String content, long timestamp, long userId, long businessId, long parentId) {
+      String id,
+      String content,
+      long timestamp,
+      String userId,
+      String businessId,
+      String parentId) {
     this.id = id;
     this.content = content;
     this.timestamp = timestamp;
     this.userId = userId;
     this.businessId = businessId;
     this.parentId = parentId;
+  }
+
+  public Comment(String id, String content, long timestamp, String userId, String businessId) {
+    this(id, content, timestamp, userId, businessId, "");
   }
 }
