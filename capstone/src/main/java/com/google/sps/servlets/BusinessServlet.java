@@ -110,6 +110,13 @@ public class BusinessServlet extends HttpServlet {
     // Update properties in datastore.
     Entity businessEntity = new Entity("UserProfile", id);
 
+    // If user is a non-business owner, return error.
+    if (getParam(IS_BUSINESS_PROPERTY, request).equals("No")) {
+      response.sendError(
+          HttpServletResponse.SC_NOT_FOUND, "You don't have permission to perform this action!");
+      return;
+    }
+
     businessEntity.setProperty(IS_BUSINESS_PROPERTY, getParam(IS_BUSINESS_PROPERTY, request));
     businessEntity.setProperty(NAME_PROPERTY, request.getParameter("name"));
     businessEntity.setProperty(LOCATION_PROPERTY, getParam(LOCATION_PROPERTY, request));

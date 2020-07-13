@@ -253,6 +253,7 @@ public class BusinessServletTest {
 
   /*
    *  Test doPost() for when user is editing their profile page, they decided to change to non-business profile.
+   *  Return error.
    **/
   @Test
   public void nonBusinessUserEditProfileAddToDatastore() throws Exception {
@@ -268,18 +269,9 @@ public class BusinessServletTest {
 
     userServlet.doPost(request, response);
 
-    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
-    Key userKey = KeyFactory.stringToKey(keyString);
-
-    Entity capEntity = datastore.get(userKey);
-
-    Assert.assertEquals(capEntity.getProperty("isBusiness"), isBusiness);
-    Assert.assertEquals(capEntity.getProperty("name"), NAME);
-    Assert.assertEquals(capEntity.getProperty("location"), LOCATION);
-    Assert.assertEquals(capEntity.getProperty("bio"), BIO);
-    Assert.assertEquals(capEntity.getProperty("story"), STORY);
-    Assert.assertEquals(capEntity.getProperty("about"), ABOUT);
-    Assert.assertEquals(capEntity.getProperty("support"), SUPPORT);
+    // verify if a sendError() was performed with the expected values.
+    Mockito.verify(response, Mockito.times(1))
+        .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
   }
 
   // Create an entity with USERID.
