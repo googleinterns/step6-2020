@@ -111,7 +111,7 @@ public class BusinessServlet extends HttpServlet {
     Entity businessEntity = new Entity("UserProfile", id);
 
     businessEntity.setProperty(IS_BUSINESS_PROPERTY, getParam(IS_BUSINESS_PROPERTY, request));
-    businessEntity.setProperty(NAME_PROPERTY, getNameParam(NAME_PROPERTY, request));
+    businessEntity.setProperty(NAME_PROPERTY, request.getParameter("name"));
     businessEntity.setProperty(LOCATION_PROPERTY, getParam(LOCATION_PROPERTY, request));
     businessEntity.setProperty(BIO_PROPERTY, getParam(BIO_PROPERTY, request));
     businessEntity.setProperty(STORY_PROPERTY, getParam(STORY_PROPERTY, request));
@@ -130,13 +130,5 @@ public class BusinessServlet extends HttpServlet {
     }
 
     return request.getParameter(property);
-  }
-
-  public String getNameParam(String name, HttpServletRequest request) {
-    if (request.getParameter(name) == null) {
-      return "Anonymous";
-    }
-
-    return request.getParameter(name);
   }
 }

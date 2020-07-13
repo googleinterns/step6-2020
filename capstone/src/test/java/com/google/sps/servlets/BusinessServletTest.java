@@ -131,7 +131,7 @@ public class BusinessServletTest {
 
     String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
     Key userKey = KeyFactory.stringToKey(keyString);
-    Entity ent = setEntity();
+    Entity ent = setUserProfileData();
 
     String isBusiness = "No";
     ent.setProperty("isBusiness", isBusiness);
@@ -157,7 +157,7 @@ public class BusinessServletTest {
 
     String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
     Key userKey = KeyFactory.stringToKey(keyString);
-    Entity ent =  setEntity();
+    Entity ent =  setUserProfileData();
 
     String isBusiness = "Yes";
     boolean isCurrentUser = true;
@@ -211,7 +211,7 @@ public class BusinessServletTest {
     when(request.getParameter("location")).thenReturn(LOCATION);
     when(request.getParameter("bio")).thenReturn(BIO);
 
-    Entity ent = createEntity();
+    Entity ent = createUserProfile();
 
     userServlet.doPost(request, response);
 
@@ -251,15 +251,46 @@ public class BusinessServletTest {
     Assert.assertEquals(capEntity.getProperty("support"), SUPPORT);
   }
 
+  /*
+   *  Test doPost() for when user is editing their profile page, they decided to change to non-business profile.
+   **/
+  @Test
+  public void nonBusinessUserEditProfileAddToDatastore() throws Exception {
+    String isBusiness = "No";
+
+    when(request.getParameter("isBusiness")).thenReturn(isBusiness);
+    when(request.getParameter("name")).thenReturn(NAME);
+    when(request.getParameter("location")).thenReturn(LOCATION);
+    when(request.getParameter("bio")).thenReturn(BIO);
+    when(request.getParameter("story")).thenReturn(STORY);
+    when(request.getParameter("about")).thenReturn(ABOUT);
+    when(request.getParameter("support")).thenReturn(SUPPORT);
+
+    userServlet.doPost(request, response);
+
+    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
+    Key userKey = KeyFactory.stringToKey(keyString);
+
+    Entity capEntity = datastore.get(userKey);
+
+    Assert.assertEquals(capEntity.getProperty("isBusiness"), isBusiness);
+    Assert.assertEquals(capEntity.getProperty("name"), NAME);
+    Assert.assertEquals(capEntity.getProperty("location"), LOCATION);
+    Assert.assertEquals(capEntity.getProperty("bio"), BIO);
+    Assert.assertEquals(capEntity.getProperty("story"), STORY);
+    Assert.assertEquals(capEntity.getProperty("about"), ABOUT);
+    Assert.assertEquals(capEntity.getProperty("support"), SUPPORT);
+  }
+
   // Create an entity with USERID.
-  public Entity createEntity() {
+  public Entity createUserProfile() {
     String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
     Key userKey = KeyFactory.stringToKey(keyString);
     return new Entity("UserProfile", USER_ID);
   }
   
   // Set static variables to entity.
-  public Entity setEntity() {
+  public Entity setUserProfileData() {
     Entity ent = new Entity("UserProfile", USER_ID);
     ent.setProperty("name", NAME);
     ent.setProperty("location", LOCATION);
