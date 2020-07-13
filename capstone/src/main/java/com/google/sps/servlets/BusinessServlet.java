@@ -20,10 +20,8 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
@@ -61,9 +59,9 @@ public class BusinessServlet extends HttpServlet {
             .setFilter(
                 CompositeFilterOperator.and(
                     FilterOperator.EQUAL.of(IS_BUSINESS_PROPERTY, "Yes"),
-                    FilterOperator.EQUAL.of(Entity.KEY_RESERVED_PROPERTY, KeyFactory.createKey(USER_TASK, businessID))
-                )
-            );
+                    FilterOperator.EQUAL.of(
+                        Entity.KEY_RESERVED_PROPERTY,
+                        KeyFactory.createKey(USER_TASK, businessID))));
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery queryResults = datastore.prepare(businessQuery);
@@ -78,7 +76,8 @@ public class BusinessServlet extends HttpServlet {
       String story = (String) businessEntity.getProperty(STORY_PROPERTY);
       String about = (String) businessEntity.getProperty(ABOUT_PROPERTY);
       String support = (String) businessEntity.getProperty(SUPPORT_PROPERTY);
-      BusinessProfile business = new BusinessProfile(id, name, email, bio, location, story, about, support);
+      BusinessProfile business =
+          new BusinessProfile(id, name, email, bio, location, story, about, support);
 
       Gson gson = new Gson();
       String jsonBusiness = gson.toJson(business);
@@ -113,13 +112,19 @@ public class BusinessServlet extends HttpServlet {
     // Update properties in datastore.
     Entity businessEntity = new Entity(USER_TASK, id);
 
-    businessEntity.setProperty(IS_BUSINESS_PROPERTY, Objects.toString(request.getParameter(IS_BUSINESS_PROPERTY), ""));
+    businessEntity.setProperty(
+        IS_BUSINESS_PROPERTY, Objects.toString(request.getParameter(IS_BUSINESS_PROPERTY), ""));
     businessEntity.setProperty(NAME_PROPERTY, request.getParameter(NAME_PROPERTY));
-    businessEntity.setProperty(LOCATION_PROPERTY, Objects.toString(request.getParameter(LOCATION_PROPERTY), ""));
-    businessEntity.setProperty(BIO_PROPERTY, Objects.toString(request.getParameter(BIO_PROPERTY), ""));
-    businessEntity.setProperty(STORY_PROPERTY, Objects.toString(request.getParameter(STORY_PROPERTY), ""));
-    businessEntity.setProperty(ABOUT_PROPERTY, Objects.toString(request.getParameter(ABOUT_PROPERTY), ""));
-    businessEntity.setProperty(SUPPORT_PROPERTY, Objects.toString(request.getParameter(SUPPORT_PROPERTY), ""));
+    businessEntity.setProperty(
+        LOCATION_PROPERTY, Objects.toString(request.getParameter(LOCATION_PROPERTY), ""));
+    businessEntity.setProperty(
+        BIO_PROPERTY, Objects.toString(request.getParameter(BIO_PROPERTY), ""));
+    businessEntity.setProperty(
+        STORY_PROPERTY, Objects.toString(request.getParameter(STORY_PROPERTY), ""));
+    businessEntity.setProperty(
+        ABOUT_PROPERTY, Objects.toString(request.getParameter(ABOUT_PROPERTY), ""));
+    businessEntity.setProperty(
+        SUPPORT_PROPERTY, Objects.toString(request.getParameter(SUPPORT_PROPERTY), ""));
 
     // Verify that the email can be used to generate a google calendar.
     String calendarEmail = Objects.toString(request.getParameter(CALENDAR_PROPERTY), "");

@@ -60,7 +60,8 @@ public class BusinessesServlet extends HttpServlet {
       String story = (String) businessEntity.getProperty(STORY_PROPERTY);
       String about = (String) businessEntity.getProperty(ABOUT_PROPERTY);
       String support = (String) businessEntity.getProperty(SUPPORT_PROPERTY);
-      BusinessProfile business = new BusinessProfile(id, name, email, bio, location, story, about, support);
+      BusinessProfile business =
+          new BusinessProfile(id, name, email, bio, location, story, about, support);
       businesses.add(business);
     }
 
