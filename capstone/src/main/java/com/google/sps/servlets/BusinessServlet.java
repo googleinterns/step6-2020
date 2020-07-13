@@ -6,6 +6,10 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
@@ -47,9 +51,9 @@ public class BusinessServlet extends HttpServlet {
             .setFilter(
                 CompositeFilterOperator.and(
                     FilterOperator.EQUAL.of(IS_BUSINESS_PROPERTY, "Yes"),
-                    FilterOperator.EQUAL.of(Entity.KEY_RESERVED_PROPERTY, KeyFactory.createKey(USER_TASK, businessID))
-                )
-            );
+                    FilterOperator.EQUAL.of(
+                        Entity.KEY_RESERVED_PROPERTY,
+                        KeyFactory.createKey(USER_TASK, businessID))));
 
     Entity businessEntity = datastore.prepare(businessQuery).asSingleEntity();
 
