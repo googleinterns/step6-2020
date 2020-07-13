@@ -62,7 +62,7 @@ public class BusinessServlet extends HttpServlet {
     // If userId is not a business owner id, redirect to "profile not found" page.
     String isBusiness =
         entity.hasProperty(IS_BUSINESS_PROPERTY) ? (String) entity.getProperty(IS_BUSINESS_PROPERTY) : "";
-    if (isBusiness.equals("No")) {
+    if (!isBusiness.equals("Yes")) {
       response.sendError(
           HttpServletResponse.SC_NOT_FOUND,
           "The profile you were looking for was not found in our records!");
