@@ -17,7 +17,6 @@ package com.google.sps.servlets;
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -26,11 +25,11 @@ import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.appengine.api.users.User;
-import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
+import com.google.common.collect.ImmutableMap;
 import com.google.sps.data.DatastoreNames;
 import java.io.IOException;
 import java.util.Arrays;
@@ -50,6 +49,8 @@ public class CommentServletTest {
 
   private final int COUNTING_LIMIT = 10;
 
+  private static final String MOCK_EMAIL = "tutorguy@gmail.com";
+  private static final String MOCK_DOMAIN = "microsoft.com";
   private final String MOCK_CONTENT = "This is my comment content.";
   private final String MOCK_USER_ID = "1";
   private final String MOCK_BUSINESS_ID = "2";
@@ -57,11 +58,18 @@ public class CommentServletTest {
 
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(
-          new LocalDatastoreServiceTestConfig(), new LocalUserServiceTestConfig());
+              new LocalDatastoreServiceTestConfig(), new LocalUserServiceTestConfig())
+          // All this is necessary to get the fake userService to return a user
+          .setEnvEmail(MOCK_EMAIL)
+          .setEnvAuthDomain(MOCK_DOMAIN)
+          .setEnvIsLoggedIn(true)
+          .setEnvAttributes(
+              new HashMap(
+                  ImmutableMap.of(
+                      "com.google.appengine.api.users.UserService.user_id_key", MOCK_USER_ID)));
 
   @Mock private HttpServletRequest request;
   @Mock private HttpServletResponse response;
-  @Mock private UserService userService;
 
   private CommentServlet servlet;
   private DatastoreService ds;
@@ -72,18 +80,14 @@ public class CommentServletTest {
     helper.setUp();
 
     ds = DatastoreServiceFactory.getDatastoreService();
-    servlet = new CommentServlet(userService, ds);
-    setMockUserId(MOCK_USER_ID);
+
+    servlet = new CommentServlet(UserServiceFactory.getUserService(), ds);
     setMockRequestParameters(request, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, MOCK_PARENT_ID);
   }
 
   @After
   public void tearDown() {
     helper.tearDown();
-  }
-
-  private void setMockUserId(String mockId) {
-    when(userService.getCurrentUser()).thenReturn(new User("", "", mockId));
   }
 
   private void setMockRequestParameters(
@@ -154,16 +158,12 @@ public class CommentServletTest {
   // Make requests where one parameter is missing, we expect that to lead to an error
   @Test
   public void testInvalidRequests() throws IOException {
-    DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-
     Map<String, String> parameterMap = new HashMap<String, String>();
 
     parameterMap.put(DatastoreNames.CONTENT_PROPERTY, MOCK_CONTENT);
     parameterMap.put(DatastoreNames.USER_ID_PROPERTY, String.valueOf(MOCK_USER_ID));
     parameterMap.put(DatastoreNames.BUSINESS_ID_PROPERTY, String.valueOf(MOCK_BUSINESS_ID));
     parameterMap.put(DatastoreNames.PARENT_ID_PROPERTY, String.valueOf(MOCK_PARENT_ID));
-
-    setMockRequestParameters(request, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, MOCK_PARENT_ID);
 
     // Test behavior while excluding any of the parameters
     for (String excludedParameterName : parameterMap.keySet()) {
@@ -186,21 +186,10 @@ public class CommentServletTest {
     }
   }
 
-  // Make sure it's impossible to post a comment without being logged in
-  @Test
-  public void testNoUserLoggedIn() throws IOException {
-    doReturn(null).when(userService).getCurrentUser();
-
-    servlet.doPost(request, response);
-
-    Mockito.verify(response, Mockito.times(1))
-        .sendError(Mockito.eq(HttpServletResponse.SC_UNAUTHORIZED), Mockito.anyString());
-  }
-
   // Make sure it's impossible to post comment under a different name
   @Test
   public void testWrongUserLoggedIn() throws IOException {
-    setMockUserId(MOCK_USER_ID + 1);
+    doReturn(MOCK_USER_ID + 1).when(request).getParameter(DatastoreNames.USER_ID_PROPERTY);
     servlet.doPost(request, response);
 
     Mockito.verify(response, Mockito.times(1))
