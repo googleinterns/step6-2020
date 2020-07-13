@@ -1,6 +1,6 @@
 package com.google.sps.servlets;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -19,7 +19,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sps.data.BusinessProfile;
-import java.io.*;
+import java.io.IOException;
 import java.util.HashMap;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -41,8 +41,8 @@ public class BusinessServletTest {
 
   @Mock private HttpServletResponse response;
 
+  private static final String USER_TASK = "UserProfile";
   private static final String NAME = "Pizzeria";
-  private static final String NO_NAME = null;
   private static final String LOCATION = "Mountain View, CA";
   private static final String BIO = "This is my business bio.";
   private static final String STORY = "The pandemic has affected my business in X many ways.";
@@ -52,13 +52,14 @@ public class BusinessServletTest {
   private static final String INVALID_USER_ID = null;
   private static final String EMAIL = "abc@gmail.com";
   private static final String AUTHDOMAIN = "gmail.com";
-  private static final String PATHINFO = "business/12345";
-  private static final String INVALID_PATHINFO = "business";
+  private static final String PATHINFO = "/12345";
+  private static final String INVALID_PATHINFO = "/notANumber";
 
   private LocalServiceTestHelper helper;
 
-  private BusinessServlet userServlet;
+  private BusinessServlet servlet;
   private DatastoreService datastore;
+  private StringWriter servletResponseWriter;
 
   @Before
   public void setUp() throws Exception {
@@ -76,7 +77,9 @@ public class BusinessServletTest {
     helper.setUp();
 
     datastore = DatastoreServiceFactory.getDatastoreService();
-    userServlet = new BusinessServlet();
+    servletResponseWriter = new StringWriter();
+    doReturn(new PrintWriter(servletResponseWriter)).when(response).getWriter();
+    servlet = new BusinessServlet();
   }
 
   @After
@@ -84,138 +87,124 @@ public class BusinessServletTest {
     helper.tearDown();
   }
 
-  /*
+  // Set static variables to entity.
+  public Entity setUserProfileData() {
+    Entity ent = new Entity(USER_TASK, USER_ID);
+    ent.setProperty("name", NAME);
+    ent.setProperty("location", LOCATION);
+    ent.setProperty("bio", BIO);
+    ent.setProperty("story", STORY);
+    ent.setProperty("about", ABOUT);
+    ent.setProperty("support", SUPPORT);
+
+    return ent;
+  }
+
+  /**
    *  Test doGet() for when user enters an invalid URL param. It should return an error.
-   **/
+   */
   @Test
   public void invalidUrlParamReturnError() throws ServletException, IOException {
     when(request.getPathInfo()).thenReturn(INVALID_PATHINFO);
 
-    userServlet.doGet(request, response);
+    servlet.doGet(request, response);
 
     // verify if a sendError() was performed with the expected values.
     Mockito.verify(response, Mockito.times(1))
         .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
   }
 
-  /*
+  /**
    *  Test doGet() for when datastore cannot find entity key. User does not exist in datastore.
    *  It should return an error.
-   **/
+   */
   @Test
   public void userNotInDatastoreReturnError()
       throws ServletException, IOException, EntityNotFoundException {
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
-    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
-    Key userKey = KeyFactory.stringToKey(keyString);
-    Entity ent = new Entity("UserProfile", USER_ID);
+    // Populate the datastore with a business with the wrong target ID.
+    Entity someBusiness = new Entity(USER_TASK, USER_ID + "1");
+    datastore.put(someBusiness);
 
-    userServlet.doGet(request, response);
+    servlet.doGet(request, response);
 
     // verify if a sendError() was performed with the expected values.
     Mockito.verify(response, Mockito.times(1))
         .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
   }
 
-  /*
+  /**
    *  Test doGet() for when user is not a business owner, it should return a response error.
-   **/
+   */
   @Test
   public void nonBusinessUserReturnError()
       throws ServletException, IOException, EntityNotFoundException {
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
-    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
-    Key userKey = KeyFactory.stringToKey(keyString);
-    Entity ent = setUserProfileData();
+    Entity fakeBusiness = setUserProfileData();
+    fakeBusiness.setProperty("isBusiness", "No");
+    datastore.put(fakeBusiness);
 
-    String isBusiness = "No";
-    ent.setProperty("isBusiness", isBusiness);
-
-    datastore.put(ent);
-
-    userServlet.doGet(request, response);
+    servlet.doGet(request, response);
 
     // verify if a sendError() was performed with the expected values.
     Mockito.verify(response, Mockito.times(1))
         .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
   }
 
-  /*
-   *  Test doGet() for when user a business owner, it should return a JSON file of business profile page information.
-   **/
+  /**
+   *  Test doGet() for when user a business owner, it should return a JSON string of business profile page information.
+   */
   @Test
   public void BusinessUserReturnJsonFile() throws ServletException, IOException {
-    StringWriter stringWriter = new StringWriter();
-    PrintWriter printWriter = new PrintWriter(stringWriter);
-    when(response.getWriter()).thenReturn(printWriter);
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
-    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
-    Key userKey = KeyFactory.stringToKey(keyString);
-    Entity ent = setUserProfileData();
+    Entity validBusiness = setUserProfileData();
+    validBusiness.setProperty("isBusiness", "Yes");
+    datastore.put(validBusiness);
 
-    String isBusiness = "Yes";
-    boolean isCurrentUser = true;
-    ent.setProperty("isBusiness", isBusiness);
-
-    datastore.put(ent);
-
-    userServlet.doGet(request, response);
+    servlet.doGet(request, response);
 
     // verify that it sends a JSON file to response.
     BusinessProfile profile =
-        new BusinessProfile(USER_ID, NAME, LOCATION, BIO, STORY, ABOUT, SUPPORT, isCurrentUser);
+        new BusinessProfile(USER_ID, NAME, LOCATION, BIO, STORY, ABOUT, EMAIL, SUPPORT, true);
 
-    String responseString = stringWriter.getBuffer().toString().trim();
-    JsonElement responseJsonElement = new JsonParser().parse(responseString);
+    String servletResponse = servletResponseWriter.toString();
 
-    Gson gson = new GsonBuilder().create();
-    JsonElement userJsonElement = gson.toJsonTree(profile);
+    Gson gson = new Gson();
+    String expectedResponse = gson.toJson(profile);
 
-    JsonObject responseJsonObject = responseJsonElement.getAsJsonObject();
-    JsonObject userJsonObject = userJsonElement.getAsJsonObject();
-
-    Assert.assertEquals(responseJsonObject, userJsonObject);
+    JsonParser parser = new JsonParser();
+    Assert.assertEquals(parser.parse(expectedResponse), parser.parse(servletResponse));
   }
 
-  /*
+  /**
    *  Test doPost() for when the user does not exist and they want to edit a profile. It should return error.
-   **/
+   */
   @Test
   public void notLoggedInUserEditProfileReturnError()
       throws ServletException, IOException, EntityNotFoundException {
-
     helper = new LocalServiceTestHelper(new LocalUserServiceTestConfig());
 
-    userServlet.doPost(request, response);
+    servlet.doPost(request, response);
 
     // verify if a sendError() was performed with the expected values.
     Mockito.verify(response, Mockito.times(1))
-        .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
+        .sendError(Mockito.eq(HttpServletResponse.SC_FORBIDDEN), Mockito.anyString());
   }
 
-  /* PASS
+  /**
    *  Test doPost() for when the user did not fill out the name section. It should return error.
-   **/
+   */
   @Test
   public void editProfileNameNotFilledReturnError()
       throws ServletException, IOException, EntityNotFoundException {
-    String isBusiness = "Yes";
-
-    when(request.getParameter("isBusiness")).thenReturn(isBusiness);
-    when(request.getParameter("name")).thenReturn(NO_NAME);
-    when(request.getParameter("location")).thenReturn(LOCATION);
-    when(request.getParameter("bio")).thenReturn(BIO);
-
-    Entity ent = createUserProfile();
-
-    userServlet.doPost(request, response);
+    servlet.doPost(request, response);
 
     // verify if a sendError() was performed with the expected values.
     Mockito.verify(response, Mockito.times(1))
-        .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
+        .sendError(Mockito.eq(HttpServletResponse.SC_BAD_REQUEST), Mockito.anyString());
   }
 
   /*
@@ -223,19 +212,18 @@ public class BusinessServletTest {
    **/
   @Test
   public void userEditProfileAddToDatastore() throws Exception {
-    String isBusiness = "Yes";
-
-    when(request.getParameter("isBusiness")).thenReturn(isBusiness);
+    when(request.getParameter("isBusiness")).thenReturn("Yes");
     when(request.getParameter("name")).thenReturn(NAME);
     when(request.getParameter("location")).thenReturn(LOCATION);
     when(request.getParameter("bio")).thenReturn(BIO);
     when(request.getParameter("story")).thenReturn(STORY);
     when(request.getParameter("about")).thenReturn(ABOUT);
+    when(request.getParameter("calendarEmail")).thenReturn(EMAIL);
     when(request.getParameter("support")).thenReturn(SUPPORT);
 
-    userServlet.doPost(request, response);
+    servlet.doPost(request, response);
 
-    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
+    String keyString = KeyFactory.createKeyString(USER_TASK, USER_ID);
     Key userKey = KeyFactory.stringToKey(keyString);
 
     Entity capEntity = datastore.get(userKey);
@@ -246,49 +234,23 @@ public class BusinessServletTest {
     Assert.assertEquals(capEntity.getProperty("bio"), BIO);
     Assert.assertEquals(capEntity.getProperty("story"), STORY);
     Assert.assertEquals(capEntity.getProperty("about"), ABOUT);
+    Assert.assertEquals(capEntity.getProperty("calendarEmail"), EMAIL);
     Assert.assertEquals(capEntity.getProperty("support"), SUPPORT);
   }
 
-  /*
+  /**
    *  Test doPost() for when user is editing their profile page, they decided to change to non-business profile.
    *  Return error.
-   **/
+   */
   @Test
   public void nonBusinessUserEditProfileAddToDatastore() throws Exception {
-    String isBusiness = "No";
-
-    when(request.getParameter("isBusiness")).thenReturn(isBusiness);
+    when(request.getParameter("isBusiness")).thenReturn("No");
     when(request.getParameter("name")).thenReturn(NAME);
-    when(request.getParameter("location")).thenReturn(LOCATION);
-    when(request.getParameter("bio")).thenReturn(BIO);
-    when(request.getParameter("story")).thenReturn(STORY);
-    when(request.getParameter("about")).thenReturn(ABOUT);
-    when(request.getParameter("support")).thenReturn(SUPPORT);
 
-    userServlet.doPost(request, response);
+    servlet.doPost(request, response);
 
     // verify if a sendError() was performed with the expected values.
     Mockito.verify(response, Mockito.times(1))
-        .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
-  }
-
-  // Create an entity with USERID.
-  public Entity createUserProfile() {
-    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
-    Key userKey = KeyFactory.stringToKey(keyString);
-    return new Entity("UserProfile", USER_ID);
-  }
-
-  // Set static variables to entity.
-  public Entity setUserProfileData() {
-    Entity ent = new Entity("UserProfile", USER_ID);
-    ent.setProperty("name", NAME);
-    ent.setProperty("location", LOCATION);
-    ent.setProperty("bio", BIO);
-    ent.setProperty("story", STORY);
-    ent.setProperty("about", ABOUT);
-    ent.setProperty("support", SUPPORT);
-
-    return ent;
+        .sendError(Mockito.eq(HttpServletResponse.SC_FORBIDDEN), Mockito.anyString());
   }
 }

@@ -24,7 +24,7 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.google.sps.data.BusinessProfile;
-import java.io.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -59,6 +59,7 @@ public class BusinessesServletTest {
   private static final String BIO = "This is my business bio.";
   private static final String STORY = "The pandemic has affected my business in X many ways.";
   private static final String ABOUT = "Here is the Pizzeria's menu.";
+  private static final String EMAIL = "email@business.biz";
   private static final String SUPPORT = "Please donate at X website.";
 
   @Before
@@ -74,6 +75,19 @@ public class BusinessesServletTest {
   @After
   public void tearDown() {
     helper.tearDown();
+  }
+
+  private Entity createBusiness(String id) {
+    Entity newBusiness = new Entity("UserProfile", id);
+    newBusiness.setProperty("name", NAME);
+    newBusiness.setProperty("location", LOCATION);
+    newBusiness.setProperty("bio", BIO);
+    newBusiness.setProperty("story", STORY);
+    newBusiness.setProperty("about", ABOUT);
+    newBusiness.setProperty("calendarEmail", EMAIL);
+    newBusiness.setProperty("support", SUPPORT);
+
+    return newBusiness;
   }
 
   /*
@@ -103,7 +117,8 @@ public class BusinessesServletTest {
     notABusiness.setProperty("isBusiness", NOT_A_BUSINESS);
     datastore.put(notABusiness);
 
-    BusinessProfile businessProfile = createBusinessProfile(USER_ID_1);
+    BusinessProfile businessProfile =
+        new BusinessProfile(id, NAME, LOCATION, BIO, STORY, ABOUT, EMAIL, SUPPORT, false);
     businesses.add(businessProfile);
 
     servlet.doGet(request, response);
@@ -116,21 +131,5 @@ public class BusinessesServletTest {
     // JsonParser helps to compare two json strings regardless of property order.
     JsonParser parser = new JsonParser();
     Assert.assertEquals(parser.parse(servletResponse), parser.parse(expectedResponse));
-  }
-
-  private Entity createBusiness(String id) {
-    Entity newBusiness = new Entity("UserProfile", id);
-    newBusiness.setProperty("name", NAME);
-    newBusiness.setProperty("location", LOCATION);
-    newBusiness.setProperty("bio", BIO);
-    newBusiness.setProperty("story", STORY);
-    newBusiness.setProperty("about", ABOUT);
-    newBusiness.setProperty("support", SUPPORT);
-
-    return newBusiness;
-  }
-
-  private BusinessProfile createBusinessProfile(String id) {
-    return new BusinessProfile(id, NAME, LOCATION, BIO, STORY, ABOUT, SUPPORT, false);
   }
 }

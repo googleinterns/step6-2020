@@ -11,6 +11,7 @@ import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 import com.google.sps.data.UserProfile;
 import java.io.IOException;
+import java.util.Objects;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -59,8 +60,7 @@ public class ProfileServlet extends HttpServlet {
     }
 
     // If userId is a business owner id, redirect to "profile not found" page.
-    String isBusiness =
-        entity.hasProperty("isBusiness") ? (String) entity.getProperty("isBusiness") : "";
+    String isBusiness = Objects.toString(entity.getProperty("isBusiness"), "");
     if (isBusiness.equals("Yes")) {
       response.sendError(
           HttpServletResponse.SC_NOT_FOUND,
@@ -70,9 +70,9 @@ public class ProfileServlet extends HttpServlet {
 
     // Query all profile properties.
     String id = entity.getKey().getName();
-    String name = entity.hasProperty("name") ? (String) entity.getProperty("name") : "Anonymous";
-    String location = entity.hasProperty("location") ? (String) entity.getProperty("location") : "";
-    String bio = entity.hasProperty("bio") ? (String) entity.getProperty("bio") : "";
+    String name = Objects.toString(entity.getProperty("name"), "Anonymous");
+    String location = Objects.toString(entity.getProperty("location"), "");
+    String bio = Objects.toString(entity.getProperty("bio"), "");
     boolean isCurrentUser = userId.equals(id);
 
     // Create a profile object that contains the properties.
@@ -98,7 +98,7 @@ public class ProfileServlet extends HttpServlet {
     // Mandatory property "name" needs to be filled out. If not, send an error.
     if (request.getParameter("name") == null) {
       response.sendError(
-          HttpServletResponse.SC_NOT_FOUND, "Required field: name was not filled out.");
+          HttpServletResponse.SC_BAD_REQUEST, "Required field: name was not filled out.");
       return;
     }
 

@@ -36,12 +36,14 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/businesses")
 public class BusinessesServlet extends HttpServlet {
 
+  private static final String USER_TASK = "UserProfile";
   private static final String IS_BUSINESS_PROPERTY = "isBusiness";
   private static final String NAME_PROPERTY = "name";
   private static final String LOCATION_PROPERTY = "location";
   private static final String BIO_PROPERTY = "bio";
   private static final String STORY_PROPERTY = "story";
   private static final String ABOUT_PROPERTY = "about";
+  private static final String CALENDAR_PROPERTY = "calendarEmail";
   private static final String SUPPORT_PROPERTY = "support";
 
   DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -63,10 +65,11 @@ public class BusinessesServlet extends HttpServlet {
       String bio = (String) entity.getProperty(BIO_PROPERTY);
       String story = (String) entity.getProperty(STORY_PROPERTY);
       String about = (String) entity.getProperty(ABOUT_PROPERTY);
+      String calendarEmail = (String) businessEntity.getProperty(CALENDAR_PROPERTY);
       String support = (String) entity.getProperty(SUPPORT_PROPERTY);
 
       BusinessProfile profile =
-          new BusinessProfile(id, name, location, bio, story, about, support, false);
+          new BusinessProfile(id, name, location, bio, story, about, calendarEmail, support, false);
       profiles.add(profile);
     }
 
