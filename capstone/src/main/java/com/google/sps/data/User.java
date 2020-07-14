@@ -8,10 +8,10 @@ public final class User {
   // The logged-in or logged-out URL links.
   private final String url;
 
-  // The logged-in or logged-out URL links.
+  // The user's id.
   private final String userId;
 
-  // The logged-in or logged-out URL links.
+  // Whether the user is a business or not.
   private final String isBusiness;
 
   /**
@@ -19,6 +19,8 @@ public final class User {
    *
    * @param isLoggedin boolean value whether user is logged in or not.
    * @param url the logged-in or logged-out URL links.
+   * @param userId the user's id.
+   * @param isBusiness whether the user is a business or not.
    */
   public User(boolean isLoggedin, String url, String userId, String isBusiness) {
     this.isLoggedin = isLoggedin;
