@@ -17,6 +17,11 @@ package com.google.sps.servlets;
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
+import static com.google.sps.data.CommentDatastore.CONTENT_PROPERTY;
+import static com.google.sps.data.CommentDatastore.USER_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastore.BUSINESS_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastore.PARENT_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastore.COMMENT_ENTITY_NAME;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -30,7 +35,6 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
 import com.google.common.collect.ImmutableMap;
-import com.google.sps.data.DatastoreNames;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -97,26 +101,26 @@ public class CommentServletTest {
       String businessId,
       String parentId) {
 
-    doReturn(contentStr).when(request).getParameter(DatastoreNames.CONTENT_PROPERTY);
-    doReturn(userId).when(request).getParameter(DatastoreNames.USER_ID_PROPERTY);
-    doReturn(businessId).when(request).getParameter(DatastoreNames.BUSINESS_ID_PROPERTY);
-    doReturn(parentId).when(request).getParameter(DatastoreNames.PARENT_ID_PROPERTY);
+    doReturn(contentStr).when(request).getParameter(CONTENT_PROPERTY);
+    doReturn(userId).when(request).getParameter(USER_ID_PROPERTY);
+    doReturn(businessId).when(request).getParameter(BUSINESS_ID_PROPERTY);
+    doReturn(parentId).when(request).getParameter(PARENT_ID_PROPERTY);
   }
 
   private Query queryComment(String content, String userId, String businessId, String parentId) {
-    return new Query(DatastoreNames.COMMENT_ENTITY_NAME)
+    return new Query(COMMENT_ENTITY_NAME)
         .setFilter(
             new CompositeFilter(
                 CompositeFilterOperator.AND,
                 Arrays.asList(
                     new FilterPredicate(
-                        DatastoreNames.CONTENT_PROPERTY, FilterOperator.EQUAL, content),
+                        CONTENT_PROPERTY, FilterOperator.EQUAL, content),
                     new FilterPredicate(
-                        DatastoreNames.USER_ID_PROPERTY, FilterOperator.EQUAL, userId),
+                        USER_ID_PROPERTY, FilterOperator.EQUAL, userId),
                     new FilterPredicate(
-                        DatastoreNames.BUSINESS_ID_PROPERTY, FilterOperator.EQUAL, businessId),
+                        BUSINESS_ID_PROPERTY, FilterOperator.EQUAL, businessId),
                     new FilterPredicate(
-                        DatastoreNames.PARENT_ID_PROPERTY, FilterOperator.EQUAL, parentId))));
+                        PARENT_ID_PROPERTY, FilterOperator.EQUAL, parentId))));
   }
 
   private int countCommentOccurences(
@@ -160,10 +164,9 @@ public class CommentServletTest {
   public void testInvalidRequests() throws IOException {
     Map<String, String> parameterMap = new HashMap<String, String>();
 
-    parameterMap.put(DatastoreNames.CONTENT_PROPERTY, MOCK_CONTENT);
-    parameterMap.put(DatastoreNames.USER_ID_PROPERTY, String.valueOf(MOCK_USER_ID));
-    parameterMap.put(DatastoreNames.BUSINESS_ID_PROPERTY, String.valueOf(MOCK_BUSINESS_ID));
-    parameterMap.put(DatastoreNames.PARENT_ID_PROPERTY, String.valueOf(MOCK_PARENT_ID));
+    parameterMap.put(CONTENT_PROPERTY, MOCK_CONTENT);
+    parameterMap.put(USER_ID_PROPERTY, String.valueOf(MOCK_USER_ID));
+    parameterMap.put(BUSINESS_ID_PROPERTY, String.valueOf(MOCK_BUSINESS_ID));
 
     // Test behavior while excluding any of the parameters
     for (String excludedParameterName : parameterMap.keySet()) {
@@ -189,10 +192,18 @@ public class CommentServletTest {
   // Make sure it's impossible to post comment under a different name
   @Test
   public void testWrongUserLoggedIn() throws IOException {
-    doReturn(MOCK_USER_ID + 1).when(request).getParameter(DatastoreNames.USER_ID_PROPERTY);
+    doReturn(MOCK_USER_ID + 1).when(request).getParameter(USER_ID_PROPERTY);
     servlet.doPost(request, response);
 
     Mockito.verify(response, Mockito.times(1))
         .sendError(Mockito.eq(HttpServletResponse.SC_UNAUTHORIZED), Mockito.anyString());
+  }
+
+  @Test
+  public void testNoParentIdSpecified() throws IOException {
+    doReturn(null).when(request).getParameter(PARENT_ID_PROPERTY);
+    servlet.doPost(request, response);
+
+    assertEquals(1, countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, ""));
   }
 }

@@ -15,6 +15,11 @@
 package com.google.sps.servlets;
 
 import static com.google.sps.data.CommentDatastore.generateComment;
+import static com.google.sps.data.CommentDatastore.USER_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastore.BUSINESS_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastore.PARENT_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastore.COMMENT_ENTITY_NAME;
+import static com.google.sps.data.CommentDatastore.TIMESTAMP_PROPERTY;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -29,7 +34,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.gson.Gson;
 import com.google.sps.data.Comment;
-import com.google.sps.data.DatastoreNames;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -50,17 +55,17 @@ public class CommentsServlet extends HttpServlet {
 
   private final String INVALID_ARGUMENT_MESSAGE =
       "Requests must have exactly one of the following parameters: "
-          + DatastoreNames.USER_ID_PROPERTY
+          + USER_ID_PROPERTY
           + ", "
-          + DatastoreNames.BUSINESS_ID_PROPERTY
+          + BUSINESS_ID_PROPERTY
           + ", or "
-          + DatastoreNames.PARENT_ID_PROPERTY;
+          + PARENT_ID_PROPERTY;
 
   private static final Set<String> FILTER_PROPERTIES =
       Stream.of(
-              DatastoreNames.USER_ID_PROPERTY,
-              DatastoreNames.BUSINESS_ID_PROPERTY,
-              DatastoreNames.PARENT_ID_PROPERTY)
+              USER_ID_PROPERTY,
+              BUSINESS_ID_PROPERTY,
+              PARENT_ID_PROPERTY)
           .collect(Collectors.toSet());
 
   DatastoreService datastore;
@@ -101,10 +106,9 @@ public class CommentsServlet extends HttpServlet {
   private List<Entity> runCommentsQuery(String filterProperty, String filterValue)
       throws IllegalArgumentException {
     Query query =
-        new Query(DatastoreNames.COMMENT_ENTITY_NAME)
+        new Query(COMMENT_ENTITY_NAME)
             .setFilter(buildFilter(filterProperty, filterValue))
-            .addSort(DatastoreNames.TIMESTAMP_PROPERTY, SortDirection.DESCENDING);
-
+            .addSort(TIMESTAMP_PROPERTY, SortDirection.DESCENDING);
     return datastore.prepare(query).asList(FetchOptions.Builder.withLimit(COMMENT_LIMIT));
   }
 
@@ -115,7 +119,7 @@ public class CommentsServlet extends HttpServlet {
   private Filter buildFilter(String filterProperty, String filterValue) {
     Filter primaryFilter = new FilterPredicate(filterProperty, FilterOperator.EQUAL, filterValue);
 
-    if (filterProperty.equals(DatastoreNames.BUSINESS_ID_PROPERTY)) {
+    if (filterProperty.equals(BUSINESS_ID_PROPERTY)) {
       // If the user requests comments for a particular business page we return only top level
       // comments
       return new CompositeFilter(
@@ -123,7 +127,7 @@ public class CommentsServlet extends HttpServlet {
           Arrays.asList(
               primaryFilter,
               // Create additional filter for top level comments only
-              new FilterPredicate(DatastoreNames.PARENT_ID_PROPERTY, FilterOperator.EQUAL, "")));
+              new FilterPredicate(PARENT_ID_PROPERTY, FilterOperator.EQUAL, "")));
     } else {
       return primaryFilter;
     }
