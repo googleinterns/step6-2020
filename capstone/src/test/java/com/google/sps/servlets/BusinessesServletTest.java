@@ -23,12 +23,10 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import com.google.sps.data.BusinessProfile;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.After;
@@ -45,9 +43,23 @@ public class BusinessesServletTest {
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
 
   @Mock private HttpServletRequest request;
+
   @Mock private HttpServletResponse response;
+
   private StringWriter servletResponseWriter;
+
   private BusinessesServlet servlet;
+
+  private static final String USER_ID_1 = "12345";
+  private static final String USER_ID_2 = "6789";
+  private static final String NOT_A_BUSINESS = "No";
+  private static final String A_BUSINESS = "Yes";
+  private static final String NAME = "Pizzeria";
+  private static final String LOCATION = "Mountain View, CA";
+  private static final String BIO = "This is my business bio.";
+  private static final String STORY = "The pandemic has affected my business in X many ways.";
+  private static final String ABOUT = "Here is the Pizzeria's menu.";
+  private static final String SUPPORT = "Please donate at X website.";
 
   @Before
   public void setUp() throws IOException {
@@ -64,43 +76,38 @@ public class BusinessesServletTest {
     helper.tearDown();
   }
 
-  private Entity createBusiness(int businessNo) {
-    Entity newBusiness = new Entity("Business");
-    newBusiness.setProperty("name", "Business " + businessNo);
-    newBusiness.setProperty("email", "work@b" + businessNo + ".com");
-    newBusiness.setProperty("bio", "This is the bio for business " + businessNo);
-    newBusiness.setProperty("location", "Mountain View, CA");
-    return newBusiness;
-  }
-
+  /*
+   *  Test doGet() for response returning the correct empty list of businesses.
+   **/
   @Test
   public void testEmptydoGet() throws IOException {
     servlet.doGet(request, response);
     Assert.assertEquals(servletResponseWriter.toString().replace("\n", ""), "[]");
   }
 
+  /*
+   *  Test doGet() for response returning the correct list of businesses.
+   **/
   @Test
-  public void testBasicdoGet() throws IOException {
+  public void testDoGetReturnCorrectList() throws IOException {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
     // This list will help in constructing the expected response.
-    List<Map<String, Object>> businesses = new ArrayList();
+    List<BusinessProfile> businesses = new ArrayList();
 
-    Entity business1 = createBusiness(1);
-    datastore.put(business1);
+    Entity aBusiness = createBusiness(USER_ID_1);
+    aBusiness.setProperty("isBusiness", A_BUSINESS);
+    datastore.put(aBusiness);
 
-    // Add an "id" property so that the expected response shows id as well.
-    // servletResponse returns "id" from the BusinessProfile
-    business1.setProperty("id", business1.getKey().getId());
-    businesses.add(business1.getProperties());
+    Entity notABusiness = createBusiness(USER_ID_2);
+    notABusiness.setProperty("isBusiness", NOT_A_BUSINESS);
+    datastore.put(notABusiness);
 
-    Entity business2 = createBusiness(2);
-    datastore.put(business2);
-
-    business2.setProperty("id", business2.getKey().getId());
-    businesses.add(business2.getProperties());
+    BusinessProfile businessProfile = createBusinessProfile(USER_ID_1);
+    businesses.add(businessProfile);
 
     servlet.doGet(request, response);
+
     String servletResponse = servletResponseWriter.toString();
     Gson gson = new Gson();
     String expectedResponse = gson.toJson(businesses);
@@ -109,5 +116,21 @@ public class BusinessesServletTest {
     // JsonParser helps to compare two json strings regardless of property order.
     JsonParser parser = new JsonParser();
     Assert.assertEquals(parser.parse(servletResponse), parser.parse(expectedResponse));
+  }
+
+  private Entity createBusiness(String id) {
+    Entity newBusiness = new Entity("UserProfile", id);
+    newBusiness.setProperty("name", NAME);
+    newBusiness.setProperty("location", LOCATION);
+    newBusiness.setProperty("bio", BIO);
+    newBusiness.setProperty("story", STORY);
+    newBusiness.setProperty("about", ABOUT);
+    newBusiness.setProperty("support", SUPPORT);
+
+    return newBusiness;
+  }
+
+  private BusinessProfile createBusinessProfile(String id) {
+    return new BusinessProfile(id, NAME, LOCATION, BIO, STORY, ABOUT, SUPPORT, false);
   }
 }
