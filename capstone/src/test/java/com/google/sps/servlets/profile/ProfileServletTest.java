@@ -1,16 +1,12 @@
 package com.google.sps.servlets.profile;
 
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.users.User;
-import com.google.appengine.api.users.UserService;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
@@ -24,7 +20,6 @@ import com.google.sps.data.UserProfile;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.After;
@@ -33,7 +28,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -61,7 +55,7 @@ public class ProfileServletTest {
   @Mock private HttpServletRequest request;
 
   @Mock private HttpServletResponse response;
-  
+
   private LocalServiceTestHelper helper;
   private ProfileServlet profileServlet;
   private DatastoreService datastore;
@@ -112,7 +106,7 @@ public class ProfileServletTest {
   public void userNotInDatastoreReturnError() throws Exception {
     helper =
         new LocalServiceTestHelper(
-                new LocalUserServiceTestConfig(), new LocalDatastoreServiceTestConfig());
+            new LocalUserServiceTestConfig(), new LocalDatastoreServiceTestConfig());
     helper.setUp();
 
     when(request.getPathInfo()).thenReturn(PATHINFO);
@@ -201,7 +195,7 @@ public class ProfileServletTest {
   public void editProfileUserNotFoundReturnError() throws Exception {
     helper =
         new LocalServiceTestHelper(
-                new LocalUserServiceTestConfig(), new LocalDatastoreServiceTestConfig());
+            new LocalUserServiceTestConfig(), new LocalDatastoreServiceTestConfig());
     helper.setUp();
 
     profileServlet.doPost(request, response);
@@ -218,7 +212,7 @@ public class ProfileServletTest {
   public void editProfileNameNotFilledReturnError() throws Exception {
     helper =
         new LocalServiceTestHelper(
-                new LocalUserServiceTestConfig(), new LocalDatastoreServiceTestConfig());
+            new LocalUserServiceTestConfig(), new LocalDatastoreServiceTestConfig());
     helper.setUp();
 
     when(request.getParameter(IS_BUSINESS_PROPERTY)).thenReturn(NO);

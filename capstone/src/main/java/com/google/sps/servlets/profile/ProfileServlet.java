@@ -57,7 +57,9 @@ public class ProfileServlet extends HttpServlet {
 
     // If userId is a business owner id, redirect to "profile not found" page.
     String isBusiness =
-        entity.hasProperty(IS_BUSINESS_PROPERTY) ? (String) entity.getProperty(IS_BUSINESS_PROPERTY) : "";
+        entity.hasProperty(IS_BUSINESS_PROPERTY)
+            ? (String) entity.getProperty(IS_BUSINESS_PROPERTY)
+            : "";
     if (isBusiness.equals("Yes")) {
       response.sendError(
           HttpServletResponse.SC_NOT_FOUND,
@@ -67,8 +69,12 @@ public class ProfileServlet extends HttpServlet {
 
     // Query all profile properties.
     String id = entity.getKey().getName();
-    String name = entity.hasProperty(NAME_PROPERTY) ? (String) entity.getProperty(NAME_PROPERTY) : "Anonymous";
-    String location = entity.hasProperty(LOCATION_PROPERTY) ? (String) entity.getProperty(LOCATION_PROPERTY) : "";
+    String name =
+        entity.hasProperty(NAME_PROPERTY)
+            ? (String) entity.getProperty(NAME_PROPERTY)
+            : "Anonymous";
+    String location =
+        entity.hasProperty(LOCATION_PROPERTY) ? (String) entity.getProperty(LOCATION_PROPERTY) : "";
     String bio = entity.hasProperty(BIO_PROPERTY) ? (String) entity.getProperty(BIO_PROPERTY) : "";
     boolean isCurrentUser = userId.equals(id);
 
