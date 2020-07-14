@@ -113,6 +113,7 @@ public class ProfileServletTest {
     helper =
         new LocalServiceTestHelper(
                 new LocalUserServiceTestConfig(), new LocalDatastoreServiceTestConfig());
+    helper.setUp();
 
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
@@ -201,6 +202,7 @@ public class ProfileServletTest {
     helper =
         new LocalServiceTestHelper(
                 new LocalUserServiceTestConfig(), new LocalDatastoreServiceTestConfig());
+    helper.setUp();
 
     profileServlet.doPost(request, response);
 
@@ -217,6 +219,7 @@ public class ProfileServletTest {
     helper =
         new LocalServiceTestHelper(
                 new LocalUserServiceTestConfig(), new LocalDatastoreServiceTestConfig());
+    helper.setUp();
 
     when(request.getParameter(IS_BUSINESS_PROPERTY)).thenReturn(NO);
     when(request.getParameter(NAME_PROPERTY)).thenReturn(NO_NAME);
