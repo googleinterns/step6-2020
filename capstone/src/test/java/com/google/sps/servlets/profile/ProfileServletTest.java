@@ -41,6 +41,10 @@ import org.mockito.MockitoAnnotations;
 @RunWith(JUnit4.class)
 public class ProfileServletTest {
 
+  private static final String NAME_PROPERTY = "name";
+  private static final String LOCATION_PROPERTY = "location";
+  private static final String BIO_PROPERTY = "bio";
+  private static final String IS_BUSINESS_PROPERTY = "isBusiness";
   private static final String NAME = "John Doe";
   private static final String NO_NAME = null;
   private static final String LOCATION = "Mountain View, CA";
@@ -51,6 +55,8 @@ public class ProfileServletTest {
   private static final String AUTHDOMAIN = "gmail.com";
   private static final String PATHINFO = "profile/12345";
   private static final String INVALID_PATHINFO = "profile";
+  private static final String YES = "Yes";
+  private static final String NO = "No";
 
   @Mock private HttpServletRequest request;
 
@@ -134,12 +140,10 @@ public class ProfileServletTest {
     Key userKey = KeyFactory.createKey("UserProfile", USER_ID);
     Entity ent = new Entity("UserProfile", USER_ID);
 
-    String isBusiness = "Yes";
-
-    ent.setProperty("isBusiness", isBusiness);
-    ent.setProperty("name", NAME);
-    ent.setProperty("location", LOCATION);
-    ent.setProperty("bio", BIO);
+    ent.setProperty(IS_BUSINESS_PROPERTY, YES);
+    ent.setProperty(NAME_PROPERTY, NAME);
+    ent.setProperty(LOCATION_PROPERTY, LOCATION);
+    ent.setProperty(BIO_PROPERTY, BIO);
 
     profileServlet.doGet(request, response);
 
@@ -163,13 +167,12 @@ public class ProfileServletTest {
     Key userKey = KeyFactory.createKey("UserProfile", USER_ID);
     Entity ent = new Entity("UserProfile", USER_ID);
 
-    String isBusiness = "No";
     boolean isCurrentUser = true;
 
-    ent.setProperty("isBusiness", isBusiness);
-    ent.setProperty("name", NAME);
-    ent.setProperty("location", LOCATION);
-    ent.setProperty("bio", BIO);
+    ent.setProperty(IS_BUSINESS_PROPERTY, NO);
+    ent.setProperty(NAME_PROPERTY, NAME);
+    ent.setProperty(LOCATION_PROPERTY, LOCATION);
+    ent.setProperty(BIO_PROPERTY, BIO);
 
     datastore.put(ent);
 
@@ -215,12 +218,10 @@ public class ProfileServletTest {
         new LocalServiceTestHelper(
                 new LocalUserServiceTestConfig(), new LocalDatastoreServiceTestConfig());
 
-    String isBusiness = "No";
-
-    when(request.getParameter("isBusiness")).thenReturn(isBusiness);
-    when(request.getParameter("name")).thenReturn(NO_NAME);
-    when(request.getParameter("location")).thenReturn(LOCATION);
-    when(request.getParameter("bio")).thenReturn(BIO);
+    when(request.getParameter(IS_BUSINESS_PROPERTY)).thenReturn(NO);
+    when(request.getParameter(NAME_PROPERTY)).thenReturn(NO_NAME);
+    when(request.getParameter(LOCATION_PROPERTY)).thenReturn(LOCATION);
+    when(request.getParameter(BIO_PROPERTY)).thenReturn(BIO);
 
     Key userKey = KeyFactory.createKey("UserProfile", USER_ID);
     Entity ent = new Entity("UserProfile", USER_ID);
@@ -237,12 +238,10 @@ public class ProfileServletTest {
    **/
   @Test
   public void userEditProfileAddToDatastore() throws Exception {
-    String isBusiness = "No";
-
-    when(request.getParameter("isBusiness")).thenReturn(isBusiness);
-    when(request.getParameter("name")).thenReturn(NAME);
-    when(request.getParameter("location")).thenReturn(LOCATION);
-    when(request.getParameter("bio")).thenReturn(BIO);
+    when(request.getParameter(IS_BUSINESS_PROPERTY)).thenReturn(NO);
+    when(request.getParameter(NAME_PROPERTY)).thenReturn(NAME);
+    when(request.getParameter(LOCATION_PROPERTY)).thenReturn(LOCATION);
+    when(request.getParameter(BIO_PROPERTY)).thenReturn(BIO);
 
     profileServlet.doPost(request, response);
 
@@ -251,10 +250,10 @@ public class ProfileServletTest {
 
     Entity capEntity = datastore.get(userKey);
 
-    Assert.assertEquals(capEntity.getProperty("isBusiness"), isBusiness);
-    Assert.assertEquals(capEntity.getProperty("name"), NAME);
-    Assert.assertEquals(capEntity.getProperty("location"), LOCATION);
-    Assert.assertEquals(capEntity.getProperty("bio"), BIO);
+    Assert.assertEquals(capEntity.getProperty(IS_BUSINESS_PROPERTY), NO);
+    Assert.assertEquals(capEntity.getProperty(NAME_PROPERTY), NAME);
+    Assert.assertEquals(capEntity.getProperty(LOCATION_PROPERTY), LOCATION);
+    Assert.assertEquals(capEntity.getProperty(BIO_PROPERTY), BIO);
   }
 
   /*
@@ -263,12 +262,10 @@ public class ProfileServletTest {
    **/
   @Test
   public void nonBusinessUserEditProfileAddToDatastore() throws Exception {
-    String isBusiness = "Yes";
-
-    when(request.getParameter("isBusiness")).thenReturn(isBusiness);
-    when(request.getParameter("name")).thenReturn(NAME);
-    when(request.getParameter("location")).thenReturn(LOCATION);
-    when(request.getParameter("bio")).thenReturn(BIO);
+    when(request.getParameter(IS_BUSINESS_PROPERTY)).thenReturn(YES);
+    when(request.getParameter(NAME_PROPERTY)).thenReturn(NAME);
+    when(request.getParameter(LOCATION_PROPERTY)).thenReturn(LOCATION);
+    when(request.getParameter(BIO_PROPERTY)).thenReturn(BIO);
 
     profileServlet.doPost(request, response);
 
