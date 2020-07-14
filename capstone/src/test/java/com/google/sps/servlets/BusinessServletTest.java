@@ -188,6 +188,7 @@ public class BusinessServletTest {
       throws ServletException, IOException, EntityNotFoundException {
 
     helper = new LocalServiceTestHelper(new LocalUserServiceTestConfig());
+    helper.setUp();
 
     userServlet.doPost(request, response);
 

@@ -86,6 +86,7 @@ public class LoginServletTest {
         new LocalServiceTestHelper(new LocalUserServiceTestConfig())
             .setEnvIsAdmin(true)
             .setEnvIsLoggedIn(false);
+    helper.setUp();
 
     StringWriter stringWriter = new StringWriter();
     PrintWriter printWriter = new PrintWriter(stringWriter);
