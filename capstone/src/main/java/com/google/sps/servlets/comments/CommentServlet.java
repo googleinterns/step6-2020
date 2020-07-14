@@ -14,13 +14,19 @@
 
 package com.google.sps.servlets;
 
+import static com.google.sps.data.CommentDatastore.CONTENT_PROPERTY;
+import static com.google.sps.data.CommentDatastore.USER_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastore.BUSINESS_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastore.COMMENT_ENTITY_NAME;
+import static com.google.sps.data.CommentDatastore.PARENT_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastore.TIMESTAMP_PROPERTY;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
-import com.google.sps.data.DatastoreNames;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,10 +43,9 @@ public class CommentServlet extends HttpServlet {
   private final List<String> REQUIRED_PARAMETERS =
       new ArrayList<>(
           Arrays.asList(
-              DatastoreNames.CONTENT_PROPERTY,
-              DatastoreNames.USER_ID_PROPERTY,
-              DatastoreNames.BUSINESS_ID_PROPERTY,
-              DatastoreNames.PARENT_ID_PROPERTY));
+              CONTENT_PROPERTY,
+              USER_ID_PROPERTY,
+              BUSINESS_ID_PROPERTY));
 
   private UserService userService = UserServiceFactory.getUserService();
   private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -77,12 +82,18 @@ public class CommentServlet extends HttpServlet {
   }
 
   private Entity buildCommentEntity(HttpServletRequest request) {
-    Entity commentEntity = new Entity("Comment");
+    Entity commentEntity = new Entity(COMMENT_ENTITY_NAME);
 
     REQUIRED_PARAMETERS.forEach(
         parameter -> commentEntity.setProperty(parameter, request.getParameter(parameter)));
 
-    commentEntity.setProperty("timestamp", System.currentTimeMillis());
+    if (request.getParameter(PARENT_ID_PROPERTY) != null) {
+      commentEntity.setProperty(PARENT_ID_PROPERTY, request.getParameter(PARENT_ID_PROPERTY));
+    } else {
+      commentEntity.setProperty(PARENT_ID_PROPERTY, "");
+    }
+
+    commentEntity.setProperty(TIMESTAMP_PROPERTY, System.currentTimeMillis());
 
     return commentEntity;
   }

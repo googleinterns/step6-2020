@@ -17,6 +17,13 @@ package com.google.sps.servlets;
 import static com.google.sps.data.CommentDatastore.generateComment;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.reset;
+import static com.google.sps.data.CommentDatastore.COMMENT_ENTITY_NAME;
+import static com.google.sps.data.CommentDatastore.CONTENT_PROPERTY;
+import static com.google.sps.data.CommentDatastore.TIMESTAMP_PROPERTY;
+
+import static com.google.sps.data.CommentDatastore.BUSINESS_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastore.USER_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastore.PARENT_ID_PROPERTY;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -26,7 +33,7 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.google.sps.data.Comment;
-import com.google.sps.data.DatastoreNames;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -98,16 +105,16 @@ public class CommentsServletTest {
   }
 
   private Entity createCommentEntity(long timestamp, long userId, long businessId) {
-    Entity comment = new Entity(DatastoreNames.COMMENT_ENTITY_NAME);
+    Entity comment = new Entity(COMMENT_ENTITY_NAME);
 
     String id = "1" + timestamp + userId + businessId;
 
-    comment.setProperty(DatastoreNames.CONTENT_PROPERTY, id);
-    comment.setProperty(DatastoreNames.TIMESTAMP_PROPERTY, timestamp);
-    comment.setProperty(DatastoreNames.USER_ID_PROPERTY, String.valueOf(userId));
-    comment.setProperty(DatastoreNames.BUSINESS_ID_PROPERTY, String.valueOf(businessId));
+    comment.setProperty(CONTENT_PROPERTY, id);
+    comment.setProperty(TIMESTAMP_PROPERTY, timestamp);
+    comment.setProperty(USER_ID_PROPERTY, String.valueOf(userId));
+    comment.setProperty(BUSINESS_ID_PROPERTY, String.valueOf(businessId));
     comment.setProperty("id", id);
-    comment.setProperty(DatastoreNames.PARENT_ID_PROPERTY, "");
+    comment.setProperty(PARENT_ID_PROPERTY, "");
 
     return comment;
   }
@@ -115,7 +122,7 @@ public class CommentsServletTest {
   private Entity createCommentEntity(long timestamp, long userId, long businessId, long parentId) {
     Entity comment = createCommentEntity(timestamp, userId, businessId);
 
-    comment.setProperty(DatastoreNames.PARENT_ID_PROPERTY, String.valueOf(parentId));
+    comment.setProperty(PARENT_ID_PROPERTY, String.valueOf(parentId));
 
     return comment;
   }
@@ -157,8 +164,8 @@ public class CommentsServletTest {
   /** Make a valid request on an empty database expecting an empty reponse. */
   @Test
   public void testEmptyDatabase() throws IOException {
-    doReturn("0").when(request).getParameter(DatastoreNames.USER_ID_PROPERTY);
-
+    doReturn("0").when(request).getParameter(USER_ID_PROPERTY);
+  
     servlet.doGet(request, response);
 
     assertEmptyResponse();
@@ -170,9 +177,9 @@ public class CommentsServletTest {
     // Test for requests that yield empty results on a populated database
     String parameterNames[] =
         new String[] {
-          DatastoreNames.USER_ID_PROPERTY,
-          DatastoreNames.BUSINESS_ID_PROPERTY,
-          DatastoreNames.PARENT_ID_PROPERTY
+          USER_ID_PROPERTY,
+          BUSINESS_ID_PROPERTY,
+          PARENT_ID_PROPERTY
         };
 
     for (String parameterName : parameterNames) {
@@ -192,7 +199,7 @@ public class CommentsServletTest {
   /** Test a request for a certain business's comments. */
   @Test
   public void testBusinessRequest() throws IOException {
-    String parameterName = DatastoreNames.BUSINESS_ID_PROPERTY;
+    String parameterName = BUSINESS_ID_PROPERTY;
     String parameterVal = "0";
 
     Comment[] expectedReturnedComments =
@@ -207,7 +214,7 @@ public class CommentsServletTest {
   /** Test a request for a certain users comments */
   @Test
   public void testUserRequest() throws IOException {
-    String parameterName = DatastoreNames.USER_ID_PROPERTY;
+    String parameterName = USER_ID_PROPERTY;
     String parameterVal = "0";
 
     Comment[] expectedReturnedComments =
@@ -233,7 +240,7 @@ public class CommentsServletTest {
   /** Test a request for replies to a certain comment */
   @Test
   public void testReplyRequest() throws IOException {
-    String parameterName = DatastoreNames.PARENT_ID_PROPERTY;
+    String parameterName = PARENT_ID_PROPERTY;
     String parameterVal = "1000";
 
     Comment[] expectedReturnedComments =
@@ -263,8 +270,8 @@ public class CommentsServletTest {
   public void testRejectsRequestsWithTwoArguments() throws IOException {
     initDatastore(ds);
 
-    doReturn("0").when(request).getParameter(DatastoreNames.USER_ID_PROPERTY);
-    doReturn("0").when(request).getParameter(DatastoreNames.BUSINESS_ID_PROPERTY);
+    doReturn("0").when(request).getParameter(USER_ID_PROPERTY);
+    doReturn("0").when(request).getParameter(BUSINESS_ID_PROPERTY);
 
     servlet.doGet(request, response);
 
@@ -276,9 +283,9 @@ public class CommentsServletTest {
   public void testRejectsRequestsWithThreeArguments() throws IOException {
     initDatastore(ds);
 
-    doReturn("0").when(request).getParameter(DatastoreNames.USER_ID_PROPERTY);
-    doReturn("0").when(request).getParameter(DatastoreNames.BUSINESS_ID_PROPERTY);
-    doReturn("100").when(request).getParameter(DatastoreNames.PARENT_ID_PROPERTY);
+    doReturn("0").when(request).getParameter(USER_ID_PROPERTY);
+    doReturn("0").when(request).getParameter(BUSINESS_ID_PROPERTY);
+    doReturn("100").when(request).getParameter(PARENT_ID_PROPERTY);
 
     servlet.doGet(request, response);
 
