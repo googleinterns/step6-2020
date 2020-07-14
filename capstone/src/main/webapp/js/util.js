@@ -60,3 +60,12 @@ export function createUrlElement(url, isLoggedin) {
   }
   return aElement;
 }
+
+export function checkUserLoggedIn() {
+  fetchJsonObject('/login').then(user => user.isLoggedin);
+}
+
+/** Use fetch to get a Json Object and then unpack that object */
+export function fetchJsonObject(url) {
+  return fetch(url).then(response => response.json());
+}

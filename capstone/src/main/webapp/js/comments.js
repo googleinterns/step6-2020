@@ -106,12 +106,18 @@ function getReplies(commentId) {
   return wrapInPromise(replies);
 }
 
-function addUserComment(textArea, parentId = null) {
-  postComment(textArea.value, getUserId(), parentId);
+async function addUserComment(textArea, parentId = null) {
+  user = await fetchJsonObject('/login');
 
-  textArea.value = '';
-  commentContainer.innerHTML = '';
-  showComments();
+  if (user.issLoggedIn) {
+    postComment(content, parentId);
+    textArea.value = '';
+    commentContainer.innerHTML = '';
+    showComments();
+  } else {
+    // redirect to login url
+    window.location.replace(user.url);
+  }
 }
 
 async function buildCommentElement(comment) {
