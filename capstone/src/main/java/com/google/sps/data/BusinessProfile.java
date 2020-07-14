@@ -22,9 +22,17 @@ public final class BusinessProfile {
    * @param story the user's pandemic story.
    * @param about the user's additional business details.
    * @param support information on how others can support their business.
-   * @param  isCurrentUser determines whether the user's profile is the current logged-in user.
+   * @param isCurrentUser determines whether the user's profile is the current logged-in user.
    */
-  public BusinessProfile(String id, String name, String location, String bio, String story, String about, String support, boolean isCurrentUser) {
+  public BusinessProfile(
+      String id,
+      String name,
+      String location,
+      String bio,
+      String story,
+      String about,
+      String support,
+      boolean isCurrentUser) {
     this.id = id;
     this.name = name;
     this.location = location;

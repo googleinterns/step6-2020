@@ -14,12 +14,12 @@
 
 package com.google.sps.servlets;
 
-import static com.google.sps.data.CommentDatastore.generateComment;
-import static com.google.sps.data.CommentDatastore.USER_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastore.BUSINESS_ID_PROPERTY;
-import static com.google.sps.data.CommentDatastore.PARENT_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastore.COMMENT_ENTITY_NAME;
+import static com.google.sps.data.CommentDatastore.PARENT_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastore.TIMESTAMP_PROPERTY;
+import static com.google.sps.data.CommentDatastore.USER_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastore.generateComment;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -34,7 +34,6 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.gson.Gson;
 import com.google.sps.data.Comment;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -62,10 +61,7 @@ public class CommentsServlet extends HttpServlet {
           + PARENT_ID_PROPERTY;
 
   private static final Set<String> FILTER_PROPERTIES =
-      Stream.of(
-              USER_ID_PROPERTY,
-              BUSINESS_ID_PROPERTY,
-              PARENT_ID_PROPERTY)
+      Stream.of(USER_ID_PROPERTY, BUSINESS_ID_PROPERTY, PARENT_ID_PROPERTY)
           .collect(Collectors.toSet());
 
   DatastoreService datastore;

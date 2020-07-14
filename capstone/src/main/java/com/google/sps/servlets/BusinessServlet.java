@@ -61,7 +61,9 @@ public class BusinessServlet extends HttpServlet {
 
     // If userId is not a business owner id, redirect to "profile not found" page.
     String isBusiness =
-        entity.hasProperty(IS_BUSINESS_PROPERTY) ? (String) entity.getProperty(IS_BUSINESS_PROPERTY) : "";
+        entity.hasProperty(IS_BUSINESS_PROPERTY)
+            ? (String) entity.getProperty(IS_BUSINESS_PROPERTY)
+            : "";
     if (!isBusiness.equals("Yes")) {
       response.sendError(
           HttpServletResponse.SC_NOT_FOUND,
@@ -71,16 +73,24 @@ public class BusinessServlet extends HttpServlet {
 
     // Query all profile properties.
     String id = entity.getKey().getName();
-    String name = entity.hasProperty(NAME_PROPERTY) ? (String) entity.getProperty(NAME_PROPERTY) : "Anonymous";
-    String location = entity.hasProperty(LOCATION_PROPERTY) ? (String) entity.getProperty(LOCATION_PROPERTY) : "";
+    String name =
+        entity.hasProperty(NAME_PROPERTY)
+            ? (String) entity.getProperty(NAME_PROPERTY)
+            : "Anonymous";
+    String location =
+        entity.hasProperty(LOCATION_PROPERTY) ? (String) entity.getProperty(LOCATION_PROPERTY) : "";
     String bio = entity.hasProperty(BIO_PROPERTY) ? (String) entity.getProperty(BIO_PROPERTY) : "";
-    String story = entity.hasProperty(STORY_PROPERTY) ? (String) entity.getProperty(STORY_PROPERTY) : "";
-    String about = entity.hasProperty(ABOUT_PROPERTY) ? (String) entity.getProperty(ABOUT_PROPERTY) : "";
-    String support = entity.hasProperty(SUPPORT_PROPERTY) ? (String) entity.getProperty(SUPPORT_PROPERTY) : "";
+    String story =
+        entity.hasProperty(STORY_PROPERTY) ? (String) entity.getProperty(STORY_PROPERTY) : "";
+    String about =
+        entity.hasProperty(ABOUT_PROPERTY) ? (String) entity.getProperty(ABOUT_PROPERTY) : "";
+    String support =
+        entity.hasProperty(SUPPORT_PROPERTY) ? (String) entity.getProperty(SUPPORT_PROPERTY) : "";
     boolean isCurrentUser = userId.equals(id);
 
     // Create a profile object that contains the properties.
-    BusinessProfile profile = new BusinessProfile(id, name, location, bio, story, about, support, isCurrentUser);
+    BusinessProfile profile =
+        new BusinessProfile(id, name, location, bio, story, about, support, isCurrentUser);
 
     // Send it back to client side as a JSON file.
     response.setContentType("application/json;");
@@ -102,8 +112,7 @@ public class BusinessServlet extends HttpServlet {
     // Mandatory property "name" needs to be filled out. If not, send an error.
     if (request.getParameter(NAME_PROPERTY) == null) {
       response.sendError(
-          HttpServletResponse.SC_NOT_FOUND,
-          "Required field: name was not filled out.");
+          HttpServletResponse.SC_NOT_FOUND, "Required field: name was not filled out.");
       return;
     }
 

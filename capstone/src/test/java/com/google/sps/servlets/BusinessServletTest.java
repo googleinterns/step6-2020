@@ -1,6 +1,6 @@
 package com.google.sps.servlets;
 
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -9,11 +9,9 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.users.User;
-import com.google.appengine.api.users.UserService;
+import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,11 +30,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import static org.mockito.Mockito.*;
 
 @RunWith(JUnit4.class)
 public class BusinessServletTest {
@@ -68,14 +64,15 @@ public class BusinessServletTest {
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     helper =
-      new LocalServiceTestHelper(new LocalUserServiceTestConfig(), new LocalDatastoreServiceTestConfig())
-          .setEnvEmail(EMAIL)
-          .setEnvAuthDomain(AUTHDOMAIN)
-          .setEnvIsLoggedIn(true)
-          .setEnvAttributes(
-              new HashMap(
-                  ImmutableMap.of(
-                      "com.google.appengine.api.users.UserService.user_id_key", USER_ID)));
+        new LocalServiceTestHelper(
+                new LocalUserServiceTestConfig(), new LocalDatastoreServiceTestConfig())
+            .setEnvEmail(EMAIL)
+            .setEnvAuthDomain(AUTHDOMAIN)
+            .setEnvIsLoggedIn(true)
+            .setEnvAttributes(
+                new HashMap(
+                    ImmutableMap.of(
+                        "com.google.appengine.api.users.UserService.user_id_key", USER_ID)));
     helper.setUp();
 
     datastore = DatastoreServiceFactory.getDatastoreService();
@@ -87,7 +84,7 @@ public class BusinessServletTest {
     helper.tearDown();
   }
 
-  /* 
+  /*
    *  Test doGet() for when user enters an invalid URL param. It should return an error.
    **/
   @Test
@@ -101,7 +98,7 @@ public class BusinessServletTest {
         .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
   }
 
-  /* 
+  /*
    *  Test doGet() for when datastore cannot find entity key. User does not exist in datastore.
    *  It should return an error.
    **/
@@ -112,7 +109,7 @@ public class BusinessServletTest {
 
     String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
     Key userKey = KeyFactory.stringToKey(keyString);
-    Entity ent =  new Entity("UserProfile", USER_ID);
+    Entity ent = new Entity("UserProfile", USER_ID);
 
     userServlet.doGet(request, response);
 
@@ -121,7 +118,7 @@ public class BusinessServletTest {
         .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
   }
 
-  /* 
+  /*
    *  Test doGet() for when user is not a business owner, it should return a response error.
    **/
   @Test
@@ -157,7 +154,7 @@ public class BusinessServletTest {
 
     String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
     Key userKey = KeyFactory.stringToKey(keyString);
-    Entity ent =  setUserProfileData();
+    Entity ent = setUserProfileData();
 
     String isBusiness = "Yes";
     boolean isCurrentUser = true;
@@ -168,7 +165,8 @@ public class BusinessServletTest {
     userServlet.doGet(request, response);
 
     // verify that it sends a JSON file to response.
-    BusinessProfile profile = new BusinessProfile(USER_ID, NAME, LOCATION, BIO, STORY, ABOUT, SUPPORT, isCurrentUser);
+    BusinessProfile profile =
+        new BusinessProfile(USER_ID, NAME, LOCATION, BIO, STORY, ABOUT, SUPPORT, isCurrentUser);
 
     String responseString = stringWriter.getBuffer().toString().trim();
     JsonElement responseJsonElement = new JsonParser().parse(responseString);
@@ -182,15 +180,14 @@ public class BusinessServletTest {
     Assert.assertEquals(responseJsonObject, userJsonObject);
   }
 
-  /* 
+  /*
    *  Test doPost() for when the user does not exist and they want to edit a profile. It should return error.
    **/
   @Test
   public void notLoggedInUserEditProfileReturnError()
       throws ServletException, IOException, EntityNotFoundException {
 
-    helper =
-      new LocalServiceTestHelper(new LocalUserServiceTestConfig());
+    helper = new LocalServiceTestHelper(new LocalUserServiceTestConfig());
 
     userServlet.doPost(request, response);
 
@@ -203,7 +200,8 @@ public class BusinessServletTest {
    *  Test doPost() for when the user did not fill out the name section. It should return error.
    **/
   @Test
-  public void editProfileNameNotFilledReturnError() throws ServletException, IOException, EntityNotFoundException {
+  public void editProfileNameNotFilledReturnError()
+      throws ServletException, IOException, EntityNotFoundException {
     String isBusiness = "Yes";
 
     when(request.getParameter("isBusiness")).thenReturn(isBusiness);
@@ -280,7 +278,7 @@ public class BusinessServletTest {
     Key userKey = KeyFactory.stringToKey(keyString);
     return new Entity("UserProfile", USER_ID);
   }
-  
+
   // Set static variables to entity.
   public Entity setUserProfileData() {
     Entity ent = new Entity("UserProfile", USER_ID);

@@ -14,23 +14,17 @@
 
 package com.google.sps.servlets;
 
-import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.gson.Gson;
 import com.google.sps.data.BusinessProfile;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.annotation.WebServlet;
@@ -55,8 +49,7 @@ public class BusinessesServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Query profile entities from datastore.
-    Filter propertyFilter =
-        new FilterPredicate(IS_BUSINESS_PROPERTY, FilterOperator.EQUAL, "Yes");
+    Filter propertyFilter = new FilterPredicate(IS_BUSINESS_PROPERTY, FilterOperator.EQUAL, "Yes");
     Query query = new Query("UserProfile").setFilter(propertyFilter);
 
     PreparedQuery results = datastore.prepare(query);
@@ -72,7 +65,8 @@ public class BusinessesServlet extends HttpServlet {
       String about = (String) entity.getProperty(ABOUT_PROPERTY);
       String support = (String) entity.getProperty(SUPPORT_PROPERTY);
 
-      BusinessProfile profile = new BusinessProfile(id, name, location, bio, story, about, support, false);
+      BusinessProfile profile =
+          new BusinessProfile(id, name, location, bio, story, about, support, false);
       profiles.add(profile);
     }
 

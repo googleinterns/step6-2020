@@ -14,43 +14,26 @@
 
 package com.google.sps.servlets;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doReturn;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.users.User;
-import com.google.appengine.api.users.UserService;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sps.data.BusinessProfile;
-import java.util.Arrays;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.io.*;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 /** Unit tests for BusinessesServlet. */
@@ -76,13 +59,13 @@ public class BusinessesServletTest {
   private static final String BIO = "This is my business bio.";
   private static final String STORY = "The pandemic has affected my business in X many ways.";
   private static final String ABOUT = "Here is the Pizzeria's menu.";
-  private static final String SUPPORT = "Please donate at X website."; 
+  private static final String SUPPORT = "Please donate at X website.";
 
   @Before
   public void setUp() throws IOException {
     MockitoAnnotations.initMocks(this);
     helper.setUp();
-    
+
     servletResponseWriter = new StringWriter();
     doReturn(new PrintWriter(servletResponseWriter)).when(response).getWriter();
     servlet = new BusinessesServlet();
@@ -92,7 +75,7 @@ public class BusinessesServletTest {
   public void tearDown() {
     helper.tearDown();
   }
-  
+
   /*
    *  Test doGet() for response returning the correct empty list of businesses.
    **/
@@ -143,7 +126,7 @@ public class BusinessesServletTest {
     newBusiness.setProperty("story", STORY);
     newBusiness.setProperty("about", ABOUT);
     newBusiness.setProperty("support", SUPPORT);
-    
+
     return newBusiness;
   }
 
