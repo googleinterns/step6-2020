@@ -14,16 +14,15 @@
 
 package com.google.sps.servlets;
 
+import static com.google.sps.data.CommentDatastore.BUSINESS_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastore.COMMENT_ENTITY_NAME;
+import static com.google.sps.data.CommentDatastore.CONTENT_PROPERTY;
+import static com.google.sps.data.CommentDatastore.PARENT_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastore.TIMESTAMP_PROPERTY;
+import static com.google.sps.data.CommentDatastore.USER_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastore.generateComment;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.reset;
-import static com.google.sps.data.CommentDatastore.COMMENT_ENTITY_NAME;
-import static com.google.sps.data.CommentDatastore.CONTENT_PROPERTY;
-import static com.google.sps.data.CommentDatastore.TIMESTAMP_PROPERTY;
-
-import static com.google.sps.data.CommentDatastore.BUSINESS_ID_PROPERTY;
-import static com.google.sps.data.CommentDatastore.USER_ID_PROPERTY;
-import static com.google.sps.data.CommentDatastore.PARENT_ID_PROPERTY;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -33,7 +32,6 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.google.sps.data.Comment;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -165,7 +163,7 @@ public class CommentsServletTest {
   @Test
   public void testEmptyDatabase() throws IOException {
     doReturn("0").when(request).getParameter(USER_ID_PROPERTY);
-  
+
     servlet.doGet(request, response);
 
     assertEmptyResponse();
@@ -176,11 +174,7 @@ public class CommentsServletTest {
   public void testEmptyResponses() throws IOException {
     // Test for requests that yield empty results on a populated database
     String parameterNames[] =
-        new String[] {
-          USER_ID_PROPERTY,
-          BUSINESS_ID_PROPERTY,
-          PARENT_ID_PROPERTY
-        };
+        new String[] {USER_ID_PROPERTY, BUSINESS_ID_PROPERTY, PARENT_ID_PROPERTY};
 
     for (String parameterName : parameterNames) {
       // Set a parameter that does not get a result
