@@ -14,12 +14,12 @@
 
 package com.google.sps.servlets;
 
-import static com.google.sps.data.CommentDatastore.CONTENT_PROPERTY;
-import static com.google.sps.data.CommentDatastore.USER_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastore.BUSINESS_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastore.COMMENT_ENTITY_NAME;
+import static com.google.sps.data.CommentDatastore.CONTENT_PROPERTY;
 import static com.google.sps.data.CommentDatastore.PARENT_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastore.TIMESTAMP_PROPERTY;
+import static com.google.sps.data.CommentDatastore.USER_ID_PROPERTY;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -41,11 +41,7 @@ import javax.servlet.http.HttpServletResponse;
 public class CommentServlet extends HttpServlet {
 
   private final List<String> REQUIRED_PARAMETERS =
-      new ArrayList<>(
-          Arrays.asList(
-              CONTENT_PROPERTY,
-              USER_ID_PROPERTY,
-              BUSINESS_ID_PROPERTY));
+      new ArrayList<>(Arrays.asList(CONTENT_PROPERTY, USER_ID_PROPERTY, BUSINESS_ID_PROPERTY));
 
   private UserService userService = UserServiceFactory.getUserService();
   private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();

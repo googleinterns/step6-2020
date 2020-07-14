@@ -2,3 +2,5 @@ target/
 .idea
 
 node_modules/
+
+appengine-generated/

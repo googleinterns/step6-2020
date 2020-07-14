@@ -15,13 +15,13 @@
 package com.google.sps.servlets;
 
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
+import static com.google.sps.data.CommentDatastore.BUSINESS_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastore.COMMENT_ENTITY_NAME;
+import static com.google.sps.data.CommentDatastore.CONTENT_PROPERTY;
+import static com.google.sps.data.CommentDatastore.PARENT_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastore.USER_ID_PROPERTY;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
-import static com.google.sps.data.CommentDatastore.CONTENT_PROPERTY;
-import static com.google.sps.data.CommentDatastore.USER_ID_PROPERTY;
-import static com.google.sps.data.CommentDatastore.BUSINESS_ID_PROPERTY;
-import static com.google.sps.data.CommentDatastore.PARENT_ID_PROPERTY;
-import static com.google.sps.data.CommentDatastore.COMMENT_ENTITY_NAME;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -113,14 +113,10 @@ public class CommentServletTest {
             new CompositeFilter(
                 CompositeFilterOperator.AND,
                 Arrays.asList(
-                    new FilterPredicate(
-                        CONTENT_PROPERTY, FilterOperator.EQUAL, content),
-                    new FilterPredicate(
-                        USER_ID_PROPERTY, FilterOperator.EQUAL, userId),
-                    new FilterPredicate(
-                        BUSINESS_ID_PROPERTY, FilterOperator.EQUAL, businessId),
-                    new FilterPredicate(
-                        PARENT_ID_PROPERTY, FilterOperator.EQUAL, parentId))));
+                    new FilterPredicate(CONTENT_PROPERTY, FilterOperator.EQUAL, content),
+                    new FilterPredicate(USER_ID_PROPERTY, FilterOperator.EQUAL, userId),
+                    new FilterPredicate(BUSINESS_ID_PROPERTY, FilterOperator.EQUAL, businessId),
+                    new FilterPredicate(PARENT_ID_PROPERTY, FilterOperator.EQUAL, parentId))));
   }
 
   private int countCommentOccurences(

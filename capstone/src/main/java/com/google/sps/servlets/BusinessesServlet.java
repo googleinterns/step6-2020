@@ -19,47 +19,59 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.gson.Gson;
 import com.google.sps.data.BusinessProfile;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** Servlet that handles business information. */
+/** Servlet responsible for listing all business profiles. */
 @WebServlet("/businesses")
 public class BusinessesServlet extends HttpServlet {
 
-  private static final String TASK_NAME = "Business";
+  private static final String IS_BUSINESS_PROPERTY = "isBusiness";
   private static final String NAME_PROPERTY = "name";
-  private static final String EMAIL_PROPERTY = "email";
-  private static final String BIO_PROPERTY = "bio";
   private static final String LOCATION_PROPERTY = "location";
+  private static final String BIO_PROPERTY = "bio";
+  private static final String STORY_PROPERTY = "story";
+  private static final String ABOUT_PROPERTY = "about";
+  private static final String SUPPORT_PROPERTY = "support";
+
+  DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // Retrieve the name and bio of all businesses to be displayed on the page.
-    Query businessQuery = new Query(TASK_NAME);
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    PreparedQuery queryResults = datastore.prepare(businessQuery);
-    ArrayList<BusinessProfile> businesses = new ArrayList();
+    // Query profile entities from datastore.
+    Filter propertyFilter = new FilterPredicate(IS_BUSINESS_PROPERTY, FilterOperator.EQUAL, "Yes");
+    Query query = new Query("UserProfile").setFilter(propertyFilter);
 
-    // Construct list of businesses from datastore.
-    for (Entity businessEntity : queryResults.asIterable()) {
-      long id = (long) businessEntity.getKey().getId();
-      String name = (String) businessEntity.getProperty(NAME_PROPERTY);
-      String email = (String) businessEntity.getProperty(EMAIL_PROPERTY);
-      String bio = (String) businessEntity.getProperty(BIO_PROPERTY);
-      String location = (String) businessEntity.getProperty(LOCATION_PROPERTY);
-      BusinessProfile business = new BusinessProfile(id, name, email, bio, location);
-      businesses.add(business);
+    PreparedQuery results = datastore.prepare(query);
+
+    // Convert entities to Profile objects.
+    List<BusinessProfile> profiles = new ArrayList<>();
+    for (Entity entity : results.asIterable()) {
+      String id = (String) entity.getKey().getName();
+      String name = (String) entity.getProperty(NAME_PROPERTY);
+      String location = (String) entity.getProperty(LOCATION_PROPERTY);
+      String bio = (String) entity.getProperty(BIO_PROPERTY);
+      String story = (String) entity.getProperty(STORY_PROPERTY);
+      String about = (String) entity.getProperty(ABOUT_PROPERTY);
+      String support = (String) entity.getProperty(SUPPORT_PROPERTY);
+
+      BusinessProfile profile =
+          new BusinessProfile(id, name, location, bio, story, about, support, false);
+      profiles.add(profile);
     }
 
+    response.setContentType("application/json;");
     Gson gson = new Gson();
-    String jsonBusinesses = gson.toJson(businesses);
-    response.setContentType("application/json");
-    response.getWriter().println(jsonBusinesses);
+    response.getWriter().println(gson.toJson(profiles));
   }
 }
