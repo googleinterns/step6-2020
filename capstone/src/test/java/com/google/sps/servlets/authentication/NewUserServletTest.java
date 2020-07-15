@@ -1,26 +1,16 @@
 package com.google.sps.servlets.authentication;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.users.User;
-import com.google.appengine.api.users.UserService;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
 import com.google.common.collect.ImmutableMap;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.HashMap;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.After;
@@ -34,7 +24,7 @@ import org.mockito.MockitoAnnotations;
 
 @RunWith(JUnit4.class)
 public class NewUserServletTest {
-  
+
   private static final String IS_BUSINESS_PROPERTY = "isBusiness";
   private static final String NAME_PROPERTY = "name";
   private static final String LOCATION_PROPERTY = "location";
@@ -55,21 +45,21 @@ public class NewUserServletTest {
   @Mock private HttpServletResponse response;
 
   private LocalServiceTestHelper helper =
-        new LocalServiceTestHelper(
-                new LocalUserServiceTestConfig(), new LocalDatastoreServiceTestConfig())
-            .setEnvEmail(EMAIL)
-            .setEnvAuthDomain(AUTHDOMAIN)
-            .setEnvIsLoggedIn(true)
-            .setEnvAttributes(
-                new HashMap(
-                    ImmutableMap.of(
-                        "com.google.appengine.api.users.UserService.user_id_key", USER_ID)));
+      new LocalServiceTestHelper(
+              new LocalUserServiceTestConfig(), new LocalDatastoreServiceTestConfig())
+          .setEnvEmail(EMAIL)
+          .setEnvAuthDomain(AUTHDOMAIN)
+          .setEnvIsLoggedIn(true)
+          .setEnvAttributes(
+              new HashMap(
+                  ImmutableMap.of(
+                      "com.google.appengine.api.users.UserService.user_id_key", USER_ID)));
   private NewUserServlet newUserServlet;
   private DatastoreService datastore;
 
   @Before
   public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);    
+    MockitoAnnotations.initMocks(this);
     helper.setUp();
 
     datastore = DatastoreServiceFactory.getDatastoreService();

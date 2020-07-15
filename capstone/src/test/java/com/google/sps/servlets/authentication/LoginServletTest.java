@@ -4,15 +4,13 @@ import static org.mockito.Mockito.when;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
 import com.google.common.collect.ImmutableMap;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -95,7 +93,7 @@ public class LoginServletTest {
     Entity ent = new Entity("UserProfile", USER_ID);
     ent.setProperty(IS_BUSINESS_PROPERTY, NO);
     datastore.put(ent);
-    
+
     loginServlet.doGet(request, response);
 
     User LoggedInUser = new User(true, LOG_OUT_URL, USER_ID, NO);
@@ -119,15 +117,14 @@ public class LoginServletTest {
   @Test
   public void loggedOutUserReturnsLogInUrl() throws ServletException, IOException {
     helper =
-        new LocalServiceTestHelper(
-                new LocalUserServiceTestConfig())
+        new LocalServiceTestHelper(new LocalUserServiceTestConfig())
             .setEnvEmail(EMAIL)
             .setEnvAuthDomain(AUTHDOMAIN)
             .setEnvIsLoggedIn(false);
     helper.setUp();
 
     loginServlet.doGet(request, response);
-    
+
     User LoggedOutUser = new User(false, LOG_IN_URL, null, null);
 
     String responseString = stringWriter.getBuffer().toString().trim();

@@ -23,10 +23,10 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
-  
+
   private UserService userService = UserServiceFactory.getUserService();
   private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-  
+
   private static final String IS_BUSINESS = "isBusiness";
   private static final String SUPPORT_PROPERTY = "support";
   private final String LOGIN_URL = userService.createLoginURL("/check_new_user");
@@ -46,11 +46,11 @@ public class LoginServlet extends HttpServlet {
         entity = datastore.get(userKey);
       } catch (EntityNotFoundException e) {
         response.sendError(
-          HttpServletResponse.SC_NOT_FOUND,
-          "The profile you were looking for was not found in our records!");
+            HttpServletResponse.SC_NOT_FOUND,
+            "The profile you were looking for was not found in our records!");
         return;
       }
-      
+
       String isBusiness = (String) entity.getProperty(IS_BUSINESS);
       userData = new User(true, LOGOUT_URL, userId, isBusiness);
     } else {
