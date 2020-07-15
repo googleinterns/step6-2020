@@ -29,20 +29,14 @@ window.addEventListener('load', function() {
 window.toggleProfile = function() {
   let viewProfile = document.getElementById('view-profile-section');
   let editProfile = document.getElementById('edit-profile-section');
+  
+  console.log("value: " + viewProfile.style.display);
 
-  if (viewProfile.style.display == 'block') {
-    viewProfile.style.display = 'none';
-    editProfile.style.display = 'block';
+  viewProfile.style.display = 'none';
+  editProfile.style.display = 'block';
 
-    // Display the edit form with default values.
-    displayEditProfileValues();
-  } else {
-    editProfile.style.display = 'none';
-    viewProfile.style.display = 'block';
-
-    // After editing the form, send POST request to servlet accordingly.
-    submitProfileForm();
-  }
+  // Display the edit form with default values.
+  displayEditProfileValues();
 }
 
 // If user answered the first question: whether they are a business user or not,
@@ -51,15 +45,12 @@ window.hasAnswerQuestionnaire = function() {
   let isBusiness = document.getElementById("yes");
   let isNotBusiness = document.getElementById("no");
   
-  let basicQuesionnaire = document.getElementById("basic-questionnaire");
   let businessQuesionnaire = document.getElementById("business-questionnaire");
 
   if (isBusiness.checked == true) {
-    basicQuesionnaire.style.display = 'block';
     businessQuesionnaire.style.display = 'block';
   } 
   if (isNotBusiness.checked == true) {
-    basicQuesionnaire.style.display = 'block';
     businessQuesionnaire.style.display = 'none';
   }
 
@@ -89,7 +80,7 @@ function displayEditProfileValues() {
 }
 
 // Submit the edit-profile form to servlet based on whether they're a business or not.
-function submitProfileForm() {
+window.submitProfileForm = function() {
   let form = document.getElementById('edit-profile');
   form.method = 'POST';
 

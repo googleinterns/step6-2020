@@ -114,7 +114,6 @@ public class ProfileServlet extends HttpServlet {
           HttpServletResponse.SC_NOT_FOUND, "You don't have permission to perform this action!");
       return;
     }
-
     profileEntity.setProperty(IS_BUSINESS_PROPERTY, getParam(IS_BUSINESS_PROPERTY, request));
     profileEntity.setProperty(NAME_PROPERTY, getParam(NAME_PROPERTY, request));
     profileEntity.setProperty(LOCATION_PROPERTY, getParam(LOCATION_PROPERTY, request));
@@ -122,7 +121,6 @@ public class ProfileServlet extends HttpServlet {
 
     // Put entity in datastore.
     datastore.put(profileEntity);
-
     response.sendRedirect("/profile.html?id=" + id);
   }
 
