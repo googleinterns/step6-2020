@@ -39,6 +39,9 @@ window.toggleProfile = function() {
   } else {
     editProfile.style.display = 'none';
     viewProfile.style.display = 'block';
+
+    // After editing the form, send POST request to servlet accordingly.
+    submitProfileForm();
   }
 }
 
@@ -84,6 +87,20 @@ function displayEditProfileValues() {
       setEditValues(userProfile.name, userProfile.location, userProfile.bio);
     });
 }
+
+// Submit the edit-profile form to servlet based on whether they're a business or not.
+function submitProfileForm() {
+  let form = document.getElementById('edit-profile');
+  form.method = 'POST';
+
+  if(document.getElementById('yes').checked) {
+    form.action = '/business';
+    return;
+  }
+  
+  form.action = '/profile';
+}
+
 
 // Obtain the ID from the URL params.
 function getId() {
