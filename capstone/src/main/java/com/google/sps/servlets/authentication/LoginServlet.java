@@ -29,8 +29,8 @@ public class LoginServlet extends HttpServlet {
   
   private static final String IS_BUSINESS = "isBusiness";
   private static final String SUPPORT_PROPERTY = "support";
-  private final String loginUrl = userService.createLoginURL("/check_new_user");
-  private final String logoutUrl = "/logout";
+  private final String LOGIN_URL = userService.createLoginURL("/check_new_user");
+  private final String LOGOUT_URL = "/logout";
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -52,9 +52,9 @@ public class LoginServlet extends HttpServlet {
       }
       
       String isBusiness = (String) entity.getProperty(IS_BUSINESS);
-      userData = new User(true, logoutUrl, userId, isBusiness);
+      userData = new User(true, LOGOUT_URL, userId, isBusiness);
     } else {
-      userData = new User(false, loginUrl, null, null);
+      userData = new User(false, LOGIN_URL, null, null);
     }
 
     response.setContentType("application/json;");
