@@ -39,6 +39,12 @@ public class BusinessServlet extends HttpServlet {
 
   DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
+  private void setEntityProperties(Entity targetEntity, HttpServletRequest request, String[] propertyNames)  {
+    for (String property: propertyNames) {
+      targetEntity.setProperty(property, Objects.toString(request.getParameter(property), ""));
+    }
+  }
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Retrieve the business ID that is located in place of the * in the URL.
@@ -115,11 +121,5 @@ public class BusinessServlet extends HttpServlet {
     datastore.put(businessEntity);
 
     response.sendRedirect("/business.html?id=" + id);
-  }
-
-  private void setEntityProperties(Entity targetEntity, HttpServletRequest request, String[] propertyNames)  {
-    for (String property: propertyNames) {
-      targetEntity.setProperty(property, Objects.toString(request.getParameter(property), ""));
-    }
   }
 }

@@ -176,8 +176,6 @@ public class BusinessServletTest {
 
     Gson gson = new Gson();
     String expectedResponse = gson.toJson(profile);
-    System.out.println("=================================");
-    System.out.println(servletResponse);
 
     JsonParser parser = new JsonParser();
     Assert.assertEquals(parser.parse(expectedResponse), parser.parse(servletResponse));
@@ -211,9 +209,9 @@ public class BusinessServletTest {
         .sendError(Mockito.eq(HttpServletResponse.SC_BAD_REQUEST), Mockito.anyString());
   }
 
-  /*
+  /**
    *  Test doPost() for when user is editing their profile page, it should put correct information into datastore.
-   **/
+   */
   @Test
   public void userEditProfileAddToDatastore() throws Exception {
     when(request.getParameter("isBusiness")).thenReturn("Yes");
