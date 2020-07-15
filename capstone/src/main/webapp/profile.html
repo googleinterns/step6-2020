@@ -16,7 +16,7 @@
       </div>
       <ul class="nav">
         <li><a href="index.html">Home</a></li>
-        <li><a href="profile.html">Profile</a></li>
+        <li id="profile-button"></li>
         <li id="auth-button"></li>
       </ul>
     </nav>
@@ -48,17 +48,17 @@
           <div id="basic-questionnaire">
             <div id="name-section">
               <label for="name">Name:</label><br>
-              <input type="text" name="name" value="John Doe" required><br>
+              <input id="edit-name" type="text" name="name" required><br>
             </div>
           
             <div id="location-section">
               <label for="location">Location:</label><br>
-              <input type="text" name="location" value="Mountain View, CA"><br>
+              <input id="edit-location" type="text" name="location"><br>
             </div>
           
             <div id="bio-section">
               <label for="bio">Short bio:</label><br>
-              <textarea name="bio" rows="10" cols="30"></textarea>
+              <textarea id="edit-bio" name="bio" rows="10" cols="30"></textarea>
             </div>
           </div>
 

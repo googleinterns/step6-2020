@@ -49,13 +49,43 @@ export function setLoginOrLogoutUrl() {
   });
 }
 
+/** Update profile link of users in nav bar. */
+export function setProfileUrl() {
+  fetch('/login').then(response => response.json()).then((user) => {
+    const profileElement = document.getElementById('profile-button');
+    if (user.userId == null) { 
+      profileElement.style.display = 'none';
+      return; 
+    }
+
+    profileElement.appendChild(buildProfileLink(user.isBusiness, user.userId));
+  });
+}
+
+/** Helper function for building the login/logout link. */
 function buildLoginOrLogoutLink(url, isLoggedin) {    
   const aElement = document.createElement('a');
   aElement.setAttribute('href', url);
   if (isLoggedin) {
-    aElement.innerText = "Logout";
+    aElement.innerText = 'Logout';
   } else {
-    aElement.innerText = "Login";
+    aElement.innerText = 'Login';
   }
+  return aElement;
+}
+
+/** Helper function for building the profile link. */
+function buildProfileLink(isBusiness, userId) {
+  const aElement = document.createElement('a');
+  var url;
+  aElement.innerText = 'Profile';
+  if (isBusiness === 'Yes') {
+    url = 'business.html?id=' + userId;
+  } else {
+    url = 'profile.html?id=' + userId;
+  }
+
+  aElement.setAttribute('href', url);
+
   return aElement;
 }

@@ -13,12 +13,13 @@
 // limitations under the License.
 
 import { loadCommentSection } from '/js/comments.js'
-import { setLoginOrLogoutUrl } from '/js/util.js';
+import { setLoginOrLogoutUrl, setProfileUrl } from '/js/util.js';
 
 // Toggle between view and edit profile options.
 window.addEventListener('load', function() {
   // Get login status of user to display on nav bar.
   setLoginOrLogoutUrl();
+  setProfileUrl();
   displayProfile();
 
   loadCommentSection(document.getElementById('comment-section'));
@@ -32,6 +33,9 @@ window.toggleProfile = function() {
   if (viewProfile.style.display == 'block') {
     viewProfile.style.display = 'none';
     editProfile.style.display = 'block';
+
+    // Display the edit form with default values.
+    displayEditProfileValues();
   } else {
     editProfile.style.display = 'none';
     viewProfile.style.display = 'block';
@@ -71,6 +75,16 @@ function displayProfile() {
     });
 }
 
+// Display edit form values from datastore.
+function displayEditProfileValues() {
+  let id = getId();
+  fetch('/profile/'+id)
+    .then(response => response.json())
+    .then((userProfile) => {
+      setEditValues(userProfile.name, userProfile.location, userProfile.bio);
+    });
+}
+
 // Obtain the ID from the URL params.
 function getId() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -97,4 +111,15 @@ function createProfile(name, location, bio) {
   name_section.innerText = name;
   location_section.innerText = location;
   bio_section.innerText = bio;
+}
+
+// Add correct values for each section when user is editing.
+function setEditValues(name, location, bio) {
+  let name_section = document.getElementById("edit-name");
+  let location_section = document.getElementById("edit-location");
+  let bio_section = document.getElementById("edit-bio");
+
+  name_section.value = name;
+  location_section.value = location;
+  bio_section.value = bio;
 }
