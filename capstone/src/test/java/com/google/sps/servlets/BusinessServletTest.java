@@ -20,6 +20,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sps.data.BusinessProfile;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -95,6 +97,7 @@ public class BusinessServletTest {
     ent.setProperty("bio", BIO);
     ent.setProperty("story", STORY);
     ent.setProperty("about", ABOUT);
+    ent.setProperty("calendarEmail", EMAIL);
     ent.setProperty("support", SUPPORT);
 
     return ent;
@@ -166,7 +169,6 @@ public class BusinessServletTest {
 
     servlet.doGet(request, response);
 
-    // verify that it sends a JSON file to response.
     BusinessProfile profile =
         new BusinessProfile(USER_ID, NAME, LOCATION, BIO, STORY, ABOUT, EMAIL, SUPPORT, true);
 
@@ -174,6 +176,8 @@ public class BusinessServletTest {
 
     Gson gson = new Gson();
     String expectedResponse = gson.toJson(profile);
+    System.out.println("=================================");
+    System.out.println(servletResponse);
 
     JsonParser parser = new JsonParser();
     Assert.assertEquals(parser.parse(expectedResponse), parser.parse(servletResponse));
@@ -185,7 +189,7 @@ public class BusinessServletTest {
   @Test
   public void notLoggedInUserEditProfileReturnError()
       throws ServletException, IOException, EntityNotFoundException {
-    helper = new LocalServiceTestHelper(new LocalUserServiceTestConfig());
+    helper.setEnvIsLoggedIn(false);
 
     servlet.doPost(request, response);
 
@@ -228,7 +232,7 @@ public class BusinessServletTest {
 
     Entity capEntity = datastore.get(userKey);
 
-    Assert.assertEquals(capEntity.getProperty("isBusiness"), isBusiness);
+    Assert.assertEquals(capEntity.getProperty("isBusiness"), "Yes");
     Assert.assertEquals(capEntity.getProperty("name"), NAME);
     Assert.assertEquals(capEntity.getProperty("location"), LOCATION);
     Assert.assertEquals(capEntity.getProperty("bio"), BIO);

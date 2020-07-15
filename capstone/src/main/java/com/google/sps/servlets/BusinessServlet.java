@@ -78,6 +78,7 @@ public class BusinessServlet extends HttpServlet {
     Gson gson = new Gson();
     response.setContentType("application/json");
     response.getWriter().println(gson.toJson(business));
+  }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -108,7 +109,7 @@ public class BusinessServlet extends HttpServlet {
     }
 
     String[] propertyNames = {IS_BUSINESS_PROPERTY, NAME_PROPERTY, LOCATION_PROPERTY, BIO_PROPERTY, STORY_PROPERTY, ABOUT_PROPERTY, CALENDAR_PROPERTY, SUPPORT_PROPERTY};
-    setEntityProperties(businessEntity, propertyNames);
+    setEntityProperties(businessEntity, request, propertyNames);
 
     // Put entity in datastore.
     datastore.put(businessEntity);
@@ -116,7 +117,7 @@ public class BusinessServlet extends HttpServlet {
     response.sendRedirect("/business.html?id=" + id);
   }
 
-  private void setEntityProperties(Entity targetEntity, String[] propertyNames)  {
+  private void setEntityProperties(Entity targetEntity, HttpServletRequest request, String[] propertyNames)  {
     for (String property: propertyNames) {
       targetEntity.setProperty(property, Objects.toString(request.getParameter(property), ""));
     }

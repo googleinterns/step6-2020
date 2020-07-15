@@ -65,7 +65,7 @@ public class BusinessesServlet extends HttpServlet {
       String bio = (String) entity.getProperty(BIO_PROPERTY);
       String story = (String) entity.getProperty(STORY_PROPERTY);
       String about = (String) entity.getProperty(ABOUT_PROPERTY);
-      String calendarEmail = (String) businessEntity.getProperty(CALENDAR_PROPERTY);
+      String calendarEmail = (String) entity.getProperty(CALENDAR_PROPERTY);
       String support = (String) entity.getProperty(SUPPORT_PROPERTY);
 
       BusinessProfile profile =

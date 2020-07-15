@@ -25,6 +25,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.google.sps.data.BusinessProfile;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -118,7 +120,7 @@ public class BusinessesServletTest {
     datastore.put(notABusiness);
 
     BusinessProfile businessProfile =
-        new BusinessProfile(id, NAME, LOCATION, BIO, STORY, ABOUT, EMAIL, SUPPORT, false);
+        new BusinessProfile(USER_ID_1, NAME, LOCATION, BIO, STORY, ABOUT, EMAIL, SUPPORT, false);
     businesses.add(businessProfile);
 
     servlet.doGet(request, response);
