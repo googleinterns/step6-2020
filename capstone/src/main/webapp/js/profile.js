@@ -44,16 +44,14 @@ window.hasAnswerQuestionnaire = function() {
   let isBusiness = document.getElementById('yes');
   let isNotBusiness = document.getElementById('no');
 
-  let profileForm = document.getElementById('edit-profile');
+  let basicQuesionnaire = document.getElementById('edit-profile');
   let businessQuesionnaire = document.getElementById('business-questionnaire');
 
   if (isBusiness.checked == true) {
     businessQuesionnaire.style.display = 'block';
-    profileForm.action = '/business';
   } 
   if (isNotBusiness.checked == true) {
     businessQuesionnaire.style.display = 'none';
-    profileForm.action = '/profile';
   }
 
   let submit = document.getElementById('submit-button');
