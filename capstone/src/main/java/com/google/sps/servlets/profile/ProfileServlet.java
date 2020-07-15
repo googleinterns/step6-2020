@@ -41,7 +41,6 @@ public class ProfileServlet extends HttpServlet {
 
     String urlId = pathSegments[1];
 
-    String userId = userService.getCurrentUser().getUserId();
     String keyString = KeyFactory.createKeyString("UserProfile", urlId);
     Key userKey = KeyFactory.stringToKey(keyString);
     Entity entity;
@@ -69,6 +68,7 @@ public class ProfileServlet extends HttpServlet {
     }
 
     // Query all profile properties.
+    String userId = userService.getCurrentUser().getUserId();
     String name =
         entity.hasProperty(NAME_PROPERTY)
             ? (String) entity.getProperty(NAME_PROPERTY)
