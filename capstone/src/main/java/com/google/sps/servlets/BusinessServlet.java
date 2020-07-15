@@ -3,10 +3,7 @@ package com.google.sps.servlets;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -39,8 +36,9 @@ public class BusinessServlet extends HttpServlet {
 
   DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-  private void setEntityProperties(Entity targetEntity, HttpServletRequest request, String[] propertyNames)  {
-    for (String property: propertyNames) {
+  private void setEntityProperties(
+      Entity targetEntity, HttpServletRequest request, String[] propertyNames) {
+    for (String property : propertyNames) {
       targetEntity.setProperty(property, Objects.toString(request.getParameter(property), ""));
     }
   }
@@ -114,7 +112,16 @@ public class BusinessServlet extends HttpServlet {
       return;
     }
 
-    String[] propertyNames = {IS_BUSINESS_PROPERTY, NAME_PROPERTY, LOCATION_PROPERTY, BIO_PROPERTY, STORY_PROPERTY, ABOUT_PROPERTY, CALENDAR_PROPERTY, SUPPORT_PROPERTY};
+    String[] propertyNames = {
+      IS_BUSINESS_PROPERTY,
+      NAME_PROPERTY,
+      LOCATION_PROPERTY,
+      BIO_PROPERTY,
+      STORY_PROPERTY,
+      ABOUT_PROPERTY,
+      CALENDAR_PROPERTY,
+      SUPPORT_PROPERTY
+    };
     setEntityProperties(businessEntity, request, propertyNames);
 
     // Put entity in datastore.

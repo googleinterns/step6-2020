@@ -14,9 +14,6 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sps.data.BusinessProfile;
 import java.io.IOException;
@@ -103,9 +100,7 @@ public class BusinessServletTest {
     return ent;
   }
 
-  /**
-   *  Test doGet() for when user enters an invalid URL param. It should return an error.
-   */
+  /** Test doGet() for when user enters an invalid URL param. It should return an error. */
   @Test
   public void invalidUrlParamReturnError() throws ServletException, IOException {
     when(request.getPathInfo()).thenReturn(INVALID_PATHINFO);
@@ -118,8 +113,8 @@ public class BusinessServletTest {
   }
 
   /**
-   *  Test doGet() for when datastore cannot find entity key. User does not exist in datastore.
-   *  It should return an error.
+   * Test doGet() for when datastore cannot find entity key. User does not exist in datastore. It
+   * should return an error.
    */
   @Test
   public void userNotInDatastoreReturnError()
@@ -137,9 +132,7 @@ public class BusinessServletTest {
         .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
   }
 
-  /**
-   *  Test doGet() for when user is not a business owner, it should return a response error.
-   */
+  /** Test doGet() for when user is not a business owner, it should return a response error. */
   @Test
   public void nonBusinessUserReturnError()
       throws ServletException, IOException, EntityNotFoundException {
@@ -157,7 +150,8 @@ public class BusinessServletTest {
   }
 
   /**
-   *  Test doGet() for when user a business owner, it should return a JSON string of business profile page information.
+   * Test doGet() for when user a business owner, it should return a JSON string of business profile
+   * page information.
    */
   @Test
   public void BusinessUserReturnJsonFile() throws ServletException, IOException {
@@ -182,7 +176,8 @@ public class BusinessServletTest {
   }
 
   /**
-   *  Test doPost() for when the user does not exist and they want to edit a profile. It should return error.
+   * Test doPost() for when the user does not exist and they want to edit a profile. It should
+   * return error.
    */
   @Test
   public void notLoggedInUserEditProfileReturnError()
@@ -196,9 +191,7 @@ public class BusinessServletTest {
         .sendError(Mockito.eq(HttpServletResponse.SC_FORBIDDEN), Mockito.anyString());
   }
 
-  /**
-   *  Test doPost() for when the user did not fill out the name section. It should return error.
-   */
+  /** Test doPost() for when the user did not fill out the name section. It should return error. */
   @Test
   public void editProfileNameNotFilledReturnError()
       throws ServletException, IOException, EntityNotFoundException {
@@ -210,7 +203,8 @@ public class BusinessServletTest {
   }
 
   /**
-   *  Test doPost() for when user is editing their profile page, it should put correct information into datastore.
+   * Test doPost() for when user is editing their profile page, it should put correct information
+   * into datastore.
    */
   @Test
   public void userEditProfileAddToDatastore() throws Exception {
@@ -241,8 +235,8 @@ public class BusinessServletTest {
   }
 
   /**
-   *  Test doPost() for when user is editing their profile page, they decided to change to non-business profile.
-   *  Return error.
+   * Test doPost() for when user is editing their profile page, they decided to change to
+   * non-business profile. Return error.
    */
   @Test
   public void nonBusinessUserEditProfileAddToDatastore() throws Exception {
