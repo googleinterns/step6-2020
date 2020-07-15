@@ -1,24 +1,20 @@
 package com.google.sps.servlets.authentication;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.users.User;
-import com.google.appengine.api.users.UserService;
+import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
-import java.io.*;
-import javax.servlet.ServletException;
+import com.google.common.collect.ImmutableMap;
+import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,27 +25,45 @@ import org.mockito.MockitoAnnotations;
 @RunWith(JUnit4.class)
 public class NewUserServletTest {
 
-  private final LocalServiceTestHelper helper =
-      new LocalServiceTestHelper(new LocalUserServiceTestConfig())
-          .setEnvIsAdmin(true)
-          .setEnvIsLoggedIn(true);
+  private static final String IS_BUSINESS_PROPERTY = "isBusiness";
+  private static final String NAME_PROPERTY = "name";
+  private static final String LOCATION_PROPERTY = "location";
+  private static final String BIO_PROPERTY = "bio";
+  private static final String NAME = "John Doe";
+  private static final String ANONYMOUS_NAME = "Anonymous";
+  private static final String LOCATION = "Mountain View, CA";
+  private static final String BIO = "This is my bio.";
+  private static final String USER_ID = "12345";
+  private static final String EMAIL = "abc@gmail.com";
+  private static final String AUTHDOMAIN = "gmail.com";
+  private static final String DEFAULT = "";
+  private static final String YES = "Yes";
+  private static final String NO = "No";
 
   @Mock private HttpServletRequest request;
 
   @Mock private HttpServletResponse response;
 
-  @Mock private UserService userService;
-
-  @Mock private DatastoreService datastore;
+  private LocalServiceTestHelper helper =
+      new LocalServiceTestHelper(
+              new LocalUserServiceTestConfig(), new LocalDatastoreServiceTestConfig())
+          .setEnvEmail(EMAIL)
+          .setEnvAuthDomain(AUTHDOMAIN)
+          .setEnvIsLoggedIn(true)
+          .setEnvAttributes(
+              new HashMap(
+                  ImmutableMap.of(
+                      "com.google.appengine.api.users.UserService.user_id_key", USER_ID)));
+  private NewUserServlet newUserServlet;
+  private DatastoreService datastore;
 
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     helper.setUp();
 
-    StringWriter stringWriter = new StringWriter();
-    PrintWriter printWriter = new PrintWriter(stringWriter);
-    when(response.getWriter()).thenReturn(printWriter);
+    datastore = DatastoreServiceFactory.getDatastoreService();
+    newUserServlet = new NewUserServlet();
   }
 
   @After
@@ -63,24 +77,17 @@ public class NewUserServletTest {
    *  Then it should be added to the datastore.
    **/
   @Test
-  public void newUserAddToDatabase() throws ServletException, IOException, EntityNotFoundException {
-    String userId = "12345";
-    String email = "abc@gmail.com";
-    String authDomain = "gmail.com";
-    User user = new User(email, authDomain, userId);
-    when(userService.getCurrentUser()).thenReturn(user);
-
-    String keyString = KeyFactory.createKeyString("UserProfile", userId);
+  public void newUserAddToDatabase() throws Exception {
+    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
     Key userKey = KeyFactory.stringToKey(keyString);
 
-    when(datastore.get(userKey)).thenThrow(EntityNotFoundException.class);
+    newUserServlet.doGet(request, response);
 
-    Entity ent = new Entity("UserProfile", userId);
-
-    NewUserServlet userServlet = new NewUserServlet(userService, datastore);
-    userServlet.doGet(request, response);
-
-    verify(datastore).put(ent);
+    Entity capEntity = datastore.get(userKey);
+    Assert.assertEquals(capEntity.getProperty(IS_BUSINESS_PROPERTY), NO);
+    Assert.assertEquals(capEntity.getProperty(NAME_PROPERTY), ANONYMOUS_NAME);
+    Assert.assertEquals(capEntity.getProperty(LOCATION_PROPERTY), DEFAULT);
+    Assert.assertEquals(capEntity.getProperty(BIO_PROPERTY), DEFAULT);
   }
 
   /*
@@ -88,23 +95,23 @@ public class NewUserServletTest {
    *  and add it to datastore. It should return an entity when called datastore.get().
    **/
   @Test
-  public void returningUserIsInDatabase()
-      throws ServletException, IOException, EntityNotFoundException {
-    String userId = "12345";
-    String email = "abc@gmail.com";
-    String authDomain = "gmail.com";
-    User user = new User(email, authDomain, userId);
-    when(userService.getCurrentUser()).thenReturn(user);
-
-    String keyString = KeyFactory.createKeyString("UserProfile", userId);
+  public void returningUserIsInDatabase() throws Exception {
+    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
     Key userKey = KeyFactory.stringToKey(keyString);
-    Entity ent = new Entity("UserProfile", userId);
 
-    when(datastore.get(userKey)).thenReturn(ent);
+    Entity ent = new Entity("UserProfile", USER_ID);
+    ent.setProperty(IS_BUSINESS_PROPERTY, NO);
+    ent.setProperty(NAME_PROPERTY, NAME);
+    ent.setProperty(LOCATION_PROPERTY, LOCATION);
+    ent.setProperty(BIO_PROPERTY, BIO);
+    datastore.put(ent);
 
-    NewUserServlet userServlet = new NewUserServlet(userService, datastore);
-    userServlet.doGet(request, response);
+    newUserServlet.doGet(request, response);
 
-    verify(datastore, never()).put(any(Entity.class));
+    Entity capEntity = datastore.get(userKey);
+    Assert.assertEquals(capEntity.getProperty(IS_BUSINESS_PROPERTY), NO);
+    Assert.assertEquals(capEntity.getProperty(NAME_PROPERTY), NAME);
+    Assert.assertEquals(capEntity.getProperty(LOCATION_PROPERTY), LOCATION);
+    Assert.assertEquals(capEntity.getProperty(BIO_PROPERTY), BIO);
   }
 }
