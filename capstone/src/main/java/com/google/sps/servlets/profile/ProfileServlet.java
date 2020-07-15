@@ -20,17 +20,14 @@ import javax.servlet.http.HttpServletResponse;
 /** Servlet responsible for showing a non-business user profile. */
 @WebServlet("/profile/*")
 public class ProfileServlet extends HttpServlet {
+  private static final String IS_BUSINESS_PROPERTY = "isBusiness";
+  private static final String NAME_PROPERTY = "name";
+  private static final String LOCATION_PROPERTY = "location";
+  private static final String BIO_PROPERTY = "bio";
 
   UserService userService = UserServiceFactory.getUserService();
 
   DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
-  public ProfileServlet() {}
-
-  public ProfileServlet(UserService userService, DatastoreService datastore) {
-    this.userService = userService;
-    this.datastore = datastore;
-  }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -86,32 +83,48 @@ public class ProfileServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String id = userService.getCurrentUser().getUserId();
-
     // Check if user is logged in.
-    if (id == null) {
+    if (userService.getCurrentUser() == null) {
       response.sendError(
           HttpServletResponse.SC_NOT_FOUND, "You don't have permission to perform this action!");
       return;
     }
 
     // Mandatory property "name" needs to be filled out. If not, send an error.
-    if (request.getParameter("name") == null) {
+    if (request.getParameter(NAME_PROPERTY) == null) {
       response.sendError(
           HttpServletResponse.SC_BAD_REQUEST, "Required field: name was not filled out.");
       return;
     }
 
+    String id = userService.getCurrentUser().getUserId();
+
     // Update properties in datastore.
     Entity profileEntity = new Entity("UserProfile", id);
-    profileEntity.setProperty("isBusiness", request.getParameter("isBusiness"));
-    profileEntity.setProperty("name", request.getParameter("name"));
-    profileEntity.setProperty("location", request.getParameter("location"));
-    profileEntity.setProperty("bio", request.getParameter("bio"));
+
+    // If user is a business owner, return error.
+    if (getParam(IS_BUSINESS_PROPERTY, request).equals("Yes")) {
+      response.sendError(
+          HttpServletResponse.SC_NOT_FOUND, "You don't have permission to perform this action!");
+      return;
+    }
+
+    profileEntity.setProperty(IS_BUSINESS_PROPERTY, getParam(IS_BUSINESS_PROPERTY, request));
+    profileEntity.setProperty(NAME_PROPERTY, getParam(NAME_PROPERTY, request));
+    profileEntity.setProperty(LOCATION_PROPERTY, getParam(LOCATION_PROPERTY, request));
+    profileEntity.setProperty(BIO_PROPERTY, getParam(BIO_PROPERTY, request));
 
     // Put entity in datastore.
     datastore.put(profileEntity);
 
     response.sendRedirect("/profile.html?id=" + id);
+  }
+
+  public String getParam(String property, HttpServletRequest request) {
+    if (request.getParameter(property) == null) {
+      return "";
+    }
+
+    return request.getParameter(property);
   }
 }

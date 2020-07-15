@@ -18,16 +18,17 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/check_new_user")
 public class NewUserServlet extends HttpServlet {
 
+  private static final String IS_BUSINESS_PROPERTY = "isBusiness";
+  private static final String NAME_PROPERTY = "name";
+  private static final String LOCATION_PROPERTY = "location";
+  private static final String BIO_PROPERTY = "bio";
+  private static final String ANONYMOUS_NAME = "Anonymous";
+  private static final String DEFAULT = "";
+  private static final String NO = "No";
+
   UserService userService = UserServiceFactory.getUserService();
 
   DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
-  public NewUserServlet() {}
-
-  public NewUserServlet(UserService userService, DatastoreService datastore) {
-    this.userService = userService;
-    this.datastore = datastore;
-  }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -40,8 +41,13 @@ public class NewUserServlet extends HttpServlet {
     try {
       Entity entity = datastore.get(userKey);
     } catch (EntityNotFoundException e) {
-      // Add user to database.
+      // Add user to database with default values.
       Entity userEntity = new Entity("UserProfile", userId);
+      userEntity.setProperty(IS_BUSINESS_PROPERTY, NO);
+      userEntity.setProperty(NAME_PROPERTY, ANONYMOUS_NAME);
+      userEntity.setProperty(LOCATION_PROPERTY, DEFAULT);
+      userEntity.setProperty(BIO_PROPERTY, DEFAULT);
+
       datastore.put(userEntity);
     }
 

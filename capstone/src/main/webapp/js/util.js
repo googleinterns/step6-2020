@@ -42,15 +42,14 @@ export function buildButton(className, clickAction, label) {
 }
 
 /** Update log-in status of users in nav bar. */
-export function getLoginStatus() {
+export function setLoginOrLogoutUrl() {
   fetch('/login').then(response => response.json()).then((user) => {
     const loginElement = document.getElementById('auth-button');
-    loginElement.appendChild(createUrlElement(user.url, user.isLoggedin));
+    loginElement.appendChild(buildLoginOrLogoutLink(user.url, user.isLoggedin));
   });
 }
 
-/** Helper function for creating a link element. */
-export function createUrlElement(url, isLoggedin) {    
+function buildLoginOrLogoutLink(url, isLoggedin) {    
   const aElement = document.createElement('a');
   aElement.setAttribute('href', url);
   if (isLoggedin) {
