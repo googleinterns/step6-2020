@@ -23,15 +23,14 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
-
+  
+  private UserService userService = UserServiceFactory.getUserService();
+  private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+  
   private static final String IS_BUSINESS = "isBusiness";
   private static final String SUPPORT_PROPERTY = "support";
-
-  private UserService userService = UserServiceFactory.getUserService();
-  DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
-  private String loginUrl = userService.createLoginURL("/check_new_user");
-  private String logoutUrl = "/logout";
+  private final String loginUrl = userService.createLoginURL("/check_new_user");
+  private final String logoutUrl = "/logout";
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
