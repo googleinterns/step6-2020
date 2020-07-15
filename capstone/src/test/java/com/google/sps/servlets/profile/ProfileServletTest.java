@@ -106,7 +106,7 @@ public class ProfileServletTest {
   @Test
   public void userNotInDatastoreReturnError() throws Exception {
     when(request.getPathInfo()).thenReturn(PATHINFO);
-    
+
     // Populate the datastore with a business with the wrong target ID.
     Entity someBusiness = new Entity("UserProfile", USER2_ID);
     datastore.put(someBusiness);
