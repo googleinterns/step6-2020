@@ -30,8 +30,6 @@ window.toggleProfile = function() {
   let viewProfile = document.getElementById('view-profile-section');
   let editProfile = document.getElementById('edit-profile-section');
   
-  console.log("value: " + viewProfile.style.display);
-
   viewProfile.style.display = 'none';
   editProfile.style.display = 'block';
 
