@@ -39,9 +39,9 @@ public class ProfileServlet extends HttpServlet {
       return;
     }
 
-    String userId = pathSegments[1];
+    String urlId = pathSegments[1];
 
-    String keyString = KeyFactory.createKeyString("UserProfile", userId);
+    String keyString = KeyFactory.createKeyString("UserProfile", urlId);
     Key userKey = KeyFactory.stringToKey(keyString);
     Entity entity;
 
@@ -55,7 +55,7 @@ public class ProfileServlet extends HttpServlet {
       return;
     }
 
-    // If userId is a business owner id, redirect to "profile not found" page.
+    // If urlId is a business owner id, redirect to "profile not found" page.
     String isBusiness =
         entity.hasProperty(IS_BUSINESS_PROPERTY)
             ? (String) entity.getProperty(IS_BUSINESS_PROPERTY)
@@ -68,7 +68,7 @@ public class ProfileServlet extends HttpServlet {
     }
 
     // Query all profile properties.
-    String id = entity.getKey().getName();
+    String userId = userService.getCurrentUser().getUserId();
     String name =
         entity.hasProperty(NAME_PROPERTY)
             ? (String) entity.getProperty(NAME_PROPERTY)
@@ -76,10 +76,10 @@ public class ProfileServlet extends HttpServlet {
     String location =
         entity.hasProperty(LOCATION_PROPERTY) ? (String) entity.getProperty(LOCATION_PROPERTY) : "";
     String bio = entity.hasProperty(BIO_PROPERTY) ? (String) entity.getProperty(BIO_PROPERTY) : "";
-    boolean isCurrentUser = userId.equals(id);
+    boolean isCurrentUser = userId.equals(urlId);
 
     // Create a profile object that contains the properties.
-    UserProfile profile = new UserProfile(id, name, location, bio, isCurrentUser);
+    UserProfile profile = new UserProfile(userId, name, location, bio, isCurrentUser);
 
     // Send it back to client side as a JSON file.
     response.setContentType("application/json;");
@@ -114,7 +114,6 @@ public class ProfileServlet extends HttpServlet {
           HttpServletResponse.SC_NOT_FOUND, "You don't have permission to perform this action!");
       return;
     }
-
     profileEntity.setProperty(IS_BUSINESS_PROPERTY, getParam(IS_BUSINESS_PROPERTY, request));
     profileEntity.setProperty(NAME_PROPERTY, getParam(NAME_PROPERTY, request));
     profileEntity.setProperty(LOCATION_PROPERTY, getParam(LOCATION_PROPERTY, request));
@@ -122,7 +121,6 @@ public class ProfileServlet extends HttpServlet {
 
     // Put entity in datastore.
     datastore.put(profileEntity);
-
     response.sendRedirect("/profile.html?id=" + id);
   }
 
