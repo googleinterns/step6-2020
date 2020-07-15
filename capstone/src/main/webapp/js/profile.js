@@ -13,12 +13,12 @@
 // limitations under the License.
 
 import { loadCommentSection } from '/js/comments.js'
-import { getLoginStatus } from '/js/util.js';
+import { setLoginOrLogoutUrl } from '/js/util.js';
 
 // Toggle between view and edit profile options.
 window.addEventListener('load', function() {
   // Get login status of user to display on nav bar.
-  getLoginStatus();
+  setLoginOrLogoutUrl();
   displayProfile();
 
   loadCommentSection(document.getElementById('comment-section'));
