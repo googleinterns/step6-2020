@@ -119,28 +119,28 @@ public class BusinessServlet extends HttpServlet {
     Entity businessEntity = new Entity(PROFILE_TASK_NAME, id);
 
     // If user is a non-business owner, return error.
-    if (Objects.toString(request.getParameter(IS_BUSINESS_PROPERTY), "").equals("Yes")) {
-
-      String[] propertyNames = {
-        IS_BUSINESS_PROPERTY,
-        NAME_PROPERTY,
-        LOCATION_PROPERTY,
-        BIO_PROPERTY,
-        STORY_PROPERTY,
-        ABOUT_PROPERTY,
-        CALENDAR_PROPERTY,
-        SUPPORT_PROPERTY
-      };
-      setEntityProperties(businessEntity, request, propertyNames);
-
-      // Put entity in datastore.
-      datastore.put(businessEntity);
-
-      response.sendRedirect("/business.html?id=" + id);
-    } else {
+    if (!Objects.toString(request.getParameter(IS_BUSINESS_PROPERTY), "").equals("Yes")) {
       response.sendError(
           HttpServletResponse.SC_FORBIDDEN, "You don't have permission to perform this action!");
+      return;
     }
+
+    String[] propertyNames = {
+      IS_BUSINESS_PROPERTY,
+      NAME_PROPERTY,
+      LOCATION_PROPERTY,
+      BIO_PROPERTY,
+      STORY_PROPERTY,
+      ABOUT_PROPERTY,
+      CALENDAR_PROPERTY,
+      SUPPORT_PROPERTY
+    };
+    setEntityProperties(businessEntity, request, propertyNames);
+
+    // Put entity in datastore.
+    datastore.put(businessEntity);
+
+    response.sendRedirect("/business.html?id=" + id);
   }
 
   private void setEntityProperties(
