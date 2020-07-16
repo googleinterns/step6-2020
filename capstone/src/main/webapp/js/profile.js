@@ -32,9 +32,6 @@ window.toggleProfile = function() {
   
   viewProfile.style.display = 'none';
   editProfile.style.display = 'block';
-
-  // Display the edit form with default values.
-  displayEditProfileValues();
 }
 
 // If user answered the first question: whether they are a business user or not,
@@ -60,21 +57,23 @@ window.hasAnswerQuestionnaire = function() {
 function displayProfile() {
   let id = getId();
   fetch('/profile/'+id)
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("404 error");
+      }
+      return response.json();
+    })
     .then((userProfile) => {
       createProfile(userProfile.name, userProfile.location, userProfile.bio);
       displayEditButton(userProfile.isCurrentUser);
+      setEditValues(userProfile.name, userProfile.location, userProfile.bio);
+    }).catch((e) => {
+      writeErrorPage(id);
     });
 }
 
-// Display edit form values from datastore.
-function displayEditProfileValues() {
-  let id = getId();
-  fetch('/profile/'+id)
-    .then(response => response.json())
-    .then((userProfile) => {
-      setEditValues(userProfile.name, userProfile.location, userProfile.bio);
-    });
+function writeErrorPage(id) {
+  location.assign('/profile/' + id);
 }
 
 // Submit the edit-profile form to servlet based on whether they're a business or not.
@@ -128,4 +127,25 @@ function setEditValues(name, location, bio) {
   name_section.value = name;
   location_section.value = location;
   bio_section.value = bio;
+}
+
+// Bias the autocomplete object to the user's geographical location,
+// as supplied by the browser's 'navigator.geolocation' object.
+window.geolocate = function() {
+  // Create the autocomplete object, restricting the search predictions to
+  // geographical location types.
+  let autocomplete = new google.maps.places.Autocomplete(
+      document.getElementById('edit-location'), {types: ['geocode']});
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      let geolocation = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+      let circle = new google.maps.Circle(
+          {center: geolocation, radius: position.coords.accuracy});
+      autocomplete.setBounds(circle.getBounds());
+    });
+  }
 }

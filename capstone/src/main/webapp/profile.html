@@ -9,6 +9,10 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="js/profile.js" type="module"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCuIcAn0GsCDsALoF3puLLDADHNzmc44R8&libraries=places"
+        async defer></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   </head>
   <body>
 
@@ -58,7 +62,7 @@
           
             <div id="location-section">
               <label for="location">Location:</label><br>
-              <input id="edit-location" type="text" name="location"><br>
+              <input id="edit-location" name="location" placeholder="Enter your address" onFocus="geolocate()" type="text"/><br>
             </div>
           
             <div id="bio-section">
