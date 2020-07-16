@@ -16,8 +16,8 @@ package com.google.sps.data;
 
 import com.google.appengine.api.datastore.Entity;
 
-public final class CommentDatastore {
-  public static final String COMMENT_ENTITY_NAME = "Comment";
+public final class CommentDatastoreUtil {
+  public static final String COMMENT_TASK_NAME = "Comment";
 
   public static final String CONTENT_PROPERTY = "content";
   public static final String TIMESTAMP_PROPERTY = "timestamp";

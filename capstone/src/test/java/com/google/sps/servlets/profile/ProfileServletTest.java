@@ -1,5 +1,26 @@
+// Copyright 2020 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package com.google.sps.servlets.profile;
 
+import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.NO;
+import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
+import static com.google.sps.data.ProfileDatastoreUtil.YES;
 import static org.mockito.Mockito.when;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -35,10 +56,6 @@ import org.mockito.MockitoAnnotations;
 @RunWith(JUnit4.class)
 public class ProfileServletTest {
 
-  private static final String NAME_PROPERTY = "name";
-  private static final String LOCATION_PROPERTY = "location";
-  private static final String BIO_PROPERTY = "bio";
-  private static final String IS_BUSINESS_PROPERTY = "isBusiness";
   private static final String NAME = "John Doe";
   private static final String NO_NAME = null;
   private static final String LOCATION = "Mountain View, CA";
@@ -49,8 +66,6 @@ public class ProfileServletTest {
   private static final String AUTHDOMAIN = "gmail.com";
   private static final String PATHINFO = "profile/12345";
   private static final String INVALID_PATHINFO = "profile";
-  private static final String YES = "Yes";
-  private static final String NO = "No";
 
   @Mock private HttpServletRequest request;
 
@@ -112,9 +127,9 @@ public class ProfileServletTest {
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
     // Create an entity with this USER_ID.
-    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
+    String keyString = KeyFactory.createKeyString(PROFILE_TASK_NAME, USER_ID);
     Key userKey = KeyFactory.stringToKey(keyString);
-    Entity ent = new Entity("UserProfile", USER_ID);
+    Entity ent = new Entity(PROFILE_TASK_NAME, USER_ID);
 
     profileServlet.doGet(request, response);
 
@@ -130,10 +145,10 @@ public class ProfileServletTest {
   public void businessUserReturnError() throws Exception {
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
-    // Create an entity with this USER_ID and set it's property "isBusiness" to "Yes".
+    // Create an entity with this USER_ID and set it's property "isBusiness" to YES.
     // Then add this to datastore.
-    Key userKey = KeyFactory.createKey("UserProfile", USER_ID);
-    Entity ent = new Entity("UserProfile", USER_ID);
+    Key userKey = KeyFactory.createKey(PROFILE_TASK_NAME, USER_ID);
+    Entity ent = new Entity(PROFILE_TASK_NAME, USER_ID);
 
     ent.setProperty(IS_BUSINESS_PROPERTY, YES);
     ent.setProperty(NAME_PROPERTY, NAME);
@@ -157,10 +172,10 @@ public class ProfileServletTest {
     when(response.getWriter()).thenReturn(printWriter);
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
-    // Create an entity with this USER_ID and set it's property "isBusiness" to "No".
+    // Create an entity with this USER_ID and set it's property "isBusiness" to NO.
     // Then add this to datastore.
-    Key userKey = KeyFactory.createKey("UserProfile", USER_ID);
-    Entity ent = new Entity("UserProfile", USER_ID);
+    Key userKey = KeyFactory.createKey(PROFILE_TASK_NAME, USER_ID);
+    Entity ent = new Entity(PROFILE_TASK_NAME, USER_ID);
 
     boolean isCurrentUser = true;
 
@@ -220,8 +235,8 @@ public class ProfileServletTest {
     when(request.getParameter(LOCATION_PROPERTY)).thenReturn(LOCATION);
     when(request.getParameter(BIO_PROPERTY)).thenReturn(BIO);
 
-    Key userKey = KeyFactory.createKey("UserProfile", USER_ID);
-    Entity ent = new Entity("UserProfile", USER_ID);
+    Key userKey = KeyFactory.createKey(PROFILE_TASK_NAME, USER_ID);
+    Entity ent = new Entity(PROFILE_TASK_NAME, USER_ID);
 
     profileServlet.doPost(request, response);
 
@@ -242,7 +257,7 @@ public class ProfileServletTest {
 
     profileServlet.doPost(request, response);
 
-    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
+    String keyString = KeyFactory.createKeyString(PROFILE_TASK_NAME, USER_ID);
     Key userKey = KeyFactory.stringToKey(keyString);
 
     Entity capEntity = datastore.get(userKey);

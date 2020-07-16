@@ -1,5 +1,22 @@
+// Copyright 2020 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package com.google.sps.servlets.authentication;
 
+import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.NO;
+import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
 import static org.mockito.Mockito.when;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -40,8 +57,6 @@ public class LoginServletTest {
   private static final String AUTHDOMAIN = "gmail.com";
   private static final String LOG_IN_URL = "/_ah/login?continue=%2Fcheck_new_user";
   private static final String LOG_OUT_URL = "/logout";
-  private static final String IS_BUSINESS_PROPERTY = "isBusiness";
-  private static final String NO = "No";
 
   @Mock private HttpServletRequest request;
 
@@ -88,9 +103,9 @@ public class LoginServletTest {
    **/
   @Test
   public void loggedInUserReturnsLogOutUrl() throws ServletException, IOException {
-    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
+    String keyString = KeyFactory.createKeyString(PROFILE_TASK_NAME, USER_ID);
     Key userKey = KeyFactory.stringToKey(keyString);
-    Entity ent = new Entity("UserProfile", USER_ID);
+    Entity ent = new Entity(PROFILE_TASK_NAME, USER_ID);
     ent.setProperty(IS_BUSINESS_PROPERTY, NO);
     datastore.put(ent);
 
