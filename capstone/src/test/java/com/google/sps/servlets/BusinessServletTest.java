@@ -48,6 +48,7 @@ public class BusinessServletTest {
   private static final String ABOUT = "Here is the Pizzeria's menu.";
   private static final String SUPPORT = "Please donate at X website.";
   private static final String USER_ID = "12345";
+  private static final String WRONG_USER = "54321";
   private static final String INVALID_USER_ID = null;
   private static final String EMAIL = "abc@gmail.com";
   private static final String AUTHDOMAIN = "gmail.com";
@@ -122,7 +123,7 @@ public class BusinessServletTest {
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
     // Populate the datastore with a business with the wrong target ID.
-    Entity someBusiness = new Entity(USER_TASK, USER_ID + "1");
+    Entity someBusiness = new Entity(USER_TASK, WRONG_USER));
     datastore.put(someBusiness);
 
     servlet.doGet(request, response);
