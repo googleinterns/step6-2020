@@ -14,6 +14,16 @@
 
 package com.google.sps.servlets;
 
+import static com.google.sps.data.ProfileDatastoreUtil.ABOUT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
+import static com.google.sps.data.ProfileDatastoreUtil.STORY_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.SUPPORT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.YES;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -35,22 +45,13 @@ import javax.servlet.http.HttpServletResponse;
 /** Servlet responsible for listing all business profiles. */
 @WebServlet("/businesses")
 public class BusinessesServlet extends HttpServlet {
-
-  private static final String IS_BUSINESS_PROPERTY = "isBusiness";
-  private static final String NAME_PROPERTY = "name";
-  private static final String LOCATION_PROPERTY = "location";
-  private static final String BIO_PROPERTY = "bio";
-  private static final String STORY_PROPERTY = "story";
-  private static final String ABOUT_PROPERTY = "about";
-  private static final String SUPPORT_PROPERTY = "support";
-
   DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Query profile entities from datastore.
-    Filter propertyFilter = new FilterPredicate(IS_BUSINESS_PROPERTY, FilterOperator.EQUAL, "Yes");
-    Query query = new Query("UserProfile").setFilter(propertyFilter);
+    Filter propertyFilter = new FilterPredicate(IS_BUSINESS_PROPERTY, FilterOperator.EQUAL, YES);
+    Query query = new Query(PROFILE_TASK_NAME).setFilter(propertyFilter);
 
     PreparedQuery results = datastore.prepare(query);
 

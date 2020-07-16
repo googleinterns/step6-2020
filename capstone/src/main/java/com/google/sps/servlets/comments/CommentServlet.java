@@ -14,12 +14,12 @@
 
 package com.google.sps.servlets;
 
-import static com.google.sps.data.CommentDatastore.BUSINESS_ID_PROPERTY;
-import static com.google.sps.data.CommentDatastore.COMMENT_ENTITY_NAME;
-import static com.google.sps.data.CommentDatastore.CONTENT_PROPERTY;
-import static com.google.sps.data.CommentDatastore.PARENT_ID_PROPERTY;
-import static com.google.sps.data.CommentDatastore.TIMESTAMP_PROPERTY;
-import static com.google.sps.data.CommentDatastore.USER_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.BUSINESS_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.COMMENT_TASK_NAME;
+import static com.google.sps.data.CommentDatastoreUtil.CONTENT_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.PARENT_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.TIMESTAMP_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.USER_ID_PROPERTY;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -78,7 +78,7 @@ public class CommentServlet extends HttpServlet {
   }
 
   private Entity buildCommentEntity(HttpServletRequest request) {
-    Entity commentEntity = new Entity(COMMENT_ENTITY_NAME);
+    Entity commentEntity = new Entity(COMMENT_TASK_NAME);
 
     REQUIRED_PARAMETERS.forEach(
         parameter -> commentEntity.setProperty(parameter, request.getParameter(parameter)));

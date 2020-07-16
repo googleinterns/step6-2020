@@ -1,6 +1,22 @@
+// Copyright 2020 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package com.google.sps.servlets;
 
-import static org.mockito.Mockito.*;
+import static com.google.sps.data.ProfileDatastoreUtil.NO;
+import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
+import static com.google.sps.data.ProfileDatastoreUtil.YES;
 import static org.mockito.Mockito.when;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -19,7 +35,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.sps.data.BusinessProfile;
-import java.io.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -107,9 +125,9 @@ public class BusinessServletTest {
       throws ServletException, IOException, EntityNotFoundException {
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
-    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
+    String keyString = KeyFactory.createKeyString(PROFILE_TASK_NAME, USER_ID);
     Key userKey = KeyFactory.stringToKey(keyString);
-    Entity ent = new Entity("UserProfile", USER_ID);
+    Entity ent = new Entity(PROFILE_TASK_NAME, USER_ID);
 
     userServlet.doGet(request, response);
 
@@ -126,11 +144,11 @@ public class BusinessServletTest {
       throws ServletException, IOException, EntityNotFoundException {
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
-    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
+    String keyString = KeyFactory.createKeyString(PROFILE_TASK_NAME, USER_ID);
     Key userKey = KeyFactory.stringToKey(keyString);
     Entity ent = setUserProfileData();
 
-    String isBusiness = "No";
+    String isBusiness = NO;
     ent.setProperty("isBusiness", isBusiness);
 
     datastore.put(ent);
@@ -152,11 +170,11 @@ public class BusinessServletTest {
     when(response.getWriter()).thenReturn(printWriter);
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
-    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
+    String keyString = KeyFactory.createKeyString(PROFILE_TASK_NAME, USER_ID);
     Key userKey = KeyFactory.stringToKey(keyString);
     Entity ent = setUserProfileData();
 
-    String isBusiness = "Yes";
+    String isBusiness = YES;
     boolean isCurrentUser = true;
     ent.setProperty("isBusiness", isBusiness);
 
@@ -203,7 +221,7 @@ public class BusinessServletTest {
   @Test
   public void editProfileNameNotFilledReturnError()
       throws ServletException, IOException, EntityNotFoundException {
-    String isBusiness = "Yes";
+    String isBusiness = YES;
 
     when(request.getParameter("isBusiness")).thenReturn(isBusiness);
     when(request.getParameter("name")).thenReturn(NO_NAME);
@@ -224,7 +242,7 @@ public class BusinessServletTest {
    **/
   @Test
   public void userEditProfileAddToDatastore() throws Exception {
-    String isBusiness = "Yes";
+    String isBusiness = YES;
 
     when(request.getParameter("isBusiness")).thenReturn(isBusiness);
     when(request.getParameter("name")).thenReturn(NAME);
@@ -236,7 +254,7 @@ public class BusinessServletTest {
 
     userServlet.doPost(request, response);
 
-    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
+    String keyString = KeyFactory.createKeyString(PROFILE_TASK_NAME, USER_ID);
     Key userKey = KeyFactory.stringToKey(keyString);
 
     Entity capEntity = datastore.get(userKey);
@@ -256,7 +274,7 @@ public class BusinessServletTest {
    **/
   @Test
   public void nonBusinessUserEditProfileAddToDatastore() throws Exception {
-    String isBusiness = "No";
+    String isBusiness = NO;
 
     when(request.getParameter("isBusiness")).thenReturn(isBusiness);
     when(request.getParameter("name")).thenReturn(NAME);
@@ -275,14 +293,14 @@ public class BusinessServletTest {
 
   // Create an entity with USERID.
   public Entity createUserProfile() {
-    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
+    String keyString = KeyFactory.createKeyString(PROFILE_TASK_NAME, USER_ID);
     Key userKey = KeyFactory.stringToKey(keyString);
-    return new Entity("UserProfile", USER_ID);
+    return new Entity(PROFILE_TASK_NAME, USER_ID);
   }
 
   // Set static variables to entity.
   public Entity setUserProfileData() {
-    Entity ent = new Entity("UserProfile", USER_ID);
+    Entity ent = new Entity(PROFILE_TASK_NAME, USER_ID);
     ent.setProperty("name", NAME);
     ent.setProperty("location", LOCATION);
     ent.setProperty("bio", BIO);
