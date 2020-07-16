@@ -14,6 +14,9 @@
 
 package com.google.sps.servlets;
 
+import static com.google.sps.data.ProfileDatastoreUtil.NO;
+import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
+import static com.google.sps.data.ProfileDatastoreUtil.YES;
 import static org.mockito.Mockito.doReturn;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -54,8 +57,8 @@ public class BusinessesServletTest {
 
   private static final String USER_ID_1 = "12345";
   private static final String USER_ID_2 = "6789";
-  private static final String NOT_A_BUSINESS = "No";
-  private static final String A_BUSINESS = "Yes";
+  private static final String NOT_A_BUSINESS = NO;
+  private static final String A_BUSINESS = YES;
   private static final String NAME = "Pizzeria";
   private static final String LOCATION = "Mountain View, CA";
   private static final String BIO = "This is my business bio.";
@@ -80,7 +83,7 @@ public class BusinessesServletTest {
   }
 
   private Entity createBusiness(String id) {
-    Entity newBusiness = new Entity("UserProfile", id);
+    Entity newBusiness = new Entity(PROFILE_TASK_NAME, id);
     newBusiness.setProperty("name", NAME);
     newBusiness.setProperty("location", LOCATION);
     newBusiness.setProperty("bio", BIO);

@@ -1,8 +1,35 @@
+// Copyright 2020 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package com.google.sps.servlets;
+
+import static com.google.sps.data.ProfileDatastoreUtil.ABOUT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.NO;
+import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
+import static com.google.sps.data.ProfileDatastoreUtil.STORY_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.SUPPORT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.YES;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
@@ -22,14 +49,6 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/business/*")
 public class BusinessServlet extends HttpServlet {
 
-  private static final String USER_TASK = "UserProfile";
-  private static final String IS_BUSINESS_PROPERTY = "isBusiness";
-  private static final String NAME_PROPERTY = "name";
-  private static final String LOCATION_PROPERTY = "location";
-  private static final String BIO_PROPERTY = "bio";
-  private static final String STORY_PROPERTY = "story";
-  private static final String ABOUT_PROPERTY = "about";
-  private static final String SUPPORT_PROPERTY = "support";
   private static final String CALENDAR_PROPERTY = "calendarEmail";
 
   UserService userService = UserServiceFactory.getUserService();
@@ -44,13 +63,13 @@ public class BusinessServlet extends HttpServlet {
 
     // Retrieve all of the information for a single business to be displayed.
     Query businessQuery =
-        new Query(USER_TASK)
+        new Query(PROFILE_TASK_NAME)
             .setFilter(
                 CompositeFilterOperator.and(
                     FilterOperator.EQUAL.of(IS_BUSINESS_PROPERTY, "Yes"),
                     FilterOperator.EQUAL.of(
                         Entity.KEY_RESERVED_PROPERTY,
-                        KeyFactory.createKey(USER_TASK, businessID))));
+                        KeyFactory.createKey(PROFILE_TASK_NAME, businessID))));
 
     Entity businessEntity = datastore.prepare(businessQuery).asSingleEntity();
 
@@ -75,6 +94,7 @@ public class BusinessServlet extends HttpServlet {
     Gson gson = new Gson();
     response.setContentType("application/json");
     response.getWriter().println(gson.toJson(business));
+
   }
 
   @Override
@@ -96,7 +116,7 @@ public class BusinessServlet extends HttpServlet {
     String id = userService.getCurrentUser().getUserId();
 
     // Update properties in datastore.
-    Entity businessEntity = new Entity(USER_TASK, id);
+    Entity businessEntity = new Entity(PROFILE_TASK_NAME, id);
 
     // If user is a non-business owner, return error.
     if (Objects.toString(request.getParameter(IS_BUSINESS_PROPERTY), "").equals("Yes")) {

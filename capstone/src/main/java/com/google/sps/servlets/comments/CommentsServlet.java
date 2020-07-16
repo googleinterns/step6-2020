@@ -14,12 +14,12 @@
 
 package com.google.sps.servlets;
 
-import static com.google.sps.data.CommentDatastore.BUSINESS_ID_PROPERTY;
-import static com.google.sps.data.CommentDatastore.COMMENT_ENTITY_NAME;
-import static com.google.sps.data.CommentDatastore.PARENT_ID_PROPERTY;
-import static com.google.sps.data.CommentDatastore.TIMESTAMP_PROPERTY;
-import static com.google.sps.data.CommentDatastore.USER_ID_PROPERTY;
-import static com.google.sps.data.CommentDatastore.generateComment;
+import static com.google.sps.data.CommentDatastoreUtil.BUSINESS_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.COMMENT_TASK_NAME;
+import static com.google.sps.data.CommentDatastoreUtil.PARENT_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.TIMESTAMP_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.USER_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.generateComment;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -102,7 +102,7 @@ public class CommentsServlet extends HttpServlet {
   private List<Entity> runCommentsQuery(String filterProperty, String filterValue)
       throws IllegalArgumentException {
     Query query =
-        new Query(COMMENT_ENTITY_NAME)
+        new Query(COMMENT_TASK_NAME)
             .setFilter(buildFilter(filterProperty, filterValue))
             .addSort(TIMESTAMP_PROPERTY, SortDirection.DESCENDING);
     return datastore.prepare(query).asList(FetchOptions.Builder.withLimit(COMMENT_LIMIT));

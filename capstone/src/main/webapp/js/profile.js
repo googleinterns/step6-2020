@@ -13,12 +13,13 @@
 // limitations under the License.
 
 import { loadCommentSection } from '/js/comments.js'
-import { setLoginOrLogoutUrl } from '/js/util.js';
+import { setLoginOrLogoutUrl, setProfileUrl } from '/js/util.js';
 
 // Toggle between view and edit profile options.
 window.addEventListener('load', function() {
   // Get login status of user to display on nav bar.
   setLoginOrLogoutUrl();
+  setProfileUrl();
   displayProfile();
 
   loadCommentSection(document.getElementById('comment-section'));
@@ -28,24 +29,21 @@ window.addEventListener('load', function() {
 window.toggleProfile = function() {
   let viewProfile = document.getElementById('view-profile-section');
   let editProfile = document.getElementById('edit-profile-section');
+  
+  viewProfile.style.display = 'none';
+  editProfile.style.display = 'block';
 
-  if (viewProfile.style.display == 'block') {
-    viewProfile.style.display = 'none';
-    editProfile.style.display = 'block';
-  } else {
-    editProfile.style.display = 'none';
-    viewProfile.style.display = 'block';
-  }
+  // Display the edit form with default values.
+  displayEditProfileValues();
 }
 
 // If user answered the first question: whether they are a business user or not,
 // then show appropriate edit profile form.
 window.hasAnswerQuestionnaire = function() {
-  let isBusiness = document.getElementById('yes');
-  let isNotBusiness = document.getElementById('no');
-
-  let basicQuesionnaire = document.getElementById('edit-profile');
-  let businessQuesionnaire = document.getElementById('business-questionnaire');
+  let isBusiness = document.getElementById("yes");
+  let isNotBusiness = document.getElementById("no");
+  
+  let businessQuesionnaire = document.getElementById("business-questionnaire");
 
   if (isBusiness.checked == true) {
     businessQuesionnaire.style.display = 'block';
@@ -68,6 +66,30 @@ function displayProfile() {
       displayEditButton(userProfile.isCurrentUser);
     });
 }
+
+// Display edit form values from datastore.
+function displayEditProfileValues() {
+  let id = getId();
+  fetch('/profile/'+id)
+    .then(response => response.json())
+    .then((userProfile) => {
+      setEditValues(userProfile.name, userProfile.location, userProfile.bio);
+    });
+}
+
+// Submit the edit-profile form to servlet based on whether they're a business or not.
+window.submitProfileForm = function() {
+  let form = document.getElementById('edit-profile');
+  form.method = 'POST';
+
+  if(document.getElementById('yes').checked) {
+    form.action = '/business';
+    return;
+  }
+  
+  form.action = '/profile';
+}
+
 
 // Obtain the ID from the URL params.
 function getId() {
@@ -95,4 +117,15 @@ function createProfile(name, location, bio) {
   nameSection.innerText = name;
   locationSection.innerText = location;
   bioSection.innerText = bio;
+}
+
+// Add correct values for each section when user is editing.
+function setEditValues(name, location, bio) {
+  let name_section = document.getElementById("edit-name");
+  let location_section = document.getElementById("edit-location");
+  let bio_section = document.getElementById("edit-bio");
+
+  name_section.value = name;
+  location_section.value = location;
+  bio_section.value = bio;
 }

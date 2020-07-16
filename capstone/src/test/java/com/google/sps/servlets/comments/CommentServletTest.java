@@ -15,11 +15,11 @@
 package com.google.sps.servlets;
 
 import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
-import static com.google.sps.data.CommentDatastore.BUSINESS_ID_PROPERTY;
-import static com.google.sps.data.CommentDatastore.COMMENT_ENTITY_NAME;
-import static com.google.sps.data.CommentDatastore.CONTENT_PROPERTY;
-import static com.google.sps.data.CommentDatastore.PARENT_ID_PROPERTY;
-import static com.google.sps.data.CommentDatastore.USER_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.BUSINESS_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.COMMENT_TASK_NAME;
+import static com.google.sps.data.CommentDatastoreUtil.CONTENT_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.PARENT_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.USER_ID_PROPERTY;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
 
@@ -108,7 +108,7 @@ public class CommentServletTest {
   }
 
   private Query queryComment(String content, String userId, String businessId, String parentId) {
-    return new Query(COMMENT_ENTITY_NAME)
+    return new Query(COMMENT_TASK_NAME)
         .setFilter(
             new CompositeFilter(
                 CompositeFilterOperator.AND,

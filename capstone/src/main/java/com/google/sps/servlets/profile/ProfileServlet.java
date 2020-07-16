@@ -1,4 +1,25 @@
+// Copyright 2020 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package com.google.sps.servlets.profile;
+
+import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
+import static com.google.sps.data.ProfileDatastoreUtil.YES;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -20,10 +41,6 @@ import javax.servlet.http.HttpServletResponse;
 /** Servlet responsible for showing a non-business user profile. */
 @WebServlet("/profile/*")
 public class ProfileServlet extends HttpServlet {
-  private static final String IS_BUSINESS_PROPERTY = "isBusiness";
-  private static final String NAME_PROPERTY = "name";
-  private static final String LOCATION_PROPERTY = "location";
-  private static final String BIO_PROPERTY = "bio";
 
   UserService userService = UserServiceFactory.getUserService();
 
@@ -40,9 +57,9 @@ public class ProfileServlet extends HttpServlet {
       return;
     }
 
-    String userId = pathSegments[1];
+    String urlId = pathSegments[1];
 
-    String keyString = KeyFactory.createKeyString("UserProfile", userId);
+    String keyString = KeyFactory.createKeyString(PROFILE_TASK_NAME, urlId);
     Key userKey = KeyFactory.stringToKey(keyString);
     Entity entity;
 
@@ -57,8 +74,9 @@ public class ProfileServlet extends HttpServlet {
     }
 
     // If userId is a business owner id, redirect to "profile not found" page.
-    String isBusiness = Objects.toString(entity.getProperty("isBusiness"), "");
-    if (isBusiness.equals("Yes")) {
+    String isBusiness = Objects.toString(entity.getProperty(IS_BUSINESS_PROPERTY), "");
+    if (isBusiness.equals(YES)) {
+
       response.sendError(
           HttpServletResponse.SC_NOT_FOUND,
           "The profile you were looking for was not found in our records!");
@@ -66,14 +84,14 @@ public class ProfileServlet extends HttpServlet {
     }
 
     // Query all profile properties.
-    String id = entity.getKey().getName();
-    String name = Objects.toString(entity.getProperty("name"), "Anonymous");
-    String location = Objects.toString(entity.getProperty("location"), "");
-    String bio = Objects.toString(entity.getProperty("bio"), "");
-    boolean isCurrentUser = userId.equals(id);
+    String userId = userService.getCurrentUser().getUserId();
+    String name = Objects.toString(entity.getProperty(NAME_PROPERTY), "Anonymous");
+    String location = Objects.toString(entity.getProperty(LOCATION_PROPERTY), "");
+    String bio = Objects.toString(entity.getProperty(BIO_PROPERTY), "");
+    boolean isCurrentUser = userId.equals(urlId);
 
     // Create a profile object that contains the properties.
-    UserProfile profile = new UserProfile(id, name, location, bio, isCurrentUser);
+    UserProfile profile = new UserProfile(userId, name, location, bio, isCurrentUser);
 
     // Send it back to client side as a JSON file.
     response.setContentType("application/json;");
@@ -100,15 +118,14 @@ public class ProfileServlet extends HttpServlet {
     String id = userService.getCurrentUser().getUserId();
 
     // Update properties in datastore.
-    Entity profileEntity = new Entity("UserProfile", id);
+    Entity profileEntity = new Entity(PROFILE_TASK_NAME, id);
 
     // If user is a business owner, return error.
-    if (getParam(IS_BUSINESS_PROPERTY, request).equals("Yes")) {
+    if (getParam(IS_BUSINESS_PROPERTY, request).equals(YES)) {
       response.sendError(
           HttpServletResponse.SC_NOT_FOUND, "You don't have permission to perform this action!");
       return;
     }
-
     profileEntity.setProperty(IS_BUSINESS_PROPERTY, getParam(IS_BUSINESS_PROPERTY, request));
     profileEntity.setProperty(NAME_PROPERTY, getParam(NAME_PROPERTY, request));
     profileEntity.setProperty(LOCATION_PROPERTY, getParam(LOCATION_PROPERTY, request));
@@ -116,7 +133,6 @@ public class ProfileServlet extends HttpServlet {
 
     // Put entity in datastore.
     datastore.put(profileEntity);
-
     response.sendRedirect("/profile.html?id=" + id);
   }
 

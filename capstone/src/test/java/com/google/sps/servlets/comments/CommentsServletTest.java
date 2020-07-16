@@ -14,13 +14,13 @@
 
 package com.google.sps.servlets;
 
-import static com.google.sps.data.CommentDatastore.BUSINESS_ID_PROPERTY;
-import static com.google.sps.data.CommentDatastore.COMMENT_ENTITY_NAME;
-import static com.google.sps.data.CommentDatastore.CONTENT_PROPERTY;
-import static com.google.sps.data.CommentDatastore.PARENT_ID_PROPERTY;
-import static com.google.sps.data.CommentDatastore.TIMESTAMP_PROPERTY;
-import static com.google.sps.data.CommentDatastore.USER_ID_PROPERTY;
-import static com.google.sps.data.CommentDatastore.generateComment;
+import static com.google.sps.data.CommentDatastoreUtil.BUSINESS_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.COMMENT_TASK_NAME;
+import static com.google.sps.data.CommentDatastoreUtil.CONTENT_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.PARENT_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.TIMESTAMP_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.USER_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.generateComment;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.reset;
 
@@ -103,7 +103,7 @@ public class CommentsServletTest {
   }
 
   private Entity createCommentEntity(long timestamp, long userId, long businessId) {
-    Entity comment = new Entity(COMMENT_ENTITY_NAME);
+    Entity comment = new Entity(COMMENT_TASK_NAME);
 
     String id = "1" + timestamp + userId + businessId;
 

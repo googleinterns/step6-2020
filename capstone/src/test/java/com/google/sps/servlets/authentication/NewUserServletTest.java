@@ -1,4 +1,27 @@
+// Copyright 2020 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package com.google.sps.servlets.authentication;
+
+import static com.google.sps.data.ProfileDatastoreUtil.ANONYMOUS_NAME;
+import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.NO;
+import static com.google.sps.data.ProfileDatastoreUtil.NULL_STRING;
+import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -23,21 +46,12 @@ import org.mockito.MockitoAnnotations;
 
 @RunWith(JUnit4.class)
 public class NewUserServletTest {
-
-  private static final String IS_BUSINESS_PROPERTY = "isBusiness";
-  private static final String NAME_PROPERTY = "name";
-  private static final String LOCATION_PROPERTY = "location";
-  private static final String BIO_PROPERTY = "bio";
   private static final String NAME = "John Doe";
-  private static final String ANONYMOUS_NAME = "Anonymous";
   private static final String LOCATION = "Mountain View, CA";
   private static final String BIO = "This is my bio.";
   private static final String USER_ID = "12345";
   private static final String EMAIL = "abc@gmail.com";
   private static final String AUTHDOMAIN = "gmail.com";
-  private static final String DEFAULT = "";
-  private static final String YES = "Yes";
-  private static final String NO = "No";
 
   @Mock private HttpServletRequest request;
 
@@ -77,7 +91,7 @@ public class NewUserServletTest {
    **/
   @Test
   public void newUserAddToDatabase() throws Exception {
-    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
+    String keyString = KeyFactory.createKeyString(PROFILE_TASK_NAME, USER_ID);
     Key userKey = KeyFactory.stringToKey(keyString);
 
     newUserServlet.doGet(request, response);
@@ -85,8 +99,8 @@ public class NewUserServletTest {
     Entity capEntity = datastore.get(userKey);
     Assert.assertEquals(capEntity.getProperty(IS_BUSINESS_PROPERTY), NO);
     Assert.assertEquals(capEntity.getProperty(NAME_PROPERTY), ANONYMOUS_NAME);
-    Assert.assertEquals(capEntity.getProperty(LOCATION_PROPERTY), DEFAULT);
-    Assert.assertEquals(capEntity.getProperty(BIO_PROPERTY), DEFAULT);
+    Assert.assertEquals(capEntity.getProperty(LOCATION_PROPERTY), NULL_STRING);
+    Assert.assertEquals(capEntity.getProperty(BIO_PROPERTY), NULL_STRING);
   }
 
   /*
@@ -95,10 +109,10 @@ public class NewUserServletTest {
    **/
   @Test
   public void returningUserIsInDatabase() throws Exception {
-    String keyString = KeyFactory.createKeyString("UserProfile", USER_ID);
+    String keyString = KeyFactory.createKeyString(PROFILE_TASK_NAME, USER_ID);
     Key userKey = KeyFactory.stringToKey(keyString);
 
-    Entity ent = new Entity("UserProfile", USER_ID);
+    Entity ent = new Entity(PROFILE_TASK_NAME, USER_ID);
     ent.setProperty(IS_BUSINESS_PROPERTY, NO);
     ent.setProperty(NAME_PROPERTY, NAME);
     ent.setProperty(LOCATION_PROPERTY, LOCATION);

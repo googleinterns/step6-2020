@@ -1,5 +1,22 @@
+// Copyright 2020 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package com.google.sps.servlets;
 
+import static com.google.sps.data.ProfileDatastoreUtil.NO;
+import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
+import static com.google.sps.data.ProfileDatastoreUtil.YES;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -40,8 +57,8 @@ public class BusinessServletTest {
 
   @Mock private HttpServletResponse response;
 
-  private static final String USER_TASK = "UserProfile";
   private static final String NAME = "Pizzeria";
+  private static final String NO_NAME = null;
   private static final String LOCATION = "Mountain View, CA";
   private static final String BIO = "This is my business bio.";
   private static final String STORY = "The pandemic has affected my business in X many ways.";
@@ -60,7 +77,6 @@ public class BusinessServletTest {
   private BusinessServlet servlet;
   private DatastoreService datastore;
   private StringWriter servletResponseWriter;
-
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
@@ -107,7 +123,6 @@ public class BusinessServletTest {
     when(request.getPathInfo()).thenReturn(INVALID_PATHINFO);
 
     servlet.doGet(request, response);
-
     // verify if a sendError() was performed with the expected values.
     Mockito.verify(response, Mockito.times(1))
         .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
@@ -123,7 +138,7 @@ public class BusinessServletTest {
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
     // Populate the datastore with a business with the wrong target ID.
-    Entity someBusiness = new Entity(USER_TASK, WRONG_USER));
+    Entity someBusiness = new Entity(PROFILE_TASK_NAME, WRONG_USER));
     datastore.put(someBusiness);
 
     servlet.doGet(request, response);
@@ -220,7 +235,7 @@ public class BusinessServletTest {
 
     servlet.doPost(request, response);
 
-    String keyString = KeyFactory.createKeyString(USER_TASK, USER_ID);
+    String keyString = KeyFactory.createKeyString(PROFILE_TASK_NAME, USER_ID);
     Key userKey = KeyFactory.stringToKey(keyString);
 
     Entity capEntity = datastore.get(userKey);
@@ -249,5 +264,6 @@ public class BusinessServletTest {
     // verify if a sendError() was performed with the expected values.
     Mockito.verify(response, Mockito.times(1))
         .sendError(Mockito.eq(HttpServletResponse.SC_FORBIDDEN), Mockito.anyString());
+
   }
 }
