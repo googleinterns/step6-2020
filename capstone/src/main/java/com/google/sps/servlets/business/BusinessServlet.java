@@ -19,17 +19,13 @@ import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.NO;
 import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
 import static com.google.sps.data.ProfileDatastoreUtil.STORY_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.SUPPORT_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.YES;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
@@ -94,7 +90,6 @@ public class BusinessServlet extends HttpServlet {
     Gson gson = new Gson();
     response.setContentType("application/json");
     response.getWriter().println(gson.toJson(business));
-
   }
 
   @Override
