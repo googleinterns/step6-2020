@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { buildElement, setLoginOrLogoutUrl } from '/js/util.js';
+import { buildElement, setLoginOrLogoutUrl, setProfileUrl } from '/js/util.js';
 
 window.onload = function() {
   // Fetches all the businesses to be displayed.
@@ -25,6 +25,9 @@ window.onload = function() {
 
   // Get login status of user to display on nav bar.
   setLoginOrLogoutUrl();
+  
+  // Update and set profile nav link.
+  setProfileUrl();
 }
 
 function createCard(business) {

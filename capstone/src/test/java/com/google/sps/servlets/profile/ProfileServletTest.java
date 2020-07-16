@@ -61,6 +61,7 @@ public class ProfileServletTest {
   private static final String LOCATION = "Mountain View, CA";
   private static final String BIO = "This is my bio.";
   private static final String USER_ID = "12345";
+  private static final String USER2_ID = "6789";
   private static final String INVALID_USER_ID = null;
   private static final String EMAIL = "abc@gmail.com";
   private static final String AUTHDOMAIN = "gmail.com";
@@ -119,17 +120,11 @@ public class ProfileServletTest {
    **/
   @Test
   public void userNotInDatastoreReturnError() throws Exception {
-    helper =
-        new LocalServiceTestHelper(
-            new LocalUserServiceTestConfig(), new LocalDatastoreServiceTestConfig());
-    helper.setUp();
-
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
-    // Create an entity with this USER_ID.
-    String keyString = KeyFactory.createKeyString(PROFILE_TASK_NAME, USER_ID);
-    Key userKey = KeyFactory.stringToKey(keyString);
-    Entity ent = new Entity(PROFILE_TASK_NAME, USER_ID);
+    // Populate the datastore with a business with the wrong target ID.
+    Entity someBusiness = new Entity(PROFILE_TASK_NAME, USER2_ID);
+    datastore.put(someBusiness);
 
     profileServlet.doGet(request, response);
 

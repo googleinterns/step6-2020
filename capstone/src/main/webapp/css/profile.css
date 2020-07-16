@@ -1,3 +1,7 @@
+#edit-button {
+    display: none;
+}
+
 #edit-profile-section {
     display: none;
 }
@@ -11,5 +15,9 @@
 }
 
 #first-question {
+    display: block;
+}
+
+#view-profile-section {
     display: block;
 }
