@@ -20,48 +20,78 @@
     </nav>
 
     <div class="content">
-      <div id="view-profile-section">
-        <h1 id="profile-name"></h1>
-        <h2 id="profile-location"></h2>
-        <h3> My Pandemic Story </h3>
-        <p id="profile-story">
-          Contrary to popular belief, Lorem Ipsum is not simply random text. It 
-          has roots in a piece of classical Latin literature from 45 BC, making 
-          it over 2000 years old. Richard McClintock, a Latin professor at 
-          Hampden-Sydney College in Virginia, looked up one of the more obscure 
-          Latin words, consectetur, from a Lorem Ipsum passage, and going through 
-          the cites of the word in classical literature, discovered the undoubtable source. 
-          Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" 
-          (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a 
-          treatise on the theory of ethics, very popular during the Renaissance. The first 
-          line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
+      <!-- View Profile Page -->
+      <div id="view-business-section">
+        <button onclick="toggleProfile()" id="edit-button">Edit Profile</button>
 
-          The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those 
-          interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by 
-          Cicero are also reproduced in their exact original form, accompanied by English versions 
-          from the 1914 translation by H. Rackham.
-        </p>
+        <h1 id="business-name"></h1>
+        <h2 id="business-location"></h2>
+        <h3> My Pandemic Story </h3>
+        <p id="business-story"></p>
 
         <h3>About My Business</h3>
-        <p id="profile-bio"></p>
+        <p id="business-bio"></p>
         
-        <p>
-          Want to learn more about us? <a href="https://lavillapizza.com/about-us/" id="profile-website">Click Here!</a>
-        </p>
+        <p id="business-about"></p>
         
         <h3>How You Can Help Us</h3>
 
-        <p>
-          It would mean the world if you can support us during this time!
-          Here is how you can help:
-          <ol>
-            <li>Click here to donate</li>
-            <li>Click here to order from us</li>
-            <li>Click here to share our story</li>
-            <li>Get in touch with us <a id="profile-email">here</a>!</li>
-            <li>Leave a comment! :)</li>
-          </ol>
-        </p>
+        <p id="business-support"></p>
+      </div>
+
+      <!-- Edit Profile Page -->
+      <div id="edit-business-section" style="display: none">
+        
+        <form id="edit-profile">
+          <div id="first-question">
+            <label for="isBusiness">Are you a business owner?</label><br>
+
+            <label for="yes"><input type="radio" id="yes" name="isBusiness" value="Yes" onclick="hasAnswerQuestionnaire()" checked>
+            Yes</label><br>
+
+            <label for="no"><input type="radio" id="no" name="isBusiness" value="No" onclick="hasAnswerQuestionnaire()">
+            No</label><br>
+          </div>
+          
+          <div id="basic-questionnaire">
+            <div id="name-section">
+              <label for="name">Name:</label><br>
+              <input id="edit-name" type="text" name="name" required><br>
+            </div>
+          
+            <div id="location-section">
+              <label for="location">Location:</label><br>
+              <input id="edit-location" type="text" name="location"><br>
+            </div>
+          
+            <div id="bio-section">
+              <label for="bio">Short bio:</label><br>
+              <textarea id="edit-bio" name="bio" rows="10" cols="30"></textarea>
+            </div>
+          </div>
+
+          <!-- Business Owner Additional Questionnaires -->
+          <div id="business-questionnaire">
+            <div id="story-section">
+              <label for="story">How did the pandemic affect your business?</label><br>
+              <textarea name="edit-story" rows="10" cols="30"></textarea>
+            </div>
+
+            <div id="about-section">
+              <label for="about">Share your business.</label><br>
+              <p>You can share your business website, grubhub delivery link, or describe what your business has to offer!</p>
+              <textarea name="edit-about" rows="10" cols="30"></textarea>
+            </div>
+
+            <div id="support-section">
+              <label for="support">How can we support you?</label><br>
+              <p>You can share your gofundme link, share a transfer giftcard link, your PO box, or simply ask people to post a generous comment :)</p>
+              <textarea name="edit-support" rows="10" cols="30"></textarea>
+            </div>
+          </div>
+
+          <input type="submit" value="Submit" id="submit-button" onclick="submitProfileForm()">
+        </form> 
       </div>
 
       <div id="comment-section"></div>
