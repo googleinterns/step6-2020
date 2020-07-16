@@ -105,7 +105,7 @@ public class BusinessServletTest {
 
   // Set static variables to entity.
   public Entity setUserProfileData() {
-    Entity ent = new Entity(USER_TASK, USER_ID);
+    Entity ent = new Entity(PROFILE_TASK_NAME, USER_ID);
     ent.setProperty("name", NAME);
     ent.setProperty("location", LOCATION);
     ent.setProperty("bio", BIO);
@@ -138,7 +138,7 @@ public class BusinessServletTest {
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
     // Populate the datastore with a business with the wrong target ID.
-    Entity someBusiness = new Entity(PROFILE_TASK_NAME, WRONG_USER));
+    Entity someBusiness = new Entity(PROFILE_TASK_NAME, WRONG_USER);
     datastore.put(someBusiness);
 
     servlet.doGet(request, response);
