@@ -13,23 +13,53 @@
 // limitations under the License.
 
 import { loadCommentSection } from '/js/comments.js';
+import { setLoginOrLogoutUrl, setProfileUrl } from '/js/util.js';
 
 window.onload = function() {
   // window.location.search returns the search string of the URL.
   // In this case, window.location.search = ?id={businessID}
   const url = new URLSearchParams(window.location.search);
   const businessId = url.get('id');
+  setLoginOrLogoutUrl();
+  setProfileUrl();
   constructBusinessProfile(businessId);
   loadCommentSection(document.getElementById('comment-section'));
 }
 
+// Set the correct values for both view and edit sections.
 function constructBusinessProfile(id) {
-  const profileInfo = document.getElementById('view-profile-section');
+  const profileInfo = document.getElementById('view-business-section');
   fetch('/business/' + id).then(response => response.json()).then(info => {
-    document.getElementById("profile-name").innerText = info.name;
-    document.getElementById("profile-location").innerText = info.location;
-    document.getElementById("profile-bio").innerText = info.bio;
-    // Opens a draft of the email to the business.
-    document.getElementById("profile-email").href = 'mailto:' + info.email;
+    if (info.isCurrentUser) {
+      document.getElementById('edit-button').style.display = 'block';
+    } else {
+      document.getElementById('edit-button').style.display = 'none';
+    }
+
+    document.getElementById('business-name').innerText = info.name;
+    document.getElementById('edit-name').value = info.name;
+
+    document.getElementById('business-location').innerText = info.location;
+    document.getElementById('edit-location').value = info.location;
+
+    document.getElementById('business-story').innerText = info.story;
+    document.getElementById('edit-story').value = info.story;
+
+    document.getElementById('business-bio').innerText = info.bio;
+    document.getElementById('edit-bio').value = info.bio;
+
+    document.getElementById('business-about').innerText = info.about;
+    document.getElementById('edit-about').value = info.about;
+
+    document.getElementById('business-support').innerText = info.support;
+    document.getElementById('edit-support').value = info.support;
   })
+}
+
+window.toggleProfile = function() {
+  const viewProfile = document.getElementById('view-business-section');
+  const editProfile = document.getElementById('edit-business-section');
+
+  viewProfile.style.display = 'none';
+  editProfile.style.display = 'block';
 }
