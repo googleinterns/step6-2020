@@ -18,6 +18,12 @@
     display: block;
 }
 
+#map {
+    display: none;
+    height: 425px;
+    width:  50%
+}
+
 #view-profile-section {
     display: block;
 }
