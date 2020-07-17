@@ -64,6 +64,7 @@ function constructBusinessProfile(id) {
   fetch('/business/' + id)
       .then(response => {
           if (!response.ok) {
+            // Redirect to BusinessServlet, which displays appropriate error.
             window.location.href = '/business/' + id;
           }
           return response.json();
