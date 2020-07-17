@@ -41,17 +41,10 @@ import javax.servlet.http.HttpServletResponse;
 public class CommentServlet extends HttpServlet {
 
   private final List<String> REQUIRED_PARAMETERS =
-      new ArrayList<>(Arrays.asList(CONTENT_PROPERTY, USER_ID_PROPERTY, BUSINESS_ID_PROPERTY));
+      new ArrayList<>(Arrays.asList(CONTENT_PROPERTY, BUSINESS_ID_PROPERTY));
 
   private UserService userService = UserServiceFactory.getUserService();
   private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
-  public CommentServlet() {}
-
-  public CommentServlet(UserService userService, DatastoreService datastore) {
-    this.userService = userService;
-    this.datastore = datastore;
-  }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -66,22 +59,23 @@ public class CommentServlet extends HttpServlet {
       }
     }
 
-    // Verify that the user posting the comment is the user is who's logged in
+    // Verify that a user is logged in
     User currentUser = userService.getCurrentUser();
-    if (currentUser == null || !currentUser.getUserId().equals(request.getParameter("userId"))) {
+    if (currentUser != null) {
+      datastore.put(buildCommentEntity(request, currentUser.getUserId()));
+    } else {
       response.sendError(
           HttpServletResponse.SC_UNAUTHORIZED, "User must be logged in to post comment");
-      return;
     }
-
-    datastore.put(buildCommentEntity(request));
   }
 
-  private Entity buildCommentEntity(HttpServletRequest request) {
+  private Entity buildCommentEntity(HttpServletRequest request, String userId) {
     Entity commentEntity = new Entity(COMMENT_TASK_NAME);
 
     REQUIRED_PARAMETERS.forEach(
         parameter -> commentEntity.setProperty(parameter, request.getParameter(parameter)));
+
+    commentEntity.setProperty(USER_ID_PROPERTY, userId);
 
     if (request.getParameter(PARENT_ID_PROPERTY) != null) {
       commentEntity.setProperty(PARENT_ID_PROPERTY, request.getParameter(PARENT_ID_PROPERTY));
