@@ -33,23 +33,27 @@ public final class Comment {
   private final String userId;
   private final String businessId;
   private final String parentId;
+  private final String name;
 
   public Comment(
       String id,
       String content,
       long timestamp,
       String userId,
+      String name,
       String businessId,
       String parentId) {
     this.id = id;
     this.content = content;
     this.timestamp = timestamp;
     this.userId = userId;
+    this.name = name;
     this.businessId = businessId;
     this.parentId = parentId;
   }
 
-  public Comment(String id, String content, long timestamp, String userId, String businessId) {
-    this(id, content, timestamp, userId, businessId, "");
+  public Comment(
+      String id, String content, long timestamp, String userId, String name, String businessId) {
+    this(id, content, timestamp, userId, name, businessId, "");
   }
 }

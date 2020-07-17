@@ -77,12 +77,13 @@ public class CommentsServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws IllegalArgumentException, IOException {
-    // Extract the parameter from which to filter the comments by from the request
+    // Extract the filter parameter from the request
     List<String> filterParameters =
         FILTER_PROPERTIES.stream()
             .filter(propertyName -> request.getParameter(propertyName) != null)
             .collect(Collectors.toList());
     if (filterParameters.size() != 1) {
+      // We allow only a single parameter
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, INVALID_ARGUMENT_MESSAGE);
       return;
     }
@@ -91,7 +92,9 @@ public class CommentsServlet extends HttpServlet {
     List<Entity> entities = runCommentsQuery(filterProperty, request.getParameter(filterProperty));
 
     List<Comment> comments =
-        entities.stream().map(entity -> generateComment(entity)).collect(Collectors.toList());
+        entities.stream()
+            .map(entity -> generateComment(entity, datastore))
+            .collect(Collectors.toList());
 
     String jsonComments = new Gson().toJson(comments);
 
