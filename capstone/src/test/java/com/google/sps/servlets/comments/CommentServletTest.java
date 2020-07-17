@@ -30,7 +30,6 @@ import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
@@ -60,7 +59,7 @@ public class CommentServletTest {
   private final String MOCK_BUSINESS_ID = "2";
   private final String MOCK_PARENT_ID = "3";
 
-  private final LocalServiceTestHelper helper =
+  private LocalServiceTestHelper helper =
       new LocalServiceTestHelper(
               new LocalDatastoreServiceTestConfig(), new LocalUserServiceTestConfig())
           // All this is necessary to get the fake userService to return a user
@@ -85,8 +84,8 @@ public class CommentServletTest {
 
     ds = DatastoreServiceFactory.getDatastoreService();
 
-    servlet = new CommentServlet(UserServiceFactory.getUserService(), ds);
-    setMockRequestParameters(request, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, MOCK_PARENT_ID);
+    servlet = new CommentServlet();
+    setMockRequestParameters(request, MOCK_CONTENT, MOCK_BUSINESS_ID, MOCK_PARENT_ID);
   }
 
   @After
@@ -95,14 +94,9 @@ public class CommentServletTest {
   }
 
   private void setMockRequestParameters(
-      HttpServletRequest request,
-      String contentStr,
-      String userId,
-      String businessId,
-      String parentId) {
+      HttpServletRequest request, String contentStr, String businessId, String parentId) {
 
     doReturn(contentStr).when(request).getParameter(CONTENT_PROPERTY);
-    doReturn(userId).when(request).getParameter(USER_ID_PROPERTY);
     doReturn(businessId).when(request).getParameter(BUSINESS_ID_PROPERTY);
     doReturn(parentId).when(request).getParameter(PARENT_ID_PROPERTY);
   }
@@ -161,7 +155,6 @@ public class CommentServletTest {
     Map<String, String> parameterMap = new HashMap<String, String>();
 
     parameterMap.put(CONTENT_PROPERTY, MOCK_CONTENT);
-    parameterMap.put(USER_ID_PROPERTY, String.valueOf(MOCK_USER_ID));
     parameterMap.put(BUSINESS_ID_PROPERTY, String.valueOf(MOCK_BUSINESS_ID));
 
     // Test behavior while excluding any of the parameters
@@ -185,12 +178,13 @@ public class CommentServletTest {
     }
   }
 
-  // Make sure it's impossible to post comment under a different name
   @Test
-  public void testWrongUserLoggedIn() throws IOException {
-    doReturn(MOCK_USER_ID + 1).when(request).getParameter(USER_ID_PROPERTY);
-    servlet.doPost(request, response);
+  public void testUserNotLoggedIn() throws IOException {
+    // Simulate no user being logged in
+    helper.setEnvIsLoggedIn(false);
+    helper.setUp();
 
+    servlet.doPost(request, response);
     Mockito.verify(response, Mockito.times(1))
         .sendError(Mockito.eq(HttpServletResponse.SC_UNAUTHORIZED), Mockito.anyString());
   }
@@ -201,5 +195,22 @@ public class CommentServletTest {
     servlet.doPost(request, response);
 
     assertEquals(1, countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, ""));
+  }
+
+  @Test
+  public void testSavesCorrectUserId() throws IOException {
+    assertEquals(0, countUserIdOccurences(MOCK_USER_ID));
+
+    servlet.doPost(request, response);
+
+    assertEquals(1, countUserIdOccurences(MOCK_USER_ID));
+  }
+
+  private int countUserIdOccurences(String userId) {
+    Query query =
+        new Query(COMMENT_TASK_NAME)
+            .setFilter(new FilterPredicate(USER_ID_PROPERTY, FilterOperator.EQUAL, userId));
+
+    return ds.prepare(query).countEntities(withLimit(COUNTING_LIMIT));
   }
 }
