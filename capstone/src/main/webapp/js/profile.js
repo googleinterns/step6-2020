@@ -116,6 +116,8 @@ function createProfile(name, location, bio) {
   nameSection.innerText = name;
   locationSection.innerText = location;
   bioSection.innerText = bio;
+
+  createProfileMap(location);
 }
 
 // Add correct values for each section when user is editing.
@@ -148,4 +150,32 @@ window.geolocate = function() {
       autocomplete.setBounds(circle.getBounds());
     });
   }
+}
+
+// Create the mini map on profile page.
+function createProfileMap(address) {
+  let map = new google.maps.Map(document.getElementById('map'), {
+    zoom: 8,
+    center: {lat: -34.397, lng: 150.644}
+  });
+  let geocoder = new google.maps.Geocoder();
+  let bounds = new google.maps.LatLngBounds();
+  geocodeAddress(address, geocoder, map, bounds);
+}
+
+// Helper function to geocode the location and place a marker on map.
+function geocodeAddress(address, geocoder, resultsMap, bounds) {
+  geocoder.geocode({'address': address}, function(results, status) {
+    if (status === 'OK') {
+      if (bounds.isEmpty()) bounds = results[0].geometry.bounds;
+      else bounds.union(results[0].geometry.bounds);
+      let marker = new google.maps.Marker({
+        map: resultsMap,
+        position: results[0].geometry.location
+      });     
+      resultsMap.fitBounds(bounds);
+    } else {
+      alert('Geocode was not successful for the following reason: ' + status);
+    }
+  });
 }
