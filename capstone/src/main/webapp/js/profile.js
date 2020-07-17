@@ -68,11 +68,11 @@ function displayProfile() {
       displayEditButton(userProfile.isCurrentUser);
       setEditValues(userProfile.name, userProfile.location, userProfile.bio);
     }).catch((e) => {
-      writeErrorPage(id);
+      redirectToDefaultPage(id);
     });
 }
 
-function writeErrorPage(id) {
+function redirectToDefaultPage(id) {
   location.assign('/profile/' + id);
 }
 
