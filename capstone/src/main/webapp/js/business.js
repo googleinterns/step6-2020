@@ -69,7 +69,6 @@ function constructBusinessProfile(id) {
     }
 
     ['name', 'location', 'story', 'bio', 'about', 'support'].forEach(property => {
-      console.log(property);
       document.getElementById('business-' + property).innerText = info[property];
       document.getElementById('edit-' + property).value = info[property];
     })
