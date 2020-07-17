@@ -97,7 +97,7 @@ public class BusinessServlet extends HttpServlet {
     // Check if user is logged in.
     if (userService.getCurrentUser() == null) {
       response.sendError(
-          HttpServletResponse.SC_FORBIDDEN, "You don't have permission to perform this action!");
+          HttpServletResponse.SC_UNAUTHORIZED, "You don't have permission to perform this action!");
       return;
     }
 
