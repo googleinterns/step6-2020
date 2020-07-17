@@ -15,7 +15,7 @@
 import { loadCommentSection } from '/js/comments.js';
 import { setLoginOrLogoutUrl, setProfileUrl } from '/js/util.js';
 
-window.onload = function() {
+window.addEventListener('load', function() {
   // window.location.search returns the search string of the URL.
   // In this case, window.location.search = ?id={businessID}
   const url = new URLSearchParams(window.location.search);
@@ -24,7 +24,7 @@ window.onload = function() {
   setProfileUrl();
   constructBusinessProfile(businessId);
   loadCommentSection(document.getElementById('comment-section'));
-}
+})
 
 // Set the correct values for both view and edit sections.
 function constructBusinessProfile(id) {
@@ -36,23 +36,10 @@ function constructBusinessProfile(id) {
       document.getElementById('edit-button').style.display = 'none';
     }
 
-    document.getElementById('business-name').innerText = info.name;
-    document.getElementById('edit-name').value = info.name;
-
-    document.getElementById('business-location').innerText = info.location;
-    document.getElementById('edit-location').value = info.location;
-
-    document.getElementById('business-story').innerText = info.story;
-    document.getElementById('edit-story').value = info.story;
-
-    document.getElementById('business-bio').innerText = info.bio;
-    document.getElementById('edit-bio').value = info.bio;
-
-    document.getElementById('business-about').innerText = info.about;
-    document.getElementById('edit-about').value = info.about;
-
-    document.getElementById('business-support').innerText = info.support;
-    document.getElementById('edit-support').value = info.support;
+    ['name', 'location', 'story', 'bio', 'about', 'support'].forEach(property => {
+      document.getElementById('business-' + property).innerText = info[property];
+      document.getElementById('edit-' + property).value = info[property];
+    })
   })
 }
 
