@@ -52,7 +52,7 @@ window.hasAnswerQuestionnaire = function() {
     businessQuesionnaire.style.display = 'none';
   }
 
-  let submit = document.getElementById("submit-button");
+  let submit = document.getElementById('submit-button');
   submit.style.display = 'block';
 }
 
@@ -100,7 +100,7 @@ function getId() {
 
 // Determine whether to display the edit button depends if user is viewing its profile page.
 function displayEditButton(isCurrentUser) {
-  let editButton =  document.getElementById("edit-button");
+  let editButton =  document.getElementById('edit-button');
   if (isCurrentUser) {
     editButton.style.display = 'block';
   } else {
@@ -110,13 +110,13 @@ function displayEditButton(isCurrentUser) {
 
 // Add correct text to each HTML element of profile page.
 function createProfile(name, location, bio) {
-  let name_section = document.getElementById("name");
-  let location_section = document.getElementById("location");
-  let bio_section = document.getElementById("bio");
+  let nameSection = document.getElementById('name');
+  let locationSection = document.getElementById('location');
+  let bioSection = document.getElementById('bio');
 
-  name_section.innerText = name;
-  location_section.innerText = location;
-  bio_section.innerText = bio;
+  nameSection.innerText = name;
+  locationSection.innerText = location;
+  bioSection.innerText = bio;
 }
 
 // Add correct values for each section when user is editing.

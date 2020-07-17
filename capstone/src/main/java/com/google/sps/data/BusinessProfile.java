@@ -23,6 +23,7 @@ public final class BusinessProfile {
   private String bio;
   private String story;
   private String about;
+  private String calendarEmail;
   private String support;
   private boolean isCurrentUser;
 
@@ -35,6 +36,7 @@ public final class BusinessProfile {
    * @param bio the user's bio.
    * @param story the user's pandemic story.
    * @param about the user's additional business details.
+   * @param calendarEmail the email to use when displaying the business google calendar
    * @param support information on how others can support their business.
    * @param isCurrentUser determines whether the user's profile is the current logged-in user.
    */
@@ -45,6 +47,7 @@ public final class BusinessProfile {
       String bio,
       String story,
       String about,
+      String calendarEmail,
       String support,
       boolean isCurrentUser) {
     this.id = id;
@@ -53,6 +56,7 @@ public final class BusinessProfile {
     this.bio = bio;
     this.story = story;
     this.about = about;
+    this.calendarEmail = calendarEmail;
     this.support = support;
     this.isCurrentUser = isCurrentUser;
   }

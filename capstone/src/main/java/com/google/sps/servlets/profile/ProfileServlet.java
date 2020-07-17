@@ -32,6 +32,7 @@ import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 import com.google.sps.data.UserProfile;
 import java.io.IOException;
+import java.util.Objects;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -72,12 +73,10 @@ public class ProfileServlet extends HttpServlet {
       return;
     }
 
-    // If urlId is a business owner id, redirect to "profile not found" page.
-    String isBusiness =
-        entity.hasProperty(IS_BUSINESS_PROPERTY)
-            ? (String) entity.getProperty(IS_BUSINESS_PROPERTY)
-            : "";
+    // If userId is a business owner id, redirect to "profile not found" page.
+    String isBusiness = Objects.toString(entity.getProperty(IS_BUSINESS_PROPERTY), "");
     if (isBusiness.equals(YES)) {
+
       response.sendError(
           HttpServletResponse.SC_NOT_FOUND,
           "The profile you were looking for was not found in our records!");
@@ -86,13 +85,9 @@ public class ProfileServlet extends HttpServlet {
 
     // Query all profile properties.
     String userId = userService.getCurrentUser().getUserId();
-    String name =
-        entity.hasProperty(NAME_PROPERTY)
-            ? (String) entity.getProperty(NAME_PROPERTY)
-            : "Anonymous";
-    String location =
-        entity.hasProperty(LOCATION_PROPERTY) ? (String) entity.getProperty(LOCATION_PROPERTY) : "";
-    String bio = entity.hasProperty(BIO_PROPERTY) ? (String) entity.getProperty(BIO_PROPERTY) : "";
+    String name = Objects.toString(entity.getProperty(NAME_PROPERTY), "Anonymous");
+    String location = Objects.toString(entity.getProperty(LOCATION_PROPERTY), "");
+    String bio = Objects.toString(entity.getProperty(BIO_PROPERTY), "");
     boolean isCurrentUser = userId.equals(urlId);
 
     // Create a profile object that contains the properties.
@@ -116,7 +111,7 @@ public class ProfileServlet extends HttpServlet {
     // Mandatory property "name" needs to be filled out. If not, send an error.
     if (request.getParameter(NAME_PROPERTY) == null) {
       response.sendError(
-          HttpServletResponse.SC_NOT_FOUND, "Required field: name was not filled out.");
+          HttpServletResponse.SC_BAD_REQUEST, "Required field: name was not filled out.");
       return;
     }
 

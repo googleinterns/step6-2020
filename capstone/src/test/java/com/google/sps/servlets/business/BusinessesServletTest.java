@@ -57,12 +57,14 @@ public class BusinessesServletTest {
 
   private static final String USER_ID_1 = "12345";
   private static final String USER_ID_2 = "6789";
+  private static final String NOT_A_BUSINESS = NO;
   private static final String A_BUSINESS = YES;
   private static final String NAME = "Pizzeria";
   private static final String LOCATION = "Mountain View, CA";
   private static final String BIO = "This is my business bio.";
   private static final String STORY = "The pandemic has affected my business in X many ways.";
   private static final String ABOUT = "Here is the Pizzeria's menu.";
+  private static final String EMAIL = "email@business.biz";
   private static final String SUPPORT = "Please donate at X website.";
 
   @Before
@@ -78,6 +80,19 @@ public class BusinessesServletTest {
   @After
   public void tearDown() {
     helper.tearDown();
+  }
+
+  private Entity createBusiness(String id) {
+    Entity newBusiness = new Entity(PROFILE_TASK_NAME, id);
+    newBusiness.setProperty("name", NAME);
+    newBusiness.setProperty("location", LOCATION);
+    newBusiness.setProperty("bio", BIO);
+    newBusiness.setProperty("story", STORY);
+    newBusiness.setProperty("about", ABOUT);
+    newBusiness.setProperty("calendarEmail", EMAIL);
+    newBusiness.setProperty("support", SUPPORT);
+
+    return newBusiness;
   }
 
   /*
@@ -104,10 +119,11 @@ public class BusinessesServletTest {
     datastore.put(aBusiness);
 
     Entity notABusiness = createBusiness(USER_ID_2);
-    notABusiness.setProperty("isBusiness", NO);
+    notABusiness.setProperty("isBusiness", NOT_A_BUSINESS);
     datastore.put(notABusiness);
 
-    BusinessProfile businessProfile = createBusinessProfile(USER_ID_1);
+    BusinessProfile businessProfile =
+        new BusinessProfile(USER_ID_1, NAME, LOCATION, BIO, STORY, ABOUT, EMAIL, SUPPORT, false);
     businesses.add(businessProfile);
 
     servlet.doGet(request, response);
@@ -120,21 +136,5 @@ public class BusinessesServletTest {
     // JsonParser helps to compare two json strings regardless of property order.
     JsonParser parser = new JsonParser();
     Assert.assertEquals(parser.parse(servletResponse), parser.parse(expectedResponse));
-  }
-
-  private Entity createBusiness(String id) {
-    Entity newBusiness = new Entity(PROFILE_TASK_NAME, id);
-    newBusiness.setProperty("name", NAME);
-    newBusiness.setProperty("location", LOCATION);
-    newBusiness.setProperty("bio", BIO);
-    newBusiness.setProperty("story", STORY);
-    newBusiness.setProperty("about", ABOUT);
-    newBusiness.setProperty("support", SUPPORT);
-
-    return newBusiness;
-  }
-
-  private BusinessProfile createBusinessProfile(String id) {
-    return new BusinessProfile(id, NAME, LOCATION, BIO, STORY, ABOUT, SUPPORT, false);
   }
 }
