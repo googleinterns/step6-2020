@@ -64,7 +64,7 @@ function constructBusinessProfile(id) {
   fetch('/business/' + id)
       .then(response => {
           if (!response.ok) {
-            throw new Error("404 error: Business could not be loaded.");
+            window.location.href = '/business/' + id;
           }
           return response.json();
       }).then(info => {
