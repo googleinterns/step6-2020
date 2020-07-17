@@ -14,6 +14,12 @@
 
 package com.google.sps.data;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+
 public final class ProfileDatastoreUtil {
   public static final String PROFILE_TASK_NAME = "UserProfile";
 
@@ -28,4 +34,20 @@ public final class ProfileDatastoreUtil {
   public static final String NULL_STRING = "";
   public static final String NO = "No";
   public static final String YES = "Yes";
+
+  /** Get the username associated with a given Id */
+  public static String getProfileName(String userId, DatastoreService datastore)
+      throws IllegalArgumentException {
+    Key userKey = KeyFactory.createKey(PROFILE_TASK_NAME, userId);
+
+    Entity userProfile;
+    try {
+      userProfile = datastore.get(userKey);
+    } catch (EntityNotFoundException e) {
+      throw new IllegalArgumentException(
+          "Database does not contain an entity with the userId " + userId);
+    }
+
+    return (String) userProfile.getProperty(NAME_PROPERTY);
+  }
 }
