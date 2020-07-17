@@ -19,8 +19,9 @@
 }
 
 #map {
-  height: 425px;
-  width:  50%
+    display: none;
+    height: 425px;
+    width:  50%
 }
 
 #view-profile-section {

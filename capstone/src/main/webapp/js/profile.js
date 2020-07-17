@@ -170,9 +170,9 @@ function geocodeAddress(address, geocoder, resultsMap, bounds) {
 
   geocoder.geocode({'address': address}, function(results, status) {
     if (status === 'OK') {
-      mapElement.style.display = 'block';
       if (bounds.isEmpty()) bounds = results[0].geometry.bounds;
       else bounds.union(results[0].geometry.bounds);
+      mapElement.style.display = 'block';
       let marker = new google.maps.Marker({
         map: resultsMap,
         position: results[0].geometry.location
