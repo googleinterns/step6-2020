@@ -61,18 +61,25 @@ window.submitProfileForm = function() {
 // Set the correct values for both view and edit sections.
 function constructBusinessProfile(id) {
   const profileInfo = document.getElementById('view-business-section');
-  fetch('/business/' + id).then(response => response.json()).then(info => {
-    if (info.isCurrentUser) {
-      document.getElementById('edit-button').style.display = 'block';
-    } else {
-      document.getElementById('edit-button').style.display = 'none';
-    }
+  fetch('/business/' + id)
+      .then(response => {
+          if (!response.ok) {
+            // Redirect to BusinessServlet, which displays appropriate error.
+            window.location.href = '/business/' + id;
+          }
+          return response.json();
+      }).then(info => {
+        if (info.isCurrentUser) {
+          document.getElementById('edit-button').style.display = 'block';
+        } else {
+          document.getElementById('edit-button').style.display = 'none';
+        }
 
-    ['name', 'location', 'story', 'bio', 'about', 'support'].forEach(property => {
-      document.getElementById('business-' + property).innerText = info[property];
-      document.getElementById('edit-' + property).value = info[property];
-    })
-  })
+        ['name', 'location', 'story', 'bio', 'about', 'support'].forEach(property => {
+          document.getElementById('business-' + property).innerText = info[property];
+          document.getElementById('edit-' + property).value = info[property];
+        })
+      })
 }
 
 window.toggleProfile = function() {

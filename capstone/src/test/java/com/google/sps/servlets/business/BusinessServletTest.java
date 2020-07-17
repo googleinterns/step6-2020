@@ -203,7 +203,7 @@ public class BusinessServletTest {
 
     // verify if a sendError() was performed with the expected values.
     Mockito.verify(response, Mockito.times(1))
-        .sendError(Mockito.eq(HttpServletResponse.SC_UNAUTHORIZED),Mockito.anyString());
+        .sendError(Mockito.eq(HttpServletResponse.SC_UNAUTHORIZED), Mockito.anyString());
   }
 
   /** Test doPost() for when the user did not fill out the name section. It should return error. */
