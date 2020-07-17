@@ -26,6 +26,38 @@ window.addEventListener('load', function() {
   loadCommentSection(document.getElementById('comment-section'));
 })
 
+// If user answered the first question: whether they are a business user or not,
+// then show appropriate edit profile form.
+window.hasAnswerQuestionnaire = function() {
+  let isBusiness = document.getElementById("yes");
+  let isNotBusiness = document.getElementById("no");
+  
+  let businessQuesionnaire = document.getElementById("business-questionnaire");
+
+  if (isBusiness.checked == true) {
+    businessQuesionnaire.style.display = 'block';
+  } 
+  if (isNotBusiness.checked == true) {
+    businessQuesionnaire.style.display = 'none';
+  }
+
+  let submit = document.getElementById("submit-button");
+  submit.style.display = 'block';
+}
+
+// Submit the edit-profile form to servlet based on whether they're a business or not.
+window.submitProfileForm = function() {
+  let form = document.getElementById('edit-profile');
+  form.method = 'POST';
+
+  if(document.getElementById('yes').checked) {
+    form.action = '/business';
+    return;
+  }
+  
+  form.action = '/profile';
+}
+
 // Set the correct values for both view and edit sections.
 function constructBusinessProfile(id) {
   const profileInfo = document.getElementById('view-business-section');
@@ -37,6 +69,7 @@ function constructBusinessProfile(id) {
     }
 
     ['name', 'location', 'story', 'bio', 'about', 'support'].forEach(property => {
+      console.log(property);
       document.getElementById('business-' + property).innerText = info[property];
       document.getElementById('edit-' + property).value = info[property];
     })

@@ -4,19 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Business Profile</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="js/business.js" type="module"></script>
   </head>
   <body>
-    <nav>
-      <div class="logo">
-        <h1>Support Local Businesses</h1>
+        <!-- Navigation Bar -->
+    <nav class="navbar navbar-inverse">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/">Support Local Businesses</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+          <li class="active"><a href="index.html">Home</a></li>
+          <li id="profile-button"></li>
+          <li id="auth-button"></li>
+        </ul>
       </div>
-      <ul class="nav">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="profile.html">Profile</a></li>
-        <li id="auth-button"></li>
-      </ul>
     </nav>
 
     <div class="content">
@@ -74,18 +79,18 @@
           <div id="business-questionnaire">
             <div id="story-section">
               <label for="story">How did the pandemic affect your business?</label><br>
-              <textarea name="edit-story" rows="10" cols="30"></textarea>
+              <textarea id="edit-story" name="story" rows="10" cols="30"></textarea>
             </div>
 
             <div id="about-section">
               <label for="about">Share your business.</label><br>
               <p>You can share your business website, grubhub delivery link, or describe what your business has to offer!</p>
-              <textarea name="edit-about" rows="10" cols="30"></textarea>
+              <textarea id="edit-about" name="about" rows="10" cols="30"></textarea>
             </div>
 
             <div id="support-section">
               <label for="support">How can we support you?</label><br>
-              <textarea name="edit-support" rows="10" cols="30"
+              <textarea id="edit-support" name="support" rows="10" cols="30"
                   placeholder="You can share your gofundme link, share a transfer giftcard link, your PO box, or simply ask people to post a generous comment"></textarea>
             </div>
           </div>
