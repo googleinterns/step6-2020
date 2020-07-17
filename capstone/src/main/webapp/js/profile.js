@@ -154,9 +154,10 @@ window.geolocate = function() {
 
 // Create the mini map on profile page.
 function createProfileMap(address) {
+  // Default center at MTV, California.
   let map = new google.maps.Map(document.getElementById('map'), {
     zoom: 8,
-    center: {lat: -34.397, lng: 150.644}
+    center: {lat: 37.3861, lng: -122.0839}
   });
   let geocoder = new google.maps.Geocoder();
   let bounds = new google.maps.LatLngBounds();
@@ -165,8 +166,11 @@ function createProfileMap(address) {
 
 // Helper function to geocode the location and place a marker on map.
 function geocodeAddress(address, geocoder, resultsMap, bounds) {
+  let mapElement = document.getElementById('map');
+
   geocoder.geocode({'address': address}, function(results, status) {
     if (status === 'OK') {
+      mapElement.style.display = 'block';
       if (bounds.isEmpty()) bounds = results[0].geometry.bounds;
       else bounds.union(results[0].geometry.bounds);
       let marker = new google.maps.Marker({
@@ -175,7 +179,7 @@ function geocodeAddress(address, geocoder, resultsMap, bounds) {
       });     
       resultsMap.fitBounds(bounds);
     } else {
-      alert('Geocode was not successful for the following reason: ' + status);
+      mapElement.style.display = 'none';
     }
   });
 }
