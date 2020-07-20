@@ -12,136 +12,113 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { wrapInPromise, buildElement, buildButton } from '/js/util.js';
+import { 
+  buildElement,
+  buildButton,
+  getJsonObject, 
+  } from '/js/util.js';
 
-var commentContainer = undefined;
-var commentField = undefined;
 
-export function loadCommentSection(parentDiv) {
-  commentContainer = document.getElementById('comments');
+// The div in which comments are shown
+let commentContainer = undefined;
 
-  parentDiv.innerHTML = '';
-  
-  let commentInput = document.createElement('div');
-  commentInput.id = 'comment-input';
-  commentInput.innerHTML = '';
-  
-  commentField = document.createElement('textarea');
-  commentField.cols = 70;
-  commentField.placeholder = 'Write a comment';
-  commentField.rows = 3;
-  
-  commentInput.appendChild(commentField);
+// The property and corresponding value by which comments are filtered
+let filterProperty = undefined;
+let filterValue = undefined;
 
-  let submitButton = document.createElement('button');
-  submitButton.className = 'submit-button';
-  submitButton.innerText = 'Submit';
-  submitButton.addEventListener('click', () => addUserComment());
+/** Build form for submitting comments. */
+export function buildCommentForm(userIsLoggedIn, businessId, parentId=null) {
+  const form = document.createElement('form');
 
-  commentInput.appendChild(submitButton);
+  form.action = '/comment';
+  form.method = 'post';
 
-  parentDiv.appendChild(commentInput);
+  const textField = buildCommentTextArea(userIsLoggedIn);
 
-  commentContainer = document.createElement('div');
-  commentContainer.id = 'comments';
+  form.appendChild(textField);
 
-  parentDiv.appendChild(commentContainer);
-  showComments();
+  if (userIsLoggedIn) {
+    form.appendChild(buildFormSubmitButton());
+  }
+
+  form.appendChild(buildHiddenStaticFormField('parentId', parentId));
+  form.appendChild(buildHiddenStaticFormField('businessId', businessId));
+
+  return form;
 }
 
-function getComments() {
-  // TODO (bergmoney@): make get request to comments servlet
-  let translatedLoremIpsum = "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant pleasure?"
+function buildFormSubmitButton() {
+  const button = document.createElement('input');
 
-  let originalLoremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-
-
-  let comments = [
-    {id: 1, userId: 1, content: 'Hii', 
-        timestamp: Date.parse('01 Jan 1970 00:00:00 GMT'), timeElapsedStr: '20yr'},
-    {id: 2, userId: 2, content: 'I am sorry about what happened to your business', 
-        timestamp: Date.parse('30 Jun 2019 00:00:00 GMT'), timeElapsedStr: '5mo'},
-    {id: 3, userId: 2, content: translatedLoremIpsum,
-        timestamp: Date.parse('01 Jan 2020 00:00:00 GMT'), timeElapsedStr: '10wk'},
-    {id: 4, userId: 3, content: originalLoremIpsum,
-        timestamp: Date.parse('01 Jun 2020 00:00:00 GMT'), timeElapsedStr: '1wk'},
-    {id: 5, userId: 0, 
-        content: 'I love pizza. This should never happen to a pizza joint. Sending my love',
-        timestamp: Date.parse('24 Jun 2020 00:00:00 GMT'), timeElapsedStr: '1d'},
-    {id: 6, userId: 0, 
-        content: 'I love pizza. This should never happen to a pizza joint. Sending my love',
-        timestamp: Date.parse('26 Jun 2020 10:00:00 GMT'), timeElapsedStr: '10h'},
-    {id: 7, userId: 0, 
-        content: 'I love pizza. This should never happen to a pizza joint. Sending my love',
-        timestamp: Date.parse('26 Jun 2020 16:00:00 GMT'), timeElapsedStr: '4h'}
-  ];
-
-  return wrapInPromise(comments);
-}
-
-function postComment(content, userId, parentId = null) {
-  //TODO (bergmoney@): Post comment to servlet
-  console.log('Post comment \'' + content + '\' by user ' + userId + ' with parent ' + parentId);
-}
-
-function getUserId() {
-  // TODO [begmoney@]: Figure out a way to get user's id or prompt sign in if user isn't logged in
-  return 1;
-}
-
-function getUserName(userId) {
-  // TODO (bergmoney@): Request username from API
-  let users = ['lukas', 'winnie', 'eashan', 'ben', 'alyssa'];
-
-  return wrapInPromise(users[userId]);
-}
-
-function getReplies(commentId) {
-  // TODO (bergmoney@): Request replies from API
-  let hash = commentId + 10;
-  let replies = [
-    {id: hash, userId: 0, content: 'Hii', timestamp: 1},
-    {id: hash, userId: 1, content: 'I am sorry about what happened to your business', timestamp: 2}
-  ]
-  return wrapInPromise(replies);
-}
-
-function addUserComment(textArea, parentId = null) {
-  postComment(textArea.value, getUserId(), parentId);
-
-  textArea.value = '';
-  commentContainer.innerHTML = '';
-  showComments();
-}
-
-async function buildCommentElement(comment) {
-  let commentElement = document.createElement('div');
-  
-  commentElement.className = 'comment'
-  commentElement.id = comment.id;
-  commentElement.innerHTML = '';
-  commentElement.appendChild(buildElement('small', comment.timeElapsedStr));
-  commentElement.appendChild(document.createElement('br'));
-  commentElement.innerHTML += comment.content + '\n';
-  commentElement.appendChild(document.createElement('br'));
-  let userName = await getUserName(comment.userId);
-  commentElement.appendChild(buildElement('small', userName));
-  
-  return commentElement;
-}
-
-function buildShowRepliesElement(commentId) {
-  let button = document.createElement('button');
-
-  button.className = 'show-replies-button';
-  button.addEventListener('click', () => showReplies(commentId));
-  button.innerText = 'Show replies';
+  button.type = 'submit';
+  button.value = 'Submit';
+  button.target = 'body';
 
   return button;
 }
 
+/** 
+* Build a hidden form field that contains information that will be sent along in the post request 
+*/
+function buildHiddenStaticFormField(name, value) {
+  const field = document.createElement('input');
+
+  field.type = 'hidden';
+  field.name = name;
+  field.value = value;
+
+  return field;
+}
+
+/** 
+* Load comment section given the parentDiv in which to load the comments, the property to filter 
+* comments by ('businessId' or 'userId') and the value to filter the comments by 
+*/
+export function loadCommentList(userIsLoggedIn, filterProperty_, filterValue_) {  
+  commentContainer = document.createElement('div');
+  commentContainer.id = 'comments';
+
+  filterProperty = filterProperty_;
+  filterValue = filterValue_;
+  
+  showComments(userIsLoggedIn);
+
+  return commentContainer
+}
+
+/** Build text field in which to enter a commment. */
+function buildCommentTextArea(userIsLoggedIn) {
+  const commentTextArea = document.createElement('textarea');
+  commentTextArea.cols = 70;
+  commentTextArea.name = 'content';
+  
+  if (userIsLoggedIn) {
+    commentTextArea.placeholder = 'Write a comment';
+  } else {
+    commentTextArea.placeholder = 'Please log in to write a comment';
+  }
+
+  commentTextArea.rows = 3;
+
+  return commentTextArea;
+}
+
+/** Given a comment object build a comment element on the web page. */
+async function buildCommentElement(comment) {
+  const commentElement = document.createElement('div');
+  
+  commentElement.className = 'comment'
+  commentElement.id = comment.id;
+  commentElement.appendChild(buildElement('small', comment.name + ' says:'));
+  commentElement.appendChild(document.createElement('br'));
+  commentElement.innerHTML += comment.content + '\n';
+  
+  return commentElement;
+}
+
+/** Build a div containing a 'show replies' button that can be expanded to show all replies. */
 function buildRepliesDiv(commentId) {
-  let div = document.createElement('div');
+  const div = document.createElement('div');
 
   div.className = 'replies';
   div.innerHTML = '';
@@ -150,69 +127,74 @@ function buildRepliesDiv(commentId) {
   return div;
 }
 
-function showReplyToCommentField(parentId) {
-  let replyToCommentDiv = document.getElementById(parentId).querySelector('.reply-to-comment-div');
+function showReplyTextArea(parentId, businessId) {
+  const replyToCommentDiv = 
+      document.getElementById(parentId).querySelector('.reply-to-comment-div');
 
   replyToCommentDiv.innerHTML = '';
-
-  let textArea = document.createElement('textArea');
-  textArea.cols = 70;
-  textArea.placeholder = 'Write a comment';
-  textArea.rows = 2;
-
-  replyToCommentDiv.appendChild(textArea);
-  
-  replyToCommentDiv.appendChild( 
-    buildButton(
-      'submit-reply-button', 
-      () => addUserComment(textArea, parentId),
-      'Post'
-    )
-  );
+  replyToCommentDiv.appendChild(buildCommentForm(true, businessId, parentId));
 }
 
-function buildReplyToCommentDiv(parentId) {
-  let div = document.createElement('div');
+/** 
+* Build div for the field in which you can reply to a given comment. 
+* If the user is not logged in the div will tell the user to log in to reply.
+*/
+function buildReplyToCommentDiv(parentId, userIsLoggedIn, businessId) {
+  const div = document.createElement('div');
 
   div.className = 'reply-to-comment-div';
+  
   div.innerHTML = '';
-  div.appendChild(
-      buildButton('reply-to-comment-button', () => showReplyToCommentField(parentId), 'Reply'));
 
+  if (userIsLoggedIn) {
+    div.appendChild(
+      buildButton(
+        'reply-to-comment-button', 
+        () => showReplyTextArea(parentId, businessId), 
+        'Reply',
+      ));
+  } else {
+    div.appendChild(
+      buildButton('reply-to-comment-button', null, 'Please log in to write a comment'));
+  }
+  
   return div
 }
 
-async function buildTopLevelCommentElement(comment) {
-  let commentElement = await buildCommentElement(comment);
+async function buildTopLevelCommentElement(comment, userIsLoggedIn) {
+  const commentElement = await buildCommentElement(comment);
   
   commentElement.appendChild(document.createElement('br'));
-  commentElement.appendChild(buildReplyToCommentDiv(comment.id));
+  commentElement.appendChild(
+      buildReplyToCommentDiv(comment.id, userIsLoggedIn, comment.businessId));
   commentElement.appendChild(buildRepliesDiv(comment.id));
   
 
   return commentElement;
 }
 
-function showComments() {
-  getComments().then(
-    comments => comments.forEach(
-      comment => 
-        buildTopLevelCommentElement(comment).then(commentElement =>
-          commentContainer.appendChild(commentElement)
+function showComments(userIsLoggedIn) {
+  const params = {};
+  params[filterProperty] = filterValue;
+
+  getJsonObject('/comments', params)
+      .then(
+        comments => comments.forEach(
+          comment => 
+            buildTopLevelCommentElement(comment, userIsLoggedIn).then(commentElement =>
+              commentContainer.appendChild(commentElement)
+            )
         )
-    )
-  );
+      );
 }
 
 async function showReplies(commentId) {
-  let replyDiv = document.getElementById(commentId).querySelector('.replies');
+  const replyDiv = document.getElementById(commentId).querySelector('.replies');
 
   replyDiv.innerHTML = '';
 
-  let replies = await getReplies(commentId);
-  replies.forEach(reply =>
-    buildCommentElement(reply).then(commentElement =>
-      replyDiv.appendChild(commentElement)
-    )
-  );
+  getJsonObject('/comments', {'parentId' : commentId})
+      .then(replies => replies.forEach(reply =>
+          buildCommentElement(reply).then(commentElement =>
+            replyDiv.appendChild(commentElement))));
 }

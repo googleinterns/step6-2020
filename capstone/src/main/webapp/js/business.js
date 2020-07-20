@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { loadCommentSection } from '/js/comments.js';
-import { setLoginOrLogoutUrl, setProfileUrl } from '/js/util.js';
+import { buildCommentForm, loadCommentList } from '/js/comments.js';
+import { checkUserLoggedIn, setLoginOrLogoutUrl, setProfileUrl} from '/js/util.js';
 
 const calendarBaseURL = 'https://calendar.google.com/calendar/embed?src=';
 
@@ -25,7 +25,12 @@ window.addEventListener('load', function() {
   setLoginOrLogoutUrl();
   setProfileUrl();
   constructBusinessProfile(businessId);
-  loadCommentSection(document.getElementById('comment-section'));
+  
+  const commentSection = document.getElementById('comment-section');
+  checkUserLoggedIn().then(userIsLoggedIn => {
+    commentSection.appendChild(buildCommentForm(userIsLoggedIn, businessId));
+    commentSection.appendChild(loadCommentList(userIsLoggedIn, 'businessId', businessId));
+  })
 })
 
 // If user answered the first question: whether they are a business user or not,
@@ -56,7 +61,7 @@ window.submitProfileForm = function() {
     form.action = '/business';
     return;
   }
-  
+
   form.action = '/profile';
 }
 

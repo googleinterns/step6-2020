@@ -17,11 +17,6 @@ export function wrapInPromise(val) {
   return new Promise((resolve, reject) => resolve(val));
 }
 
-/** Perform integer division, rounding the floating point result down. */
-export function div(a, b) {
-  return Math.floor(a / b);
-}
-
 /** Build html element of specified type and content */
 export function buildElement(type, content) {
   let element = document.createElement(type);
@@ -88,4 +83,33 @@ function buildProfileLink(isBusiness, userId) {
   aElement.setAttribute('href', url);
 
   return aElement;
+}
+
+export function checkUserLoggedIn() {
+  return getJsonObject('/login').then(user => user.isLoggedin);
+}
+
+/** Use fetch to get a Json Object and then unpack that object */
+export function getJsonObject(url, parameters = {}) {
+  return makeGetRequest(url, parameters).then(response => response.json());
+}
+
+export function makePostRequest(url, parameters) {
+  return fetch('https://example.com/profile', {
+    method: 'POST',
+    body: JSON.stringify(parameters),
+  });
+}
+
+export function makeGetRequest(url, parameters = {}) {
+  if (Object.keys(parameters).length > 0) {
+    // Add parameter fields to the url as query parameters
+    
+    // Create query parameter strings to be added to the url
+    let queryParamStrings = Object.keys(parameters).map(key => key + '=' + parameters[key]);
+    
+    url += '?' + queryParamStrings.join('&');
+  }
+  
+  return fetch(url);
 }
