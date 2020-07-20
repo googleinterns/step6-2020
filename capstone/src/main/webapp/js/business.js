@@ -93,6 +93,8 @@ function constructBusinessProfile(id) {
           document.getElementById('calendar-warning').style.display = 'block';
         }
 
+        createProfileMap(info['location']);
+
         ['name', 'location', 'story', 'bio', 'about', 'support'].forEach(property => {
           document.getElementById('business-' + property).innerText = info[property];
           document.getElementById('edit-' + property).value = info[property];
@@ -119,5 +121,56 @@ window.previewCalendar = function() {
     calendar.style.display = 'block';
     calendar.src = calendarBaseURL + email;
     warningMessage.style.display = 'block';
+
+// Create the mini map on profile page.
+function createProfileMap(address) {
+  // Default center at MTV, California.
+  let map = new google.maps.Map(document.getElementById('map'), {
+    zoom: 8,
+    center: {lat: 37.3861, lng: -122.0839}
+  });
+  let geocoder = new google.maps.Geocoder();
+  let bounds = new google.maps.LatLngBounds();
+  geocodeAddress(address, geocoder, map, bounds);
+}
+
+// Helper function to geocode the location and place a marker on map.
+function geocodeAddress(address, geocoder, resultsMap, bounds) {
+  let mapElement = document.getElementById('map');
+
+  geocoder.geocode({'address': address}, function(results, status) {
+    if (status === 'OK') {
+      if (bounds.isEmpty()) bounds = results[0].geometry.bounds;
+      else bounds.union(results[0].geometry.bounds);
+      mapElement.style.display = 'block';
+      let marker = new google.maps.Marker({
+        map: resultsMap,
+        position: results[0].geometry.location
+      });     
+      resultsMap.fitBounds(bounds);
+    } else {
+      mapElement.style.display = 'none';
+    }
+  });
+}
+
+// Bias the autocomplete object to the user's geographical location,
+// as supplied by the browser's 'navigator.geolocation' object.
+window.geolocate = function() {
+  // Create the autocomplete object, restricting the search predictions to
+  // geographical location types.
+  let autocomplete = new google.maps.places.Autocomplete(
+      document.getElementById('edit-location'), {types: ['geocode']});
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      let geolocation = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+      let circle = new google.maps.Circle(
+          {center: geolocation, radius: position.coords.accuracy});
+      autocomplete.setBounds(circle.getBounds());
+    });
   }
 }

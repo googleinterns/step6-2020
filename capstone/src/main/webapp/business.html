@@ -4,9 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Business Profile</title>
+    <link rel="stylesheet" href="css/business.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCuIcAn0GsCDsALoF3puLLDADHNzmc44R8&libraries=places"
+        async defer></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="js/business.js" type="module"></script>
   </head>
   <body>
@@ -17,14 +22,14 @@
           <a class="navbar-brand" href="/">Support Local Businesses</a>
         </div>
         <ul class="nav navbar-nav navbar-right">
-          <li class="active"><a href="index.html">Home</a></li>
+          <li><a href="index.html">Home</a></li>
           <li id="profile-button"></li>
           <li id="auth-button"></li>
         </ul>
       </div>
     </nav>
 
-    <div class="content">
+    <div class="container">
       <!-- View Profile Page -->
       <div id="view-business-section">
         <button onclick="toggleProfile()" id="edit-button">Edit Profile</button>
@@ -35,9 +40,10 @@
         <h3> My Pandemic Story </h3>
         <p id="business-story"></p>
 
-        <h3>About My Business</h3>
+        <h3>Short bio</h3>
         <p id="business-bio"></p>
         
+        <h3>More About The Business</h3>
         <p id="business-about"></p>
         
         <h3>How You Can Help Us</h3>
@@ -67,7 +73,7 @@
           
             <div id="location-section">
               <label for="location">Location:</label><br>
-              <input id="edit-location" type="text" name="location"><br>
+              <input id="edit-location" name="location" placeholder="Enter your address" onFocus="geolocate()" type="text"/><br>
             </div>
           
             <div id="bio-section">
@@ -112,6 +118,8 @@
           <input type="submit" value="Submit" id="submit-button" onclick="submitProfileForm()">
         </form> 
       </div>
+
+      <div id="map"></div>
 
       <div id="comment-section"></div>
     </div>
