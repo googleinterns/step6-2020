@@ -36,7 +36,7 @@
 
         <h1 id="business-name"></h1>
         <h2 id="business-location"></h2>
-
+        <div id="business-calendar"></div>
         <h3> My Pandemic Story </h3>
         <p id="business-story"></p>
 
@@ -91,8 +91,21 @@
 
             <div id="about-section">
               <label for="about">Share your business.</label><br>
-              <p>You can share your business website, grubhub delivery link, or describe what your business has to offer!</p>
-              <textarea id="edit-about" name="about" rows="10" cols="30"></textarea>
+              <textarea id="edit-about" name="about" rows="10" cols="30"
+                  placeholder="You can share your business website, grubhub delivery link, or describe what your business has to offer!"></textarea>
+            </div>
+
+            <div id="calendar-section">
+              <p>If you have a Google Calendar of events, feel free to share the linked email below.</p>
+              <p><strong>NOTE</strong>: Other users may be able to see this email address and events that are not intended to be marked as public.</p>
+              <p>If the email address entered does not have a linked Google Calendar, it won't display properly</p>
+              <input id="edit-calendar" type="text" name="calendarEmail" onchange="previewCalendar()"></input>
+              <div id="calendar-warning" style="display: none">
+                <p><strong>NOTE</strong> This is what other users when they navigate to your business profile page.</p>
+                <p>Make sure the calendar is public so that other users can see the events on the calendar.</p>
+                <p>You can do so by following <a href="https://support.google.com/calendar/answer/37083?hl=en">these instructions</a>.</p>
+              </div>
+              <iframe id="edit-calendar-preview" height="500px" width="700px" style="display: none"></iframe>
             </div>
 
             <div id="support-section">
