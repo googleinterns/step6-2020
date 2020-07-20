@@ -15,6 +15,8 @@
 import { loadCommentSection } from '/js/comments.js';
 import { setLoginOrLogoutUrl, setProfileUrl } from '/js/util.js';
 
+const calendarBaseURL = 'https://calendar.google.com/calendar/embed?src=';
+
 window.addEventListener('load', function() {
   // window.location.search returns the search string of the URL.
   // In this case, window.location.search = ?id={businessID}
@@ -64,7 +66,7 @@ function constructBusinessProfile(id) {
   fetch('/business/' + id)
       .then(response => {
           if (!response.ok) {
-            // Redirect to BusinessServlet, which displays appropriate error.
+            // Redirect to BusinessServlet, which displays the appropriate error.
             window.location.href = '/business/' + id;
           }
           return response.json();
@@ -73,6 +75,22 @@ function constructBusinessProfile(id) {
           document.getElementById('edit-button').style.display = 'block';
         } else {
           document.getElementById('edit-button').style.display = 'none';
+        }
+        
+        const calendarDiv = document.getElementById('business-calendar');
+        if (info.calendarEmail.length > 0) {
+          calendarDiv.style.display = 'block';
+          let calendar = document.createElement('iframe');
+          calendar.src = calendarBaseURL + info.calendarEmail;
+          calendar.height = '500px';
+          calendar.width = '700px';
+          calendarDiv.appendChild(calendar);
+          
+          document.getElementById('edit-calendar').value = info.calendarEmail;
+          const previewCalendar = document.getElementById('edit-calendar-preview');
+          previewCalendar.style.display = 'block';
+          previewCalendar.src = calendarBaseURL + info.calendarEmail;
+          document.getElementById('calendar-warning').style.display = 'block';
         }
 
         ['name', 'location', 'story', 'bio', 'about', 'support'].forEach(property => {
@@ -88,4 +106,18 @@ window.toggleProfile = function() {
 
   viewProfile.style.display = 'none';
   editProfile.style.display = 'block';
+}
+
+window.previewCalendar = function() {
+  const calendar = document.getElementById('edit-calendar-preview');
+  const email = document.getElementById('edit-calendar').value;
+  const warningMessage = document.getElementById('calendar-warning');
+  if (email.length == 0) {
+    calendar.style.display = 'none';
+    warningMessage.style.display = 'none';
+  } else {
+    calendar.style.display = 'block';
+    calendar.src = calendarBaseURL + email;
+    warningMessage.style.display = 'block';
+  }
 }
