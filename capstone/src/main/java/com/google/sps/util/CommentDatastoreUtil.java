@@ -18,6 +18,7 @@ import static com.google.sps.data.ProfileDatastoreUtil.getProfileName;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.KeyFactory;
 
 public final class CommentDatastoreUtil {
   public static final String COMMENT_TASK_NAME = "Comment";
@@ -29,8 +30,12 @@ public final class CommentDatastoreUtil {
   public static final String PARENT_ID_PROPERTY = "parentId";
 
   public static Comment generateComment(Entity commentEntity, DatastoreService datastore) {
-
-    String id = commentEntity.getKey().getName();
+    String id;
+    if (commentEntity.getKey().getName() != null) {
+      id = commentEntity.getKey().getName();
+    } else {
+      id = KeyFactory.keyToString(commentEntity.getKey());
+    }
     String content = (String) commentEntity.getProperty(CONTENT_PROPERTY);
     long timestamp = (long) commentEntity.getProperty(TIMESTAMP_PROPERTY);
     String userId = (String) commentEntity.getProperty(USER_ID_PROPERTY);

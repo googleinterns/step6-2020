@@ -67,6 +67,8 @@ public class CommentServlet extends HttpServlet {
       response.sendError(
           HttpServletResponse.SC_UNAUTHORIZED, "User must be logged in to post comment");
     }
+
+    response.sendRedirect("/business.html?id=" + request.getParameter(BUSINESS_ID_PROPERTY));
   }
 
   private Entity buildCommentEntity(HttpServletRequest request, String userId) {
