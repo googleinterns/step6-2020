@@ -29,6 +29,7 @@ public final class ProfileDatastoreUtil {
   public static final String LAT_PROPERTY = "lat";
   public static final String LONG_PROPERTY = "long";
   public static final String BIO_PROPERTY = "bio";
+  public static final String CALENDAR_PROPERTY = "calendarEmail";
   public static final String STORY_PROPERTY = "story";
   public static final String ABOUT_PROPERTY = "about";
   public static final String SUPPORT_PROPERTY = "support";
