@@ -78,7 +78,7 @@ function constructBusinessProfile(id) {
         }
         
         const calendarDiv = document.getElementById('business-calendar');
-        if (info.calendarEmail.length > 0) {
+        if (info.calendarEmail != '') {
           calendarDiv.style.display = 'block';
           let calendar = document.createElement('iframe');
           calendar.src = calendarBaseURL + info.calendarEmail;
@@ -112,7 +112,7 @@ window.previewCalendar = function() {
   const calendar = document.getElementById('edit-calendar-preview');
   const email = document.getElementById('edit-calendar').value;
   const warningMessage = document.getElementById('calendar-warning');
-  if (email.length == 0) {
+  if (email == '') {
     calendar.style.display = 'none';
     warningMessage.style.display = 'none';
   } else {
