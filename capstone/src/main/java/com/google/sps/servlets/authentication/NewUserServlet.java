@@ -16,8 +16,13 @@ package com.google.sps.servlets.authentication;
 
 import static com.google.sps.data.ProfileDatastoreUtil.ANONYMOUS_NAME;
 import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.DEFAULT_LOCATION;
+import static com.google.sps.data.ProfileDatastoreUtil.DEFAULT_LAT;
+import static com.google.sps.data.ProfileDatastoreUtil.DEFAULT_LONG;
 import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LAT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LONG_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NO;
 import static com.google.sps.data.ProfileDatastoreUtil.NULL_STRING;
@@ -60,7 +65,9 @@ public class NewUserServlet extends HttpServlet {
       Entity userEntity = new Entity(PROFILE_TASK_NAME, userId);
       userEntity.setProperty(IS_BUSINESS_PROPERTY, NO);
       userEntity.setProperty(NAME_PROPERTY, ANONYMOUS_NAME);
-      userEntity.setProperty(LOCATION_PROPERTY, NULL_STRING);
+      userEntity.setProperty(LOCATION_PROPERTY, DEFAULT_LOCATION);
+      userEntity.setProperty(LAT_PROPERTY, DEFAULT_LAT);
+      userEntity.setProperty(LONG_PROPERTY, DEFAULT_LONG);
       userEntity.setProperty(BIO_PROPERTY, NULL_STRING);
 
       datastore.put(userEntity);

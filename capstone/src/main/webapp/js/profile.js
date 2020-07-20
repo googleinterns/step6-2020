@@ -84,6 +84,11 @@ function redirectToDefaultPage(id) {
 
 // Submit the edit-profile form to servlet based on whether they're a business or not.
 window.submitProfileForm = function() {
+  if (!convertToLatLong()) {
+    alert("Sorry, the form didn't go through. There's some fields that were filled incorrectly.");
+    return;
+  }
+
   let form = document.getElementById('edit-profile');
   form.method = 'POST';
 
@@ -93,8 +98,8 @@ window.submitProfileForm = function() {
   }
   
   form.action = '/profile';
+  form.submit();
 }
-
 
 // Obtain the ID from the URL params.
 function getId() {
@@ -135,6 +140,27 @@ function setEditValues(name, location, bio) {
   name_section.value = name;
   location_section.value = location;
   bio_section.value = bio;
+}
+
+// Convert address to latitude and longitude values.
+async function convertToLatLong() {
+  let address = document.getElementById('edit-location').value;
+  let lat = document.getElementById('edit-lat');
+  let long = document.getElementById('edit-long');
+
+  var geocoder = new google.maps.Geocoder();
+  geocoder.geocode( { 'address': address}, function(results, status) {
+    if (status == google.maps.GeocoderStatus.OK) {
+      lat.value = results[0].geometry.location.lat();
+      long.value = results[0].geometry.location.lng();
+      alert("Hi I made ithere: lat is " + lat.value);
+      return true;
+    } else {
+      return false;
+    }
+  });
+  
+  let result = await geocoder;
 }
 
 // Bias the autocomplete object to the user's geographical location,

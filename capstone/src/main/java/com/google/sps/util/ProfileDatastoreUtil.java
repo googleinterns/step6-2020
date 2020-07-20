@@ -26,10 +26,15 @@ public final class ProfileDatastoreUtil {
   public static final String IS_BUSINESS_PROPERTY = "isBusiness";
   public static final String NAME_PROPERTY = "name";
   public static final String LOCATION_PROPERTY = "location";
+  public static final String LAT_PROPERTY = "lat";
+  public static final String LONG_PROPERTY = "long";
   public static final String BIO_PROPERTY = "bio";
   public static final String STORY_PROPERTY = "story";
   public static final String ABOUT_PROPERTY = "about";
   public static final String SUPPORT_PROPERTY = "support";
+  public static final String DEFAULT_LOCATION = "Mountain View, CA, USA";
+  public static final String DEFAULT_LAT = "37.386051";
+  public static final String DEFAULT_LONG = "-122.083855";
   public static final String ANONYMOUS_NAME = "Anonymous";
   public static final String NULL_STRING = "";
   public static final String NO = "No";

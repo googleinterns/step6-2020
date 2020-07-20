@@ -16,8 +16,13 @@ package com.google.sps.servlets.authentication;
 
 import static com.google.sps.data.ProfileDatastoreUtil.ANONYMOUS_NAME;
 import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.DEFAULT_LOCATION;
+import static com.google.sps.data.ProfileDatastoreUtil.DEFAULT_LAT;
+import static com.google.sps.data.ProfileDatastoreUtil.DEFAULT_LONG;
 import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LAT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LONG_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NO;
 import static com.google.sps.data.ProfileDatastoreUtil.NULL_STRING;
@@ -47,7 +52,9 @@ import org.mockito.MockitoAnnotations;
 @RunWith(JUnit4.class)
 public class NewUserServletTest {
   private static final String NAME = "John Doe";
-  private static final String LOCATION = "Mountain View, CA";
+  private static final String LAT = "37.386051";
+  private static final String LOCATION = "Mountain View, CA, USA";
+  private static final String LONG = "-122.083855";
   private static final String BIO = "This is my bio.";
   private static final String USER_ID = "12345";
   private static final String EMAIL = "abc@gmail.com";
@@ -99,7 +106,9 @@ public class NewUserServletTest {
     Entity capEntity = datastore.get(userKey);
     Assert.assertEquals(capEntity.getProperty(IS_BUSINESS_PROPERTY), NO);
     Assert.assertEquals(capEntity.getProperty(NAME_PROPERTY), ANONYMOUS_NAME);
-    Assert.assertEquals(capEntity.getProperty(LOCATION_PROPERTY), NULL_STRING);
+    Assert.assertEquals(capEntity.getProperty(LOCATION_PROPERTY), LOCATION);
+    Assert.assertEquals(capEntity.getProperty(LAT_PROPERTY), LAT);
+    Assert.assertEquals(capEntity.getProperty(LONG_PROPERTY), LONG);
     Assert.assertEquals(capEntity.getProperty(BIO_PROPERTY), NULL_STRING);
   }
 
@@ -116,6 +125,8 @@ public class NewUserServletTest {
     ent.setProperty(IS_BUSINESS_PROPERTY, NO);
     ent.setProperty(NAME_PROPERTY, NAME);
     ent.setProperty(LOCATION_PROPERTY, LOCATION);
+    ent.setProperty(LAT_PROPERTY, LAT);
+    ent.setProperty(LONG_PROPERTY, LONG);
     ent.setProperty(BIO_PROPERTY, BIO);
     datastore.put(ent);
 
@@ -125,6 +136,8 @@ public class NewUserServletTest {
     Assert.assertEquals(capEntity.getProperty(IS_BUSINESS_PROPERTY), NO);
     Assert.assertEquals(capEntity.getProperty(NAME_PROPERTY), NAME);
     Assert.assertEquals(capEntity.getProperty(LOCATION_PROPERTY), LOCATION);
+    Assert.assertEquals(capEntity.getProperty(LAT_PROPERTY), LAT);
+    Assert.assertEquals(capEntity.getProperty(LONG_PROPERTY), LONG);
     Assert.assertEquals(capEntity.getProperty(BIO_PROPERTY), BIO);
   }
 }

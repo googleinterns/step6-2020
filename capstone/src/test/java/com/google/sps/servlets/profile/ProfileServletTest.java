@@ -17,6 +17,8 @@ package com.google.sps.servlets.profile;
 import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LAT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LONG_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NO;
 import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
@@ -59,6 +61,8 @@ public class ProfileServletTest {
   private static final String NAME = "John Doe";
   private static final String NO_NAME = null;
   private static final String LOCATION = "Mountain View, CA";
+  private static final String LAT = "1111";
+  private static final String LONG = "2222";
   private static final String BIO = "This is my bio.";
   private static final String USER_ID = "12345";
   private static final String USER2_ID = "6789";
@@ -148,6 +152,8 @@ public class ProfileServletTest {
     ent.setProperty(IS_BUSINESS_PROPERTY, YES);
     ent.setProperty(NAME_PROPERTY, NAME);
     ent.setProperty(LOCATION_PROPERTY, LOCATION);
+    ent.setProperty(LAT_PROPERTY, LAT);
+    ent.setProperty(LONG_PROPERTY, LONG);
     ent.setProperty(BIO_PROPERTY, BIO);
 
     profileServlet.doGet(request, response);
@@ -177,6 +183,8 @@ public class ProfileServletTest {
     ent.setProperty(IS_BUSINESS_PROPERTY, NO);
     ent.setProperty(NAME_PROPERTY, NAME);
     ent.setProperty(LOCATION_PROPERTY, LOCATION);
+    ent.setProperty(LAT_PROPERTY, LAT);
+    ent.setProperty(LONG_PROPERTY, LONG);
     ent.setProperty(BIO_PROPERTY, BIO);
 
     datastore.put(ent);
@@ -228,6 +236,8 @@ public class ProfileServletTest {
     when(request.getParameter(IS_BUSINESS_PROPERTY)).thenReturn(NO);
     when(request.getParameter(NAME_PROPERTY)).thenReturn(NO_NAME);
     when(request.getParameter(LOCATION_PROPERTY)).thenReturn(LOCATION);
+    when(request.getParameter(LAT_PROPERTY)).thenReturn(LAT);
+    when(request.getParameter(LONG_PROPERTY)).thenReturn(LONG);
     when(request.getParameter(BIO_PROPERTY)).thenReturn(BIO);
 
     Key userKey = KeyFactory.createKey(PROFILE_TASK_NAME, USER_ID);
@@ -248,6 +258,8 @@ public class ProfileServletTest {
     when(request.getParameter(IS_BUSINESS_PROPERTY)).thenReturn(NO);
     when(request.getParameter(NAME_PROPERTY)).thenReturn(NAME);
     when(request.getParameter(LOCATION_PROPERTY)).thenReturn(LOCATION);
+    when(request.getParameter(LAT_PROPERTY)).thenReturn(LAT);
+    when(request.getParameter(LONG_PROPERTY)).thenReturn(LONG);
     when(request.getParameter(BIO_PROPERTY)).thenReturn(BIO);
 
     profileServlet.doPost(request, response);
@@ -260,6 +272,8 @@ public class ProfileServletTest {
     Assert.assertEquals(capEntity.getProperty(IS_BUSINESS_PROPERTY), NO);
     Assert.assertEquals(capEntity.getProperty(NAME_PROPERTY), NAME);
     Assert.assertEquals(capEntity.getProperty(LOCATION_PROPERTY), LOCATION);
+    Assert.assertEquals(capEntity.getProperty(LAT_PROPERTY), LAT);
+    Assert.assertEquals(capEntity.getProperty(LONG_PROPERTY), LONG);
     Assert.assertEquals(capEntity.getProperty(BIO_PROPERTY), BIO);
   }
 
@@ -272,6 +286,8 @@ public class ProfileServletTest {
     when(request.getParameter(IS_BUSINESS_PROPERTY)).thenReturn(YES);
     when(request.getParameter(NAME_PROPERTY)).thenReturn(NAME);
     when(request.getParameter(LOCATION_PROPERTY)).thenReturn(LOCATION);
+    when(request.getParameter(LAT_PROPERTY)).thenReturn(LAT);
+    when(request.getParameter(LONG_PROPERTY)).thenReturn(LONG);
     when(request.getParameter(BIO_PROPERTY)).thenReturn(BIO);
 
     profileServlet.doPost(request, response);
