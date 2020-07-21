@@ -14,7 +14,7 @@
 
 package com.google.sps.servlets;
 
-import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
+import static com.google.appengine.api.datastore.FetchOptions.Builder.withDefaults;
 import static com.google.sps.data.CommentDatastoreUtil.BUSINESS_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.COMMENT_TASK_NAME;
 import static com.google.sps.data.CommentDatastoreUtil.CONTENT_PROPERTY;
@@ -49,8 +49,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 public class CommentServletTest {
-
-  private final int COUNTING_LIMIT = 10;
 
   private static final String MOCK_EMAIL = "tutorguy@gmail.com";
   private static final String MOCK_DOMAIN = "microsoft.com";
@@ -116,7 +114,7 @@ public class CommentServletTest {
   private int countCommentOccurences(
       DatastoreService ds, String content, String userId, String businessId, String parentId) {
     return ds.prepare(queryComment(content, userId, businessId, parentId))
-        .countEntities(withLimit(COUNTING_LIMIT));
+        .countEntities(withDefaults());
   }
 
   // Check if we can add a comment
@@ -211,6 +209,6 @@ public class CommentServletTest {
         new Query(COMMENT_TASK_NAME)
             .setFilter(new FilterPredicate(USER_ID_PROPERTY, FilterOperator.EQUAL, userId));
 
-    return ds.prepare(query).countEntities(withLimit(COUNTING_LIMIT));
+    return ds.prepare(query).countEntities(withDefaults());
   }
 }
