@@ -87,17 +87,20 @@ window.submitProfileForm = function() {
   let form = document.getElementById('edit-profile');
   form.method = 'POST';
   
-  convertToLatLong().then((results) => {
-    if(document.getElementById('yes').checked) {
+  if(document.getElementById('yes').checked) {
       form.action = '/business';
       return;
     }
   
-    form.action = '/profile';
+  form.action = '/profile';
+
+  if (document.getElementById('edit-location').value.length == 0) {
     form.submit();
-  }).catch((results) => {
-    alert("Sorry, the form didn't go through. There's some fields that were filled incorrectly.");
-  })
+  } else {
+    convertToLatLong().then((results) => {
+      form.submit();
+    }) 
+  }
 }
 
 // Convert address to latitude and longitude values.
@@ -106,15 +109,13 @@ async function convertToLatLong() {
   let lat = document.getElementById('edit-lat');
   let long = document.getElementById('edit-long');
 
-  var geocoder = new google.maps.Geocoder();
-
   let results = await geocoderPromise({'address': address});
   lat.value = results[0].geometry.location.lat();
   long.value = results[0].geometry.location.lng();
 }
 
 function geocoderPromise(request) {
-  var geocoder = new google.maps.Geocoder();
+  let geocoder = new google.maps.Geocoder();
 
   return new Promise((resolve, reject) => {
     geocoder.geocode(request, function(results, status) {
