@@ -49,7 +49,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /** Servlet responsible for listing the businesses within the requested map radius. */
-@WebServlet("/map")
+@WebServlet("/map/*")
 public class MapServlet extends HttpServlet {
 
   private static final String CALENDAR_PROPERTY = "calendarEmail";
@@ -60,10 +60,22 @@ public class MapServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
     // Get bounds SW and NE lat and longs and replace it underneath.
-    float SW_Lat = 12345;
-    float SW_Lng = 12345;
-    float NE_Lat = 12345;
-    float NE_Lng = 12345;
+    String pathInfo = request.getPathInfo(); // /{value}/SW_Lat/SW_Lng/NE_Lat/NE_Lng
+    List<Long> coordinates = parseBoundCoordinate(pathInfo);
+
+    float SW_Lat, SW_Lng, NE_Lat, NE_Lng;
+
+    try {
+      SW_Lat = coordinates.get(0);
+      SW_Lng = coordinates.get(1);
+      NE_Lat = coordinates.get(2);
+      NE_Lng = coordinates.get(3);
+    } catch (IndexOutOfBoundsException e) {
+      // Return error. Invalid URL Params.
+      System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    System.out.println("i shouldnt be here");
+      return;
+    }
 
     GeoPt SW = new GeoPt(SW_Lat, SW_Lng);
     GeoPt NE = new GeoPt(NE_Lat, NE_Lng);
@@ -71,10 +83,10 @@ public class MapServlet extends HttpServlet {
     Rectangle bounds = new Rectangle(SW, NE);
 
     Filter propertyFilter = new CompositeFilter(CompositeFilterOperator.AND, Arrays.asList(
-     new FilterPredicate(IS_BUSINESS_PROPERTY, FilterOperator.EQUAL, YES),
-     new CompositeFilter(CompositeFilterOperator.AND, Arrays.<Filter>asList(
-        new StContainsFilter("lat", bounds),
-        new StContainsFilter("long", bounds)))));
+                            new FilterPredicate(IS_BUSINESS_PROPERTY, FilterOperator.EQUAL, YES),
+                            new CompositeFilter(CompositeFilterOperator.AND, Arrays.<Filter>asList(
+                                new StContainsFilter("lat", bounds),
+                                new StContainsFilter("long", bounds)))));
 
     Query query = new Query(PROFILE_TASK_NAME).setFilter(propertyFilter);
 
@@ -92,10 +104,16 @@ public class MapServlet extends HttpServlet {
       String calendarEmail = (String) entity.getProperty(CALENDAR_PROPERTY);
       String support = (String) entity.getProperty(SUPPORT_PROPERTY);
 
+      System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    System.out.println("The location is: " + location);
+
       BusinessProfile profile =
           new BusinessProfile(id, name, location, bio, story, about, calendarEmail, support, false);
       businesses.add(profile);
     }
+
+    System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    System.out.println("hi im here");
 
     response.setContentType("application/json;");
     Gson gson = new Gson();
@@ -103,7 +121,14 @@ public class MapServlet extends HttpServlet {
   }
 
   // Helper function: Return the array of coordinates in order.
-  public String[] parseBoundCoordinate(String param) {
-    return null;
+  public List<Long> parseBoundCoordinate(String pathInfo) {
+    List<Long> coordinates = new ArrayList<>();
+
+    String [] pathParts = pathInfo.split("/");
+    for (int i = 1; i < pathParts.length; i++) {
+      coordinates.add((long)Double.parseDouble(pathParts[i]));
+    }
+        
+    return coordinates;
   }
 }
