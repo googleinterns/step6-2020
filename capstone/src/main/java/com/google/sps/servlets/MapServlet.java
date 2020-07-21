@@ -60,8 +60,8 @@ public class MapServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
     // Get bounds SW and NE lat and longs and replace it underneath.
-    String pathInfo = request.getPathInfo(); // /{value}/SW_Lat/SW_Lng/NE_Lat/NE_Lng
-    List<Long> coordinates = parseBoundCoordinate(pathInfo);
+    String pathInfo = request.getPathInfo(); // {value}/SW_Lat/SW_Lng/NE_Lat/NE_Lng
+    List<Float> coordinates = parseBoundCoordinate(pathInfo);
 
     float SW_Lat, SW_Lng, NE_Lat, NE_Lng;
 
@@ -71,9 +71,8 @@ public class MapServlet extends HttpServlet {
       NE_Lat = coordinates.get(2);
       NE_Lng = coordinates.get(3);
     } catch (IndexOutOfBoundsException e) {
-      // Return error. Invalid URL Params.
-      System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-    System.out.println("i shouldnt be here");
+      response.sendError(
+          HttpServletResponse.SC_NOT_FOUND, "The map is not found.");
       return;
     }
 
@@ -84,9 +83,7 @@ public class MapServlet extends HttpServlet {
 
     Filter propertyFilter = new CompositeFilter(CompositeFilterOperator.AND, Arrays.asList(
                             new FilterPredicate(IS_BUSINESS_PROPERTY, FilterOperator.EQUAL, YES),
-                            new CompositeFilter(CompositeFilterOperator.AND, Arrays.<Filter>asList(
-                                new StContainsFilter("lat", bounds),
-                                new StContainsFilter("long", bounds)))));
+                            new StContainsFilter("geoPt", bounds)));
 
     Query query = new Query(PROFILE_TASK_NAME).setFilter(propertyFilter);
 
@@ -104,16 +101,10 @@ public class MapServlet extends HttpServlet {
       String calendarEmail = (String) entity.getProperty(CALENDAR_PROPERTY);
       String support = (String) entity.getProperty(SUPPORT_PROPERTY);
 
-      System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-    System.out.println("The location is: " + location);
-
       BusinessProfile profile =
           new BusinessProfile(id, name, location, bio, story, about, calendarEmail, support, false);
       businesses.add(profile);
     }
-
-    System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-    System.out.println("hi im here");
 
     response.setContentType("application/json;");
     Gson gson = new Gson();
@@ -121,12 +112,12 @@ public class MapServlet extends HttpServlet {
   }
 
   // Helper function: Return the array of coordinates in order.
-  public List<Long> parseBoundCoordinate(String pathInfo) {
-    List<Long> coordinates = new ArrayList<>();
+  public List<Float> parseBoundCoordinate(String pathInfo) {
+    List<Float> coordinates = new ArrayList<>();
 
     String [] pathParts = pathInfo.split("/");
     for (int i = 1; i < pathParts.length; i++) {
-      coordinates.add((long)Double.parseDouble(pathParts[i]));
+      coordinates.add(Float.parseFloat(pathParts[i]));
     }
         
     return coordinates;

@@ -17,6 +17,7 @@ package com.google.sps.servlets;
 import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
 import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.CALENDAR_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.GEO_PT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.STORY_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.ABOUT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.SUPPORT_PROPERTY;
@@ -35,6 +36,7 @@ import static org.mockito.Mockito.when;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.gson.Gson;
@@ -52,23 +54,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 /** Unit tests for MapServlet. */
 public class MapServletTest {
-
-  private final LocalServiceTestHelper helper =
-      new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
-
-  @Mock private HttpServletRequest request;
-
-  @Mock private HttpServletResponse response;
-
-  private StringWriter servletResponseWriter;
-
-  private MapServlet servlet;
-
-  private DatastoreService datastore;
 
   private static final String USER_ID_1 = "12345";
   private static final String USER_ID_2 = "6789";
@@ -90,8 +80,19 @@ public class MapServletTest {
   private static final String PATHINFO = "map/37.2227223/-122.3033039/37.548271/-121.988571";
   private static final String INVALID_PATHINFO = "map";
 
+  private final LocalServiceTestHelper helper =
+      new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
+
+  @Mock private HttpServletRequest request;
+
+  @Mock private HttpServletResponse response;
+
+  private StringWriter servletResponseWriter;
+  private MapServlet servlet;
+  private DatastoreService datastore;
+
   @Before
-  public void setUp() throws IOException {
+  public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     helper.setUp();
 
@@ -110,7 +111,7 @@ public class MapServletTest {
    *  Test doGet() for response returning the correct empty list of businesses.
    **/
   @Test
-  public void testEmptydoGet() throws IOException {
+  public void testEmptydoGet() throws Exception {
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
     servlet.doGet(request, response);
@@ -122,7 +123,7 @@ public class MapServletTest {
    *  and other businesses in different areas.
    **/
   @Test
-  public void testDoGetReturnCorrectList() throws IOException {
+  public void testDoGetReturnCorrectList() throws Exception {
     when(request.getPathInfo()).thenReturn(PATHINFO);
 
     // This list will help in constructing the expected response.
@@ -131,15 +132,13 @@ public class MapServletTest {
     Entity aBusinessInBounds = createBusiness(USER_ID_1);
     aBusinessInBounds.setProperty(IS_BUSINESS_PROPERTY, A_BUSINESS);
     aBusinessInBounds.setProperty(LOCATION_PROPERTY, LOCATION_IN_BOUNDS);
-    aBusinessInBounds.setProperty(LAT_PROPERTY, LAT_IN_BOUNDS);
-    aBusinessInBounds.setProperty(LONG_PROPERTY, LONG_IN_BOUNDS);
+    aBusinessInBounds.setProperty(GEO_PT_PROPERTY, createGeoPt(LAT_IN_BOUNDS, LONG_IN_BOUNDS));
     datastore.put(aBusinessInBounds);
 
     Entity aBusinessNotInBounds = createBusiness(USER_ID_2);
     aBusinessNotInBounds.setProperty(IS_BUSINESS_PROPERTY, A_BUSINESS);
     aBusinessNotInBounds.setProperty(LOCATION_PROPERTY, LOCATION_NOT_IN_BOUNDS);
-    aBusinessNotInBounds.setProperty(LAT_PROPERTY, LAT_NOT_IN_BOUNDS);
-    aBusinessNotInBounds.setProperty(LONG_PROPERTY, LONG_NOT_IN_BOUNDS);
+    aBusinessNotInBounds.setProperty(GEO_PT_PROPERTY, createGeoPt(LAT_NOT_IN_BOUNDS, LONG_NOT_IN_BOUNDS));
     datastore.put(aBusinessNotInBounds);
 
     Entity notABusiness = createNonBusiness(USER_ID_3);
@@ -162,6 +161,20 @@ public class MapServletTest {
     Assert.assertEquals(parser.parse(servletResponse), parser.parse(expectedResponse));
   }
 
+  /*
+   *  Test doGet() for response returning error because of invalid parameters.
+   **/
+  @Test
+  public void testDoGetReturnError() throws Exception {
+    when(request.getPathInfo()).thenReturn(INVALID_PATHINFO);
+
+    servlet.doGet(request, response);
+
+    // verify if a sendError() was performed with the expected values.
+    Mockito.verify(response, Mockito.times(1))
+        .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
+  }
+
   // Create a business entity.
   private Entity createBusiness(String id) {
     Entity newBusiness = new Entity(PROFILE_TASK_NAME, id);
@@ -175,14 +188,18 @@ public class MapServletTest {
     return newBusiness;
   }
 
+  // Create a geoPt.
+  private GeoPt createGeoPt(String lat, String lng) {
+    return new GeoPt(Float.parseFloat(lat), Float.parseFloat(lng));
+  }
+
   // Create a non-business entity.
   private Entity createNonBusiness(String id) {
     Entity nonBusiness = new Entity(PROFILE_TASK_NAME, id);
     nonBusiness.setProperty(NAME_PROPERTY, NAME);
     nonBusiness.setProperty(LOCATION_PROPERTY, LOCATION_IN_BOUNDS);
     nonBusiness.setProperty(BIO_PROPERTY, BIO);
-    nonBusiness.setProperty(LAT_PROPERTY, LAT_IN_BOUNDS);
-    nonBusiness.setProperty(LONG_PROPERTY, LONG_IN_BOUNDS);
+    nonBusiness.setProperty(GEO_PT_PROPERTY, createGeoPt(LAT_IN_BOUNDS, LONG_IN_BOUNDS));
 
     return nonBusiness;
   }
