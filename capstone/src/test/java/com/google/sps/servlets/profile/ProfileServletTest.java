@@ -146,15 +146,9 @@ public class ProfileServletTest {
 
     // Create an entity with this USER_ID and set it's property "isBusiness" to YES.
     // Then add this to datastore.
-    Key userKey = KeyFactory.createKey(PROFILE_TASK_NAME, USER_ID);
-    Entity ent = new Entity(PROFILE_TASK_NAME, USER_ID);
+    Entity ent = setBusinessEntityProperty();
 
     ent.setProperty(IS_BUSINESS_PROPERTY, YES);
-    ent.setProperty(NAME_PROPERTY, NAME);
-    ent.setProperty(LOCATION_PROPERTY, LOCATION);
-    ent.setProperty(LAT_PROPERTY, LAT);
-    ent.setProperty(LONG_PROPERTY, LONG);
-    ent.setProperty(BIO_PROPERTY, BIO);
 
     profileServlet.doGet(request, response);
 
@@ -176,16 +170,11 @@ public class ProfileServletTest {
     // Create an entity with this USER_ID and set it's property "isBusiness" to NO.
     // Then add this to datastore.
     Key userKey = KeyFactory.createKey(PROFILE_TASK_NAME, USER_ID);
-    Entity ent = new Entity(PROFILE_TASK_NAME, USER_ID);
-
-    boolean isCurrentUser = true;
+    Entity ent = setBusinessEntityProperty();
 
     ent.setProperty(IS_BUSINESS_PROPERTY, NO);
-    ent.setProperty(NAME_PROPERTY, NAME);
-    ent.setProperty(LOCATION_PROPERTY, LOCATION);
-    ent.setProperty(LAT_PROPERTY, LAT);
-    ent.setProperty(LONG_PROPERTY, LONG);
-    ent.setProperty(BIO_PROPERTY, BIO);
+
+    boolean isCurrentUser = true;
 
     datastore.put(ent);
 
@@ -235,10 +224,7 @@ public class ProfileServletTest {
 
     when(request.getParameter(IS_BUSINESS_PROPERTY)).thenReturn(NO);
     when(request.getParameter(NAME_PROPERTY)).thenReturn(NO_NAME);
-    when(request.getParameter(LOCATION_PROPERTY)).thenReturn(LOCATION);
-    when(request.getParameter(LAT_PROPERTY)).thenReturn(LAT);
-    when(request.getParameter(LONG_PROPERTY)).thenReturn(LONG);
-    when(request.getParameter(BIO_PROPERTY)).thenReturn(BIO);
+    setRequestParameters();
 
     Key userKey = KeyFactory.createKey(PROFILE_TASK_NAME, USER_ID);
     Entity ent = new Entity(PROFILE_TASK_NAME, USER_ID);
@@ -257,10 +243,7 @@ public class ProfileServletTest {
   public void userEditProfileAddToDatastore() throws Exception {
     when(request.getParameter(IS_BUSINESS_PROPERTY)).thenReturn(NO);
     when(request.getParameter(NAME_PROPERTY)).thenReturn(NAME);
-    when(request.getParameter(LOCATION_PROPERTY)).thenReturn(LOCATION);
-    when(request.getParameter(LAT_PROPERTY)).thenReturn(LAT);
-    when(request.getParameter(LONG_PROPERTY)).thenReturn(LONG);
-    when(request.getParameter(BIO_PROPERTY)).thenReturn(BIO);
+    setRequestParameters();
 
     profileServlet.doPost(request, response);
 
@@ -285,15 +268,33 @@ public class ProfileServletTest {
   public void nonBusinessUserEditProfileAddToDatastore() throws Exception {
     when(request.getParameter(IS_BUSINESS_PROPERTY)).thenReturn(YES);
     when(request.getParameter(NAME_PROPERTY)).thenReturn(NAME);
-    when(request.getParameter(LOCATION_PROPERTY)).thenReturn(LOCATION);
-    when(request.getParameter(LAT_PROPERTY)).thenReturn(LAT);
-    when(request.getParameter(LONG_PROPERTY)).thenReturn(LONG);
-    when(request.getParameter(BIO_PROPERTY)).thenReturn(BIO);
+    setRequestParameters();
 
     profileServlet.doPost(request, response);
 
     // verify if a sendError() was performed with the expected values.
     Mockito.verify(response, Mockito.times(1))
         .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
+  }
+
+  // Helper function to set business entity properties.
+  public Entity setBusinessEntityProperty() {
+    Entity ent = new Entity(PROFILE_TASK_NAME, USER_ID);
+
+    ent.setProperty(NAME_PROPERTY, NAME);
+    ent.setProperty(LOCATION_PROPERTY, LOCATION);
+    ent.setProperty(LAT_PROPERTY, LAT);
+    ent.setProperty(LONG_PROPERTY, LONG);
+    ent.setProperty(BIO_PROPERTY, BIO);
+
+    return ent;
+  }
+
+  // Helper function to set getParameter() method.
+  public void setRequestParameters() {
+    when(request.getParameter(LOCATION_PROPERTY)).thenReturn(LOCATION);
+    when(request.getParameter(LAT_PROPERTY)).thenReturn(LAT);
+    when(request.getParameter(LONG_PROPERTY)).thenReturn(LONG);
+    when(request.getParameter(BIO_PROPERTY)).thenReturn(BIO);
   }
 }
