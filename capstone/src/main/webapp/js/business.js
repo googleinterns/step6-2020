@@ -126,6 +126,8 @@ window.previewCalendar = function() {
     calendar.style.display = 'block';
     calendar.src = calendarBaseURL + email;
     warningMessage.style.display = 'block';
+  }
+}
 
 // Create the mini map on profile page.
 function createProfileMap(address) {

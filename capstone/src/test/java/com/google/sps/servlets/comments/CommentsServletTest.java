@@ -23,6 +23,7 @@ import static com.google.sps.data.CommentDatastoreUtil.USER_ID_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
 import static com.google.sps.data.ProfileDatastoreUtil.getProfileName;
+import static com.google.sps.util.TestUtil.assertResponseWithArbitraryTextRaised;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.reset;
 
@@ -44,7 +45,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 public class CommentsServletTest {
@@ -203,11 +203,6 @@ public class CommentsServletTest {
     Assert.assertEquals(parser.parse(a), parser.parse(b));
   }
 
-  private void assertResponseWithArbitraryTextRaised(int targetResponse) throws IOException {
-    Mockito.verify(response, Mockito.times(1))
-        .sendError(Mockito.eq(targetResponse), Mockito.anyString());
-  }
-
   /**
    * Runs a standard test in which one parameter in the request is specified, the datastore has the
    * * same data in it that it always does, and a certain json response is expected.
@@ -330,7 +325,7 @@ public class CommentsServletTest {
     initDatastore(ds);
     servlet.doGet(request, response);
 
-    assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_BAD_REQUEST);
+    assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_BAD_REQUEST, response);
   }
 
   /** Test that the server rejects requests with two arguements. */
@@ -343,7 +338,7 @@ public class CommentsServletTest {
 
     servlet.doGet(request, response);
 
-    assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_BAD_REQUEST);
+    assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_BAD_REQUEST, response);
   }
 
   /** Test that the server rejects requests with two arguements. */
@@ -359,7 +354,7 @@ public class CommentsServletTest {
 
     servlet.doGet(request, response);
 
-    assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_BAD_REQUEST);
+    assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_BAD_REQUEST, response);
   }
 
   @Test
