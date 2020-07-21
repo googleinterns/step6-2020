@@ -75,7 +75,7 @@ public class BusinessServlet extends HttpServlet {
           "The business you were looking was not found in our records!");
       return;
     }
-    String id = businessID;
+    String id = businessEntity.getKey().getName();
     String name = (String) businessEntity.getProperty(NAME_PROPERTY);
     String email = (String) businessEntity.getProperty(CALENDAR_PROPERTY);
     String bio = (String) businessEntity.getProperty(BIO_PROPERTY);
