@@ -278,7 +278,7 @@ public class ProfileServletTest {
   }
 
   // Helper function to set business entity properties.
-  public Entity setBusinessEntityProperty() {
+  private Entity setBusinessEntityProperty() {
     Entity ent = new Entity(PROFILE_TASK_NAME, USER_ID);
 
     ent.setProperty(NAME_PROPERTY, NAME);
@@ -291,7 +291,7 @@ public class ProfileServletTest {
   }
 
   // Helper function to set getParameter() method.
-  public void setRequestParameters() {
+  private void setRequestParameters() {
     when(request.getParameter(LOCATION_PROPERTY)).thenReturn(LOCATION);
     when(request.getParameter(LAT_PROPERTY)).thenReturn(LAT);
     when(request.getParameter(LONG_PROPERTY)).thenReturn(LONG);
