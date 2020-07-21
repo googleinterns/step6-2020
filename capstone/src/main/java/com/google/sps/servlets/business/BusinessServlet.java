@@ -83,7 +83,7 @@ public class BusinessServlet extends HttpServlet {
     String story = (String) businessEntity.getProperty(STORY_PROPERTY);
     String about = (String) businessEntity.getProperty(ABOUT_PROPERTY);
     String support = (String) businessEntity.getProperty(SUPPORT_PROPERTY);
-    
+
     String userId = "";
     if (userService.getCurrentUser() != null) {
       userId = userService.getCurrentUser().getUserId();
