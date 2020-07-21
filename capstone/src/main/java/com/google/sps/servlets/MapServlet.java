@@ -18,6 +18,7 @@ import static com.google.sps.data.ProfileDatastoreUtil.ABOUT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.CALENDAR_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
 import static com.google.sps.data.ProfileDatastoreUtil.STORY_PROPERTY;
@@ -51,8 +52,6 @@ import javax.servlet.http.HttpServletResponse;
 /** Servlet responsible for listing the businesses within the requested map radius. */
 @WebServlet("/map/*")
 public class MapServlet extends HttpServlet {
-
-  private static final String CALENDAR_PROPERTY = "calendarEmail";
 
   DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
