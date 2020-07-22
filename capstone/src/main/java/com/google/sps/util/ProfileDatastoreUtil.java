@@ -32,6 +32,10 @@ public final class ProfileDatastoreUtil {
   public static final String BIO_PROPERTY = "bio";
   public static final String CALENDAR_PROPERTY = "calendarEmail";
   public static final String STORY_PROPERTY = "story";
+  public static final String SW_LAT_PROPERTY = "SW_Lat";
+  public static final String SW_LNG_PROPERTY = "SW_Lng";
+  public static final String NE_LAT_PROPERTY = "NE_Lat";
+  public static final String NE_LNG_PROPERTY = "NE_Lng";
   public static final String ABOUT_PROPERTY = "about";
   public static final String SUPPORT_PROPERTY = "support";
   public static final String ANONYMOUS_NAME = "Anonymous";

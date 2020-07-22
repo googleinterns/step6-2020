@@ -21,6 +21,10 @@ import static com.google.sps.data.ProfileDatastoreUtil.GEO_PT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.STORY_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.ABOUT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.SUPPORT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.SW_LAT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.SW_LNG_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.NE_LAT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.NE_LNG_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LAT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
@@ -77,8 +81,10 @@ public class MapServletTest {
   private static final String ABOUT = "Here is the Pizzeria's menu.";
   private static final String EMAIL = "email@business.biz";
   private static final String SUPPORT = "Please donate at X website.";
-  private static final String PATHINFO = "map/37.2227223/-122.3033039/37.548271/-121.988571";
-  private static final String INVALID_PATHINFO = "map";
+  private static final String SW_LAT = "37.2227223";
+  private static final String SW_LNG = "-122.3033039";
+  private static final String NE_LAT = "37.548271";
+  private static final String NE_LNG = "-121.988571";
 
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
@@ -112,7 +118,7 @@ public class MapServletTest {
    **/
   @Test
   public void testEmptydoGet() throws Exception {
-    when(request.getPathInfo()).thenReturn(PATHINFO);
+    setRequestParams();
 
     servlet.doGet(request, response);
     Assert.assertEquals(servletResponseWriter.toString().replace("\n", ""), "[]");
@@ -124,7 +130,7 @@ public class MapServletTest {
    **/
   @Test
   public void testDoGetReturnCorrectList() throws Exception {
-    when(request.getPathInfo()).thenReturn(PATHINFO);
+    setRequestParams();
 
     // This list will help in constructing the expected response.
     List<BusinessProfile> businesses = new ArrayList();
@@ -166,8 +172,6 @@ public class MapServletTest {
    **/
   @Test
   public void testDoGetReturnError() throws Exception {
-    when(request.getPathInfo()).thenReturn(INVALID_PATHINFO);
-
     servlet.doGet(request, response);
 
     // verify if a sendError() was performed with the expected values.
@@ -202,5 +206,13 @@ public class MapServletTest {
     nonBusiness.setProperty(GEO_PT_PROPERTY, createGeoPt(LAT_IN_BOUNDS, LONG_IN_BOUNDS));
 
     return nonBusiness;
+  }
+
+  // Set request parameters.
+  private void setRequestParams() {
+    when(request.getParameter(SW_LAT_PROPERTY)).thenReturn(SW_LAT);
+    when(request.getParameter(SW_LNG_PROPERTY)).thenReturn(SW_LNG);
+    when(request.getParameter(NE_LAT_PROPERTY)).thenReturn(NE_LAT);
+    when(request.getParameter(NE_LNG_PROPERTY)).thenReturn(NE_LNG);
   }
 }

@@ -58,18 +58,15 @@ public class MapServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-    // Get bounds SW and NE lat and longs and replace it underneath.
-    String pathInfo = request.getPathInfo(); // {value}/SW_Lat/SW_Lng/NE_Lat/NE_Lng
-    List<Float> coordinates = parseBoundCoordinate(pathInfo);
-
+    // Get map bounds from request parameter.
     float SW_Lat, SW_Lng, NE_Lat, NE_Lng;
 
     try {
-      SW_Lat = coordinates.get(0);
-      SW_Lng = coordinates.get(1);
-      NE_Lat = coordinates.get(2);
-      NE_Lng = coordinates.get(3);
-    } catch (IndexOutOfBoundsException e) {
+      SW_Lat = Float.parseFloat(request.getParameter("SW_Lat"));
+      SW_Lng = Float.parseFloat(request.getParameter("SW_Lng"));
+      NE_Lat = Float.parseFloat(request.getParameter("NE_Lat"));
+      NE_Lng = Float.parseFloat(request.getParameter("NE_Lng"));
+    } catch (Exception e) {
       response.sendError(
           HttpServletResponse.SC_BAD_REQUEST, "The map is not found.");
       return;
@@ -108,17 +105,5 @@ public class MapServlet extends HttpServlet {
     response.setContentType("application/json;");
     Gson gson = new Gson();
     response.getWriter().println(gson.toJson(businesses));
-  }
-
-  // Helper function: Return the array of coordinates in order.
-  public List<Float> parseBoundCoordinate(String pathInfo) {
-    List<Float> coordinates = new ArrayList<>();
-
-    String [] pathParts = pathInfo.split("/");
-    for (int i = 1; i < pathParts.length; i++) {
-      coordinates.add(Float.parseFloat(pathParts[i]));
-    }
-        
-    return coordinates;
   }
 }
