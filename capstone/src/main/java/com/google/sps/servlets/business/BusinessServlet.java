@@ -75,10 +75,7 @@ public class BusinessServlet extends HttpServlet {
           "The business you were looking was not found in our records!");
       return;
     }
-    String id = "";
-    if (userService.getCurrentUser() != null) {
-      id = userService.getCurrentUser().getUserId();
-    }
+    String id = businessEntity.getKey().getName();
     String name = (String) businessEntity.getProperty(NAME_PROPERTY);
     String email = (String) businessEntity.getProperty(CALENDAR_PROPERTY);
     String bio = (String) businessEntity.getProperty(BIO_PROPERTY);
@@ -86,7 +83,12 @@ public class BusinessServlet extends HttpServlet {
     String story = (String) businessEntity.getProperty(STORY_PROPERTY);
     String about = (String) businessEntity.getProperty(ABOUT_PROPERTY);
     String support = (String) businessEntity.getProperty(SUPPORT_PROPERTY);
-    boolean isCurrentUser = businessID.equals(id);
+
+    String userId = "";
+    if (userService.getCurrentUser() != null) {
+      userId = userService.getCurrentUser().getUserId();
+    }
+    boolean isCurrentUser = businessID.equals(userId);
     BusinessProfile business =
         new BusinessProfile(id, name, location, bio, story, about, email, support, isCurrentUser);
 
