@@ -14,19 +14,18 @@
 
 package com.google.sps.servlets;
 
-import static com.google.sps.data.ProfileDatastoreUtil.ABOUT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.GEO_PT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.CALENDAR_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
+import static com.google.sps.data.ProfileDatastoreUtil.LAT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LONG_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.SW_LAT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.SW_LNG_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NE_LAT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NE_LNG_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.STORY_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.SUPPORT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.YES;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -43,7 +42,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.StContainsFilter;
 import com.google.appengine.api.datastore.GeoPt;
 import com.google.gson.Gson;
-import com.google.sps.data.BusinessProfile;
+import com.google.sps.data.MapInfo;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -81,29 +80,26 @@ public class MapServlet extends HttpServlet {
 
     Rectangle bounds = new Rectangle(SW, NE);
 
+    // Filter businesses that are within the map search bounds.
     Filter propertyFilter = new CompositeFilter(CompositeFilterOperator.AND, Arrays.asList(
                             new FilterPredicate(IS_BUSINESS_PROPERTY, FilterOperator.EQUAL, YES),
-                            new StContainsFilter("geoPt", bounds)));
+                            new StContainsFilter(GEO_PT_PROPERTY, bounds)));
 
     Query query = new Query(PROFILE_TASK_NAME).setFilter(propertyFilter);
 
     PreparedQuery results = datastore.prepare(query);
 
     // Convert entities to Profile objects.
-    List<BusinessProfile> businesses = new ArrayList<>();
+    List<MapInfo> businesses = new ArrayList<>();
     for (Entity entity : results.asIterable()) {
       String id = (String) entity.getKey().getName();
       String name = (String) entity.getProperty(NAME_PROPERTY);
       String location = (String) entity.getProperty(LOCATION_PROPERTY);
       String bio = (String) entity.getProperty(BIO_PROPERTY);
-      String story = (String) entity.getProperty(STORY_PROPERTY);
-      String about = (String) entity.getProperty(ABOUT_PROPERTY);
-      String calendarEmail = (String) entity.getProperty(CALENDAR_PROPERTY);
-      String support = (String) entity.getProperty(SUPPORT_PROPERTY);
+      GeoPt geoPt = (GeoPt) entity.getProperty(GEO_PT_PROPERTY);
 
-      BusinessProfile profile =
-          new BusinessProfile(id, name, location, bio, story, about, calendarEmail, support, false);
-      businesses.add(profile);
+      MapInfo business = new MapInfo(id, name, location, bio, geoPt);
+      businesses.add(business);
     }
 
     response.setContentType("application/json;");

@@ -16,11 +16,7 @@ package com.google.sps.servlets;
 
 import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
 import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.CALENDAR_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.GEO_PT_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.STORY_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.ABOUT_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.SUPPORT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.SW_LAT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.SW_LNG_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NE_LAT_PROPERTY;
@@ -45,7 +41,7 @@ import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestC
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
-import com.google.sps.data.BusinessProfile;
+import com.google.sps.data.MapInfo;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -77,10 +73,6 @@ public class MapServletTest {
   private static final String LOCATION_IN_BOUNDS = "Mountain View, CA, USA";
   private static final String LOCATION_NOT_IN_BOUNDS = "New York, NY";
   private static final String BIO = "This is my business bio.";
-  private static final String STORY = "The pandemic has affected my business in X many ways.";
-  private static final String ABOUT = "Here is the Pizzeria's menu.";
-  private static final String EMAIL = "email@business.biz";
-  private static final String SUPPORT = "Please donate at X website.";
   private static final String SW_LAT = "37.2227223";
   private static final String SW_LNG = "-122.3033039";
   private static final String NE_LAT = "37.548271";
@@ -96,6 +88,8 @@ public class MapServletTest {
   private StringWriter servletResponseWriter;
   private MapServlet servlet;
   private DatastoreService datastore;
+  private GeoPt GEO_PT_IN_BOUNDS;
+  private GeoPt GEO_PT_NOT_IN_BOUNDS;
 
   @Before
   public void setUp() throws Exception {
@@ -106,6 +100,8 @@ public class MapServletTest {
     doReturn(new PrintWriter(servletResponseWriter)).when(response).getWriter();
     servlet = new MapServlet();
     datastore = DatastoreServiceFactory.getDatastoreService();
+    GEO_PT_IN_BOUNDS = new GeoPt(Float.parseFloat(LAT_IN_BOUNDS), Float.parseFloat(LONG_IN_BOUNDS));
+    GEO_PT_NOT_IN_BOUNDS = new GeoPt(Float.parseFloat(LAT_NOT_IN_BOUNDS), Float.parseFloat(LONG_NOT_IN_BOUNDS));
   }
 
   @After
@@ -133,26 +129,26 @@ public class MapServletTest {
     setRequestParams();
 
     // This list will help in constructing the expected response.
-    List<BusinessProfile> businesses = new ArrayList();
+    List<MapInfo> businesses = new ArrayList();
 
     Entity aBusinessInBounds = createBusiness(USER_ID_1);
     aBusinessInBounds.setProperty(IS_BUSINESS_PROPERTY, A_BUSINESS);
     aBusinessInBounds.setProperty(LOCATION_PROPERTY, LOCATION_IN_BOUNDS);
-    aBusinessInBounds.setProperty(GEO_PT_PROPERTY, createGeoPt(LAT_IN_BOUNDS, LONG_IN_BOUNDS));
+    aBusinessInBounds.setProperty(GEO_PT_PROPERTY, GEO_PT_IN_BOUNDS);
     datastore.put(aBusinessInBounds);
 
     Entity aBusinessNotInBounds = createBusiness(USER_ID_2);
     aBusinessNotInBounds.setProperty(IS_BUSINESS_PROPERTY, A_BUSINESS);
     aBusinessNotInBounds.setProperty(LOCATION_PROPERTY, LOCATION_NOT_IN_BOUNDS);
-    aBusinessNotInBounds.setProperty(GEO_PT_PROPERTY, createGeoPt(LAT_NOT_IN_BOUNDS, LONG_NOT_IN_BOUNDS));
+    aBusinessNotInBounds.setProperty(GEO_PT_PROPERTY, GEO_PT_NOT_IN_BOUNDS);
     datastore.put(aBusinessNotInBounds);
 
     Entity notABusiness = createNonBusiness(USER_ID_3);
     notABusiness.setProperty(IS_BUSINESS_PROPERTY, NOT_A_BUSINESS);
     datastore.put(notABusiness);
 
-    BusinessProfile businessProfile =
-        new BusinessProfile(USER_ID_1, NAME, LOCATION_IN_BOUNDS, BIO, STORY, ABOUT, EMAIL, SUPPORT, false);
+    MapInfo businessProfile =
+        new MapInfo(USER_ID_1, NAME, LOCATION_IN_BOUNDS, BIO, GEO_PT_IN_BOUNDS);
     businesses.add(businessProfile);
 
     servlet.doGet(request, response);
@@ -184,17 +180,8 @@ public class MapServletTest {
     Entity newBusiness = new Entity(PROFILE_TASK_NAME, id);
     newBusiness.setProperty(NAME_PROPERTY, NAME);
     newBusiness.setProperty(BIO_PROPERTY, BIO);
-    newBusiness.setProperty(STORY_PROPERTY, STORY);
-    newBusiness.setProperty(ABOUT_PROPERTY, ABOUT);
-    newBusiness.setProperty(CALENDAR_PROPERTY, EMAIL);
-    newBusiness.setProperty(SUPPORT_PROPERTY, SUPPORT);
 
     return newBusiness;
-  }
-
-  // Create a geoPt.
-  private GeoPt createGeoPt(String lat, String lng) {
-    return new GeoPt(Float.parseFloat(lat), Float.parseFloat(lng));
   }
 
   // Create a non-business entity.
@@ -202,8 +189,8 @@ public class MapServletTest {
     Entity nonBusiness = new Entity(PROFILE_TASK_NAME, id);
     nonBusiness.setProperty(NAME_PROPERTY, NAME);
     nonBusiness.setProperty(LOCATION_PROPERTY, LOCATION_IN_BOUNDS);
+    nonBusiness.setProperty(GEO_PT_PROPERTY, GEO_PT_IN_BOUNDS);
     nonBusiness.setProperty(BIO_PROPERTY, BIO);
-    nonBusiness.setProperty(GEO_PT_PROPERTY, createGeoPt(LAT_IN_BOUNDS, LONG_IN_BOUNDS));
 
     return nonBusiness;
   }
