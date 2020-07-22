@@ -21,6 +21,10 @@ import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.CALENDAR_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
+import static com.google.sps.data.ProfileDatastoreUtil.SW_LAT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.SW_LNG_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.NE_LAT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.NE_LNG_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.STORY_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.SUPPORT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.YES;
@@ -62,11 +66,11 @@ public class MapServlet extends HttpServlet {
     float SW_Lat, SW_Lng, NE_Lat, NE_Lng;
 
     try {
-      SW_Lat = Float.parseFloat(request.getParameter("SW_Lat"));
-      SW_Lng = Float.parseFloat(request.getParameter("SW_Lng"));
-      NE_Lat = Float.parseFloat(request.getParameter("NE_Lat"));
-      NE_Lng = Float.parseFloat(request.getParameter("NE_Lng"));
-    } catch (Exception e) {
+      SW_Lat = Float.parseFloat(request.getParameter(SW_LAT_PROPERTY));
+      SW_Lng = Float.parseFloat(request.getParameter(SW_LNG_PROPERTY));
+      NE_Lat = Float.parseFloat(request.getParameter(NE_LAT_PROPERTY));
+      NE_Lng = Float.parseFloat(request.getParameter(NE_LNG_PROPERTY));
+    } catch (NullPointerException e) {
       response.sendError(
           HttpServletResponse.SC_BAD_REQUEST, "The map is not found.");
       return;
