@@ -222,9 +222,5 @@ function showInfoWindow(id, name, location) {
 function buildIWContent(id, name, location) {
   document.getElementById('map-name').textContent = name;
   document.getElementById('map-location').textContent = location;
-
-  const aElement = document.createElement('a');
-  aElement.setAttribute('href', '/business.html?id='+id);
-  aElement.innerText = 'CLICK HERE';
-  document.getElementById('map-link').appendChild(aElement);
+  document.getElementById('map-link').setAttribute('href', '/business.html?id='+id);
 }
