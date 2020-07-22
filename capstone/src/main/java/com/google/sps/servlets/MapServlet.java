@@ -72,7 +72,7 @@ public class MapServlet extends HttpServlet {
       NE_Lng = Float.parseFloat(request.getParameter(NE_LNG_PROPERTY));
     } catch (NullPointerException e) {
       response.sendError(
-          HttpServletResponse.SC_BAD_REQUEST, "The map is not found.");
+          HttpServletResponse.SC_BAD_REQUEST, "Request parameters are invalid.");
       return;
     }
 
