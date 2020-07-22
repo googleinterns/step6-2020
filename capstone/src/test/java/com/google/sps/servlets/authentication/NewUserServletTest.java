@@ -16,6 +16,7 @@ package com.google.sps.servlets.authentication;
 
 import static com.google.sps.data.ProfileDatastoreUtil.ANONYMOUS_NAME;
 import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.GEO_PT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
@@ -26,6 +27,7 @@ import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
@@ -47,11 +49,14 @@ import org.mockito.MockitoAnnotations;
 @RunWith(JUnit4.class)
 public class NewUserServletTest {
   private static final String NAME = "John Doe";
-  private static final String LOCATION = "Mountain View, CA";
+  private static final String LAT = "37.386051";
+  private static final String LOCATION = "Mountain View, CA, USA";
+  private static final String LONG = "-122.083855";
   private static final String BIO = "This is my bio.";
   private static final String USER_ID = "12345";
   private static final String EMAIL = "abc@gmail.com";
   private static final String AUTHDOMAIN = "gmail.com";
+  private static final GeoPt GEO_PT = new GeoPt(Float.parseFloat(LAT), Float.parseFloat(LONG));
 
   @Mock private HttpServletRequest request;
 
@@ -100,6 +105,7 @@ public class NewUserServletTest {
     Assert.assertEquals(capEntity.getProperty(IS_BUSINESS_PROPERTY), NO);
     Assert.assertEquals(capEntity.getProperty(NAME_PROPERTY), ANONYMOUS_NAME);
     Assert.assertEquals(capEntity.getProperty(LOCATION_PROPERTY), NULL_STRING);
+    Assert.assertEquals(capEntity.getProperty(GEO_PT_PROPERTY), NULL_STRING);
     Assert.assertEquals(capEntity.getProperty(BIO_PROPERTY), NULL_STRING);
   }
 
@@ -116,6 +122,7 @@ public class NewUserServletTest {
     ent.setProperty(IS_BUSINESS_PROPERTY, NO);
     ent.setProperty(NAME_PROPERTY, NAME);
     ent.setProperty(LOCATION_PROPERTY, LOCATION);
+    ent.setProperty(GEO_PT_PROPERTY, GEO_PT);
     ent.setProperty(BIO_PROPERTY, BIO);
     datastore.put(ent);
 
@@ -125,6 +132,7 @@ public class NewUserServletTest {
     Assert.assertEquals(capEntity.getProperty(IS_BUSINESS_PROPERTY), NO);
     Assert.assertEquals(capEntity.getProperty(NAME_PROPERTY), NAME);
     Assert.assertEquals(capEntity.getProperty(LOCATION_PROPERTY), LOCATION);
+    Assert.assertEquals(capEntity.getProperty(GEO_PT_PROPERTY), GEO_PT);
     Assert.assertEquals(capEntity.getProperty(BIO_PROPERTY), BIO);
   }
 }

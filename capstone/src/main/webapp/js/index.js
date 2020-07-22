@@ -78,3 +78,6 @@ function showMoreInfo(id) {
   // id.slice(-1) gets the index of the business as specified by the id
   businessCard.style.maxHeight = 'none';
 }
+
+// TODO: @winniewan. Fetch map data from server side and display the home page map.
+

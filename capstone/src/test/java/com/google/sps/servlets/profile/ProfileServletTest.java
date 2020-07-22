@@ -15,8 +15,11 @@
 package com.google.sps.servlets.profile;
 
 import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.GEO_PT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LAT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LONG_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NO;
 import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
@@ -26,6 +29,7 @@ import static org.mockito.Mockito.when;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
@@ -59,6 +63,8 @@ public class ProfileServletTest {
   private static final String NAME = "John Doe";
   private static final String NO_NAME = null;
   private static final String LOCATION = "Mountain View, CA";
+  private static final String LAT = "45.0";
+  private static final String LONG = "45.0";
   private static final String BIO = "This is my bio.";
   private static final String USER_ID = "12345";
   private static final String USER2_ID = "6789";
@@ -75,6 +81,7 @@ public class ProfileServletTest {
   private LocalServiceTestHelper helper;
   private ProfileServlet profileServlet;
   private DatastoreService datastore;
+  private GeoPt GEO_PT;
 
   @Before
   public void setUp() throws Exception {
@@ -93,6 +100,7 @@ public class ProfileServletTest {
 
     datastore = DatastoreServiceFactory.getDatastoreService();
     profileServlet = new ProfileServlet();
+    GEO_PT = new GeoPt(Float.parseFloat(LAT), Float.parseFloat(LONG));
   }
 
   @After
@@ -142,13 +150,9 @@ public class ProfileServletTest {
 
     // Create an entity with this USER_ID and set it's property "isBusiness" to YES.
     // Then add this to datastore.
-    Key userKey = KeyFactory.createKey(PROFILE_TASK_NAME, USER_ID);
-    Entity ent = new Entity(PROFILE_TASK_NAME, USER_ID);
+    Entity ent = setBusinessEntityProperty();
 
     ent.setProperty(IS_BUSINESS_PROPERTY, YES);
-    ent.setProperty(NAME_PROPERTY, NAME);
-    ent.setProperty(LOCATION_PROPERTY, LOCATION);
-    ent.setProperty(BIO_PROPERTY, BIO);
 
     profileServlet.doGet(request, response);
 
@@ -170,14 +174,11 @@ public class ProfileServletTest {
     // Create an entity with this USER_ID and set it's property "isBusiness" to NO.
     // Then add this to datastore.
     Key userKey = KeyFactory.createKey(PROFILE_TASK_NAME, USER_ID);
-    Entity ent = new Entity(PROFILE_TASK_NAME, USER_ID);
-
-    boolean isCurrentUser = true;
+    Entity ent = setBusinessEntityProperty();
 
     ent.setProperty(IS_BUSINESS_PROPERTY, NO);
-    ent.setProperty(NAME_PROPERTY, NAME);
-    ent.setProperty(LOCATION_PROPERTY, LOCATION);
-    ent.setProperty(BIO_PROPERTY, BIO);
+
+    boolean isCurrentUser = true;
 
     datastore.put(ent);
 
@@ -227,8 +228,7 @@ public class ProfileServletTest {
 
     when(request.getParameter(IS_BUSINESS_PROPERTY)).thenReturn(NO);
     when(request.getParameter(NAME_PROPERTY)).thenReturn(NO_NAME);
-    when(request.getParameter(LOCATION_PROPERTY)).thenReturn(LOCATION);
-    when(request.getParameter(BIO_PROPERTY)).thenReturn(BIO);
+    setRequestParameters();
 
     Key userKey = KeyFactory.createKey(PROFILE_TASK_NAME, USER_ID);
     Entity ent = new Entity(PROFILE_TASK_NAME, USER_ID);
@@ -247,8 +247,7 @@ public class ProfileServletTest {
   public void userEditProfileAddToDatastore() throws Exception {
     when(request.getParameter(IS_BUSINESS_PROPERTY)).thenReturn(NO);
     when(request.getParameter(NAME_PROPERTY)).thenReturn(NAME);
-    when(request.getParameter(LOCATION_PROPERTY)).thenReturn(LOCATION);
-    when(request.getParameter(BIO_PROPERTY)).thenReturn(BIO);
+    setRequestParameters();
 
     profileServlet.doPost(request, response);
 
@@ -260,6 +259,7 @@ public class ProfileServletTest {
     Assert.assertEquals(capEntity.getProperty(IS_BUSINESS_PROPERTY), NO);
     Assert.assertEquals(capEntity.getProperty(NAME_PROPERTY), NAME);
     Assert.assertEquals(capEntity.getProperty(LOCATION_PROPERTY), LOCATION);
+    Assert.assertEquals(capEntity.getProperty(GEO_PT_PROPERTY), GEO_PT);
     Assert.assertEquals(capEntity.getProperty(BIO_PROPERTY), BIO);
   }
 
@@ -271,13 +271,32 @@ public class ProfileServletTest {
   public void nonBusinessUserEditProfileAddToDatastore() throws Exception {
     when(request.getParameter(IS_BUSINESS_PROPERTY)).thenReturn(YES);
     when(request.getParameter(NAME_PROPERTY)).thenReturn(NAME);
-    when(request.getParameter(LOCATION_PROPERTY)).thenReturn(LOCATION);
-    when(request.getParameter(BIO_PROPERTY)).thenReturn(BIO);
+    setRequestParameters();
 
     profileServlet.doPost(request, response);
 
     // verify if a sendError() was performed with the expected values.
     Mockito.verify(response, Mockito.times(1))
         .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
+  }
+
+  // Helper function to set business entity properties.
+  private Entity setBusinessEntityProperty() {
+    Entity ent = new Entity(PROFILE_TASK_NAME, USER_ID);
+
+    ent.setProperty(NAME_PROPERTY, NAME);
+    ent.setProperty(LOCATION_PROPERTY, LOCATION);
+    ent.setProperty(GEO_PT_PROPERTY, GEO_PT);
+    ent.setProperty(BIO_PROPERTY, BIO);
+
+    return ent;
+  }
+
+  // Helper function to set getParameter() method.
+  private void setRequestParameters() {
+    when(request.getParameter(LOCATION_PROPERTY)).thenReturn(LOCATION);
+    when(request.getParameter(LAT_PROPERTY)).thenReturn(LAT);
+    when(request.getParameter(LONG_PROPERTY)).thenReturn(LONG);
+    when(request.getParameter(BIO_PROPERTY)).thenReturn(BIO);
   }
 }

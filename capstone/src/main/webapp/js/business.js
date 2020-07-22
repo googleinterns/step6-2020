@@ -57,12 +57,46 @@ window.submitProfileForm = function() {
   let form = document.getElementById('edit-profile');
   form.method = 'POST';
 
+  
   if(document.getElementById('yes').checked) {
     form.action = '/business';
     return;
   }
 
   form.action = '/profile';
+
+  if (document.getElementById('edit-location').value.length == 0) {
+    form.submit();
+  } else {
+    convertToLatLong().then((results) => {
+      form.submit();
+    }) 
+  }
+}
+
+// Convert address to latitude and longitude values.
+async function convertToLatLong() {
+  let address = document.getElementById('edit-location').value;
+  let lat = document.getElementById('edit-lat');
+  let long = document.getElementById('edit-long');
+
+  let results = await geocoderPromise({'address': address});
+  lat.value = results[0].geometry.location.lat();
+  long.value = results[0].geometry.location.lng();
+}
+
+function geocoderPromise(request) {
+  let geocoder = new google.maps.Geocoder();
+
+  return new Promise((resolve, reject) => {
+    geocoder.geocode(request, function(results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        resolve(results);
+      } else {
+        reject();
+      }
+    })
+  })
 }
 
 // Set the correct values for both view and edit sections.

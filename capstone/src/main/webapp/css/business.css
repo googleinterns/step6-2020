@@ -3,3 +3,7 @@
     height: 425px;
     width:  50%
 }
+
+#lat-long {
+    display: none;
+}

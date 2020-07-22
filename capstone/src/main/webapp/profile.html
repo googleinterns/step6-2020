@@ -61,7 +61,12 @@
           
             <div id="location-section">
               <label for="location">Location:</label><br>
-              <input id="edit-location" name="location" placeholder="Enter your address" onFocus="geolocate()" type="text"/><br>
+              <input id="edit-location" name="location" placeholder="Enter your address" onFocus="geolocate()" type="text" /><br>
+            </div>
+
+            <div id="lat-long">
+              <input name="lat" id="edit-lat" value="" />
+              <input name="long" id="edit-long" value="" />
             </div>
           
             <div id="bio-section">
@@ -90,7 +95,7 @@
             </div>
           </div>
 
-          <input type="submit" value="Submit" id="submit-button" onclick="submitProfileForm()">
+          <input type="button" value="Submit" id="submit-button" onclick="submitProfileForm()">
         </form> 
       </div>
 

@@ -1,11 +1,3 @@
-#edit-button {
-    display: none;
-}
-
-#edit-profile-section {
-    display: none;
-}
-
 #basic-questionnaire {
     display: block;
 }
@@ -14,8 +6,20 @@
     display: none;
 }
 
+#edit-button {
+    display: none;
+}
+
+#edit-profile-section {
+    display: none;
+}
+
 #first-question {
     display: block;
+}
+
+#lat-long {
+    display: none;
 }
 
 #map {

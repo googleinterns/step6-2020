@@ -16,6 +16,7 @@ package com.google.sps.servlets;
 
 import static com.google.sps.data.ProfileDatastoreUtil.ABOUT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.CALENDAR_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
@@ -45,8 +46,6 @@ import javax.servlet.http.HttpServletResponse;
 /** Servlet responsible for listing all business profiles. */
 @WebServlet("/businesses")
 public class BusinessesServlet extends HttpServlet {
-
-  private static final String CALENDAR_PROPERTY = "calendarEmail";
 
   DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
