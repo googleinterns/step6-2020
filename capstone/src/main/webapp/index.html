@@ -6,7 +6,10 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="css/index.css">
     <script type="module" src="js/index.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCuIcAn0GsCDsALoF3puLLDADHNzmc44R8&libraries=places"
+        async defer></script>
   </head>
   <body>
     <!-- Navigation Bar -->
@@ -24,8 +27,47 @@
     </nav>
 
     <div class="container">
-      <div id="map"></div>
+      <!-- Home Page Map Search Box -->
+      <div class="business-search">
+        <div id="findBusinesses"> Find local businesses in: </div>
 
+        <div id="locationField">
+          <input id="autocomplete" placeholder="Enter a location" type="text" />
+        </div>
+      </div>
+
+      <!-- Home Page Map -->
+      <div id="home-page-map">
+        <div id="map"></div>
+          <div id="listing">
+            <!-- The Results Table From Map -->
+            <table id="resultsTable">
+              <tbody id="results"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Individual Map Marker's Info Window  -->
+        <div style="display: none">
+          <div id="info-content">
+            <table>
+              <tr id="map-name-row" class="iw_table_row">
+                <td class="iw_heading">Business Name: </td>
+                <td id="map-name"></td>
+              </tr>
+              <tr id="map-location-row" class="iw_table_row">
+                <td class="iw_heading">Business Address: </td>
+                <td id="map-location"></td>
+              </tr>
+              <tr id="map-link-row" class="iw_table_row">
+                <td class="iw_heading">Business Profile: </td>
+                <td id="map-link"></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+      <!-- List of Business Cards -->
       <div id="businesses"></div>
     </div>
   </body>
