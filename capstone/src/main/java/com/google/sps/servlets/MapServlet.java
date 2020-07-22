@@ -71,7 +71,7 @@ public class MapServlet extends HttpServlet {
       NE_Lng = coordinates.get(3);
     } catch (IndexOutOfBoundsException e) {
       response.sendError(
-          HttpServletResponse.SC_NOT_FOUND, "The map is not found.");
+          HttpServletResponse.SC_BAD_REQUEST, "The map is not found.");
       return;
     }
 

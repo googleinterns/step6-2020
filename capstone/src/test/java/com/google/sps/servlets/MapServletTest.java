@@ -172,7 +172,7 @@ public class MapServletTest {
 
     // verify if a sendError() was performed with the expected values.
     Mockito.verify(response, Mockito.times(1))
-        .sendError(Mockito.eq(HttpServletResponse.SC_NOT_FOUND), Mockito.anyString());
+        .sendError(Mockito.eq(HttpServletResponse.SC_BAD_REQUEST), Mockito.anyString());
   }
 
   // Create a business entity.
