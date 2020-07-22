@@ -15,11 +15,11 @@
 package com.google.sps.servlets.profile;
 
 import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.LAT_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.LONG_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.GEO_PT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LAT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LONG_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
 import static com.google.sps.data.ProfileDatastoreUtil.YES;
@@ -134,7 +134,9 @@ public class ProfileServlet extends HttpServlet {
     profileEntity.setProperty(IS_BUSINESS_PROPERTY, getParam(IS_BUSINESS_PROPERTY, request));
     profileEntity.setProperty(NAME_PROPERTY, getParam(NAME_PROPERTY, request));
     profileEntity.setProperty(LOCATION_PROPERTY, getParam(LOCATION_PROPERTY, request));
-    profileEntity.setProperty(GEO_PT_PROPERTY, getGeoPt(getParam(LAT_PROPERTY, request), getParam(LONG_PROPERTY, request)));
+    profileEntity.setProperty(
+        GEO_PT_PROPERTY,
+        getGeoPt(getParam(LAT_PROPERTY, request), getParam(LONG_PROPERTY, request)));
     profileEntity.setProperty(BIO_PROPERTY, getParam(BIO_PROPERTY, request));
 
     // Put entity in datastore.
