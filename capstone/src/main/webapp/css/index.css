@@ -1,107 +1,106 @@
+#autocomplete {
+    width: 100%;
+}
+
+body {
+    padding: 0 !important;
+}
+
 #businesses {
-  margin-left: auto;
-  margin-right: auto;
-  width: 750px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 750px;
 }
 
 .business-card {
-  border: 5px solid silver;
-  border-radius: 20px;
-  margin-bottom: 10px;
-  max-height: 150px;
-  overflow: hidden;
-  position: relative;
+    border: 5px solid silver;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    max-height: 150px;
+    overflow: hidden;
+    position: relative;
 }
 
 .business-info {
-  font-size: 125%;
+    font-size: 125%;
 }
 
-.show-more {
-  background-image: linear-gradient(transparent, white);
-  bottom: 0;
-  color: darkgreen;
-  margin: 0;
-  padding: 20px 0px;
-  position: absolute;
-  text-align: center;
-  width: 100%;
+.business-search {
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    background: #fff;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    margin-bottom: 20px;
+    width: 440px;
+    z-index: 1;
 }
 
-.show-more span {
-  background-color: silver;
-  padding: 5px;
-  border-radius: 5px;
-}
-
-.show-more span:hover {
-  cursor: pointer;
-}
-
-
-#map {
-  height: 500px;
-  width: 700px;
+#findBusinesses {
+    font-size: 14px;
 }
 
 #home-page-map {   
     display: flex;
 }
 
-body {
-  padding: 0 !important;
-}
-
-table {
-  font-size: 12px;
-}
-
-.business-search {
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  background: #fff;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  margin-bottom: 20px;
-  width: 440px;
-  z-index: 1;
+.iw_heading {
+    font-weight: bold;
+    text-align: left;
 }
 
 #listing {
-  width: 200px;
-  height: 470px;
-  overflow: auto;
-  cursor: pointer;
-  overflow-x: hidden;
-}
-
-#findBusinesses {
-  font-size: 14px;
+    width: 200px;
+    height: 470px;
+    overflow: auto;
+    cursor: pointer;
+    overflow-x: hidden;
 }
 
 #locationField {
-  -webkit-box-flex: 1 1 190px;
-  -ms-flex: 1 1 190px;
-  flex: 1 1 190px;
-  margin: 0 8px;
+    -webkit-box-flex: 1 1 190px;
+    -ms-flex: 1 1 190px;
+    flex: 1 1 190px;
+    margin: 0 8px;
 }
 
-#autocomplete {
-  width: 100%;
+#map {
+    height: 500px;
+    width: 700px;
+}
+
+.map_link_row, .map_location_row, .map_name_row {
+    height: 18px;
 }
 
 #resultsTable {
-  border-collapse: collapse;
-  width: 240px;
+    border-collapse: collapse;
+    width: 240px;
 }
 
-.map_name_row, .map_location_row, .map_link_row {
-  height: 18px;
+.show-more {
+    background-image: linear-gradient(transparent, white);
+    bottom: 0;
+    color: darkgreen;
+    margin: 0;
+    padding: 20px 0px;
+    position: absolute;
+    text-align: center;
+    width: 100%;
 }
 
-.iw_heading {
-  font-weight: bold;
-  text-align: left;
+.show-more span {
+    background-color: silver;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.show-more span:hover {
+    cursor: pointer;
+}
+
+table {
+    font-size: 12px;
 }
