@@ -88,12 +88,11 @@ window.submitProfileForm = function() {
   form.method = 'POST';
   
   if(document.getElementById('yes').checked) {
-      form.action = '/business';
-      return;
-    }
+    form.action = '/business';
+  } else {
+    form.action = '/profile';
+  }
   
-  form.action = '/profile';
-
   if (document.getElementById('edit-location').value.length == 0) {
     form.submit();
   } else {

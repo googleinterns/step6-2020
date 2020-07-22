@@ -56,15 +56,13 @@ window.hasAnswerQuestionnaire = function() {
 window.submitProfileForm = function() {
   let form = document.getElementById('edit-profile');
   form.method = 'POST';
-
   
   if(document.getElementById('yes').checked) {
     form.action = '/business';
-    return;
+  } else {
+    form.action = '/profile';
   }
-
-  form.action = '/profile';
-
+  
   if (document.getElementById('edit-location').value.length == 0) {
     form.submit();
   } else {
