@@ -34,16 +34,11 @@ public final class MapInfo {
    * @param bio the user's bio.
    * @param geoPt the user's lat and long coordinates.
    */
-  public MapInfo(
-      String id,
-      String name,
-      String location,
-      String bio,
-      GeoPt geoPt) {
+  public MapInfo(String id, String name, String location, String bio, GeoPt geoPt) {
     this.id = id;
     this.name = name;
     this.location = location;
     this.bio = bio;
-    this.geoPt = geoPt; 
+    this.geoPt = geoPt;
   }
 }

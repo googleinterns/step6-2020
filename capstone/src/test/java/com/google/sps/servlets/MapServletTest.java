@@ -14,22 +14,18 @@
 
 package com.google.sps.servlets;
 
-import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
 import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.GEO_PT_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.SW_LAT_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.SW_LNG_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NE_LAT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NE_LNG_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.LAT_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.LONG_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NO;
 import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
+import static com.google.sps.data.ProfileDatastoreUtil.SW_LAT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.SW_LNG_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.YES;
-
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -42,7 +38,6 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.google.sps.data.MapInfo;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -101,7 +96,8 @@ public class MapServletTest {
     servlet = new MapServlet();
     datastore = DatastoreServiceFactory.getDatastoreService();
     GEO_PT_IN_BOUNDS = new GeoPt(Float.parseFloat(LAT_IN_BOUNDS), Float.parseFloat(LONG_IN_BOUNDS));
-    GEO_PT_NOT_IN_BOUNDS = new GeoPt(Float.parseFloat(LAT_NOT_IN_BOUNDS), Float.parseFloat(LONG_NOT_IN_BOUNDS));
+    GEO_PT_NOT_IN_BOUNDS =
+        new GeoPt(Float.parseFloat(LAT_NOT_IN_BOUNDS), Float.parseFloat(LONG_NOT_IN_BOUNDS));
   }
 
   @After

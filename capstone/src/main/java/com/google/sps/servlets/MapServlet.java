@@ -19,33 +19,31 @@ import static com.google.sps.data.ProfileDatastoreUtil.GEO_PT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
-import static com.google.sps.data.ProfileDatastoreUtil.LAT_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.LONG_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.SW_LAT_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.SW_LNG_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NE_LAT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NE_LNG_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
+import static com.google.sps.data.ProfileDatastoreUtil.SW_LAT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.SW_LNG_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.YES;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
-import com.google.appengine.api.datastore.Query.GeoRegion.Rectangle;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Query.GeoRegion.Rectangle;
 import com.google.appengine.api.datastore.Query.StContainsFilter;
-import com.google.appengine.api.datastore.GeoPt;
 import com.google.gson.Gson;
 import com.google.sps.data.MapInfo;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -70,8 +68,7 @@ public class MapServlet extends HttpServlet {
       NE_Lat = Float.parseFloat(request.getParameter(NE_LAT_PROPERTY));
       NE_Lng = Float.parseFloat(request.getParameter(NE_LNG_PROPERTY));
     } catch (NullPointerException e) {
-      response.sendError(
-          HttpServletResponse.SC_BAD_REQUEST, "Request parameters are invalid.");
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Request parameters are invalid.");
       return;
     }
 
@@ -81,9 +78,12 @@ public class MapServlet extends HttpServlet {
     Rectangle bounds = new Rectangle(SW, NE);
 
     // Filter businesses that are within the map search bounds.
-    Filter propertyFilter = new CompositeFilter(CompositeFilterOperator.AND, Arrays.asList(
-                            new FilterPredicate(IS_BUSINESS_PROPERTY, FilterOperator.EQUAL, YES),
-                            new StContainsFilter(GEO_PT_PROPERTY, bounds)));
+    Filter propertyFilter =
+        new CompositeFilter(
+            CompositeFilterOperator.AND,
+            Arrays.asList(
+                new FilterPredicate(IS_BUSINESS_PROPERTY, FilterOperator.EQUAL, YES),
+                new StContainsFilter(GEO_PT_PROPERTY, bounds)));
 
     Query query = new Query(PROFILE_TASK_NAME).setFilter(propertyFilter);
 
