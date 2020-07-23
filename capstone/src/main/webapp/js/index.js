@@ -113,7 +113,6 @@ function onPlaceChanged() {
   let place = autocomplete.getPlace();
   if (place.geometry) {
     map.panTo(place.geometry.location);
-    // map.setZoom(10);
     map.fitBounds(place.geometry.viewport);
     search();
   } else {
@@ -132,31 +131,34 @@ function search() {
   let NE_Lat = NEPoint.lat();
   let NE_Lng = NEPoint.lng();
 
-  fetch('/map?SW_Lat='+SW_Lat+'&SW_Lng='+SW_Lng+'&NE_Lat='+NE_Lat+'&NE_Lng='+NE_Lng).then(response => response.json()).then(results => {
-    clearResults();
-    clearMarkers();
+  fetch('/map?SW_Lat='+SW_Lat+'&SW_Lng='+SW_Lng+'&NE_Lat='+NE_Lat+'&NE_Lng='+NE_Lng)
+    .then(response => response.json())
+    .then(results => {
+    
+      clearResults();
+      clearMarkers();
 
-    // Create a marker for each business found, and
-    // assign a letter of the alphabetic to each marker icon.
-    for(let i = 0; i < results.length; i++) {
-      let markerLetter = String.fromCharCode('A'.charCodeAt(0) + (i % 26));
-      let markerIcon = MARKER_PATH + markerLetter + '.png';
-      let coordinates = new google.maps.LatLng(results[i].geoPt.latitude, results[i].geoPt.longitude);
+      // Create a marker for each business found, and
+      // assign a letter of the alphabetic to each marker icon.
+      for(let i = 0; i < results.length; i++) {
+        let markerLetter = String.fromCharCode('A'.charCodeAt(0) + (i % 26));
+        let markerIcon = MARKER_PATH + markerLetter + '.png';
+        let coordinates = new google.maps.LatLng(results[i].geoPt.latitude, results[i].geoPt.longitude);
 
-      // Use marker animation to drop the icons incrementally on the map.
-      markers[i] = new google.maps.Marker({
-        position: coordinates,
-        animation: google.maps.Animation.DROP,
-        icon: markerIcon
-      });
+        // Use marker animation to drop the icons incrementally on the map.
+        markers[i] = new google.maps.Marker({
+          position: coordinates,
+          animation: google.maps.Animation.DROP,
+          icon: markerIcon
+        });
 
-      // If the user clicks a business marker, show the details of that business
-      // in an info window.
-      markers[i].placeResult = results[i];
-      google.maps.event.addListener(markers[i], 'click', showInfoWindow.bind(markers[i], results[i].id, results[i].name, results[i].location));
-      setTimeout(dropMarker(i), i * 100);
-      addResult(results[i], results[i].id, i);
-    }
+        // If the user clicks a business marker, show the details of that business
+        // in an info window.
+        markers[i].placeResult = results[i];
+        google.maps.event.addListener(markers[i], 'click', showInfoWindow.bind(markers[i], results[i].id, results[i].name, results[i].location));
+        setTimeout(dropMarker(i), i * 100);
+        addResult(results[i], results[i].id, i);
+      }
   });
 }
 
@@ -194,7 +196,6 @@ function addResult(result, id, i) {
   let icon = document.createElement('img');
   icon.src = markerIcon;
   icon.setAttribute('class', 'placeIcon');
-  icon.setAttribute('className', 'placeIcon');
   let name = document.createTextNode(result.name);
   iconTd.appendChild(icon);
   nameTd.appendChild(name);
@@ -222,5 +223,5 @@ function showInfoWindow(id, name, location) {
 function buildIWContent(id, name, location) {
   document.getElementById('map-name').textContent = name;
   document.getElementById('map-location').textContent = location;
-  document.getElementById('map-link').setAttribute('href', '/business.html?id='+id);
+  document.getElementById('map-link').href = '/business.html?id=' + id;
 }

@@ -52,11 +52,11 @@ body {
 }
 
 #listing {
-    width: 200px;
+    cursor: pointer;
     height: 470px;
     overflow: auto;
-    cursor: pointer;
     overflow-x: hidden;
+    width: 200px;
 }
 
 #locationField {
@@ -93,8 +93,8 @@ body {
 
 .show-more span {
     background-color: silver;
-    padding: 5px;
     border-radius: 5px;
+    padding: 5px;
 }
 
 .show-more span:hover {
