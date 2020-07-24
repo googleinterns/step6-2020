@@ -21,10 +21,21 @@ import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.search.Document;
+import com.google.appengine.api.search.Field;
+import com.google.appengine.api.search.Index;
+import com.google.appengine.api.search.IndexSpec;
+import com.google.appengine.api.search.PutException;
+import com.google.appengine.api.search.Results;
+import com.google.appengine.api.search.ScoredDocument;
+import com.google.appengine.api.search.SearchException;
+import com.google.appengine.api.search.SearchService;
+import com.google.appengine.api.search.SearchServiceFactory;
+import com.google.appengine.api.search.StatusCode;
 import com.google.gson.Gson;
 import com.google.sps.data.BusinessProfile;
 import java.util.ArrayList;
@@ -40,32 +51,44 @@ public class SearchServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) {
-    String searchFor = request.getParameter("searchFor");
+    String searchItem = request.getParameter("searchItem");
 
-    Query searchQuery =
-        new Query(PROFILE_TASK_NAME)
-            .setFilter(
-                CompositeFilterOperator.and(
-                    FilterOperator.EQUAL.of(IS_BUSINESS_PROPERTY, "Yes"),
-                    FilterOperator.EQUAL.of(NAME_PROPERTY, searchFor)));
-    
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    PreparedQuery searchResults = datastore.prepare(searchQuery);
+    SearchService searchService = SearchServiceFactory.getSearchService();
+    Index index = searchService.getIndex(IndexSpec.newBuilder().setIndexName("Business"));
 
-    List<BusinessProfile> businesses = new ArrayList<>();
-    for (Entity business: searchResults.asIterable()) {
-      String id = (String) entity.getKey().getName();
-      String name = (String) entity.getProperty(NAME_PROPERTY);
-      String location = (String) entity.getProperty(LOCATION_PROPERTY);
-      String bio = (String) entity.getProperty(BIO_PROPERTY);
-      String story = (String) entity.getProperty(STORY_PROPERTY);
-      String about = (String) entity.getProperty(ABOUT_PROPERTY);
-      String calendarEmail = (String) entity.getProperty(CALENDAR_PROPERTY);
-      String support = (String) entity.getProperty(SUPPORT_PROPERTY);
+    try {
+      Results<ScoredDocument> searchResults = index.search(Query.newBuilder().build("name:" + searchItem));
 
-      BusinessProfile profile =
-          new BusinessProfile(id, name, location, bio, story, about, calendarEmail, support, false);
-      businesses.add(profile);
+      DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+      List<BusinessProfile> profiles = new ArrayList<>();
+      for (ScoredDocument document: searchResults) {
+        String businessId = document.getId();
+        Query businessQuery =
+            new Query(PROFILE_TASK_NAME)
+                .setFilter(
+                    CompositeFilterOperator.and(
+                        FilterOperator.EQUAL.of(IS_BUSINESS_PROPERTY, "Yes"),
+                        FilterOperator.EQUAL.of(
+                            Entity.KEY_RESERVED_PROPERTY,
+                            KeyFactory.createKey(PROFILE_TASK_NAME, businessID))));
+        Entity businessEntity = datastore.prepare(businessQuery).asSingleEntity();
+        String id = businessEntity.getKey().getName();
+        String name = (String) businessEntity.getProperty(NAME_PROPERTY);
+        String email = (String) businessEntity.getProperty(CALENDAR_PROPERTY);
+        String bio = (String) businessEntity.getProperty(BIO_PROPERTY);
+        String location = (String) businessEntity.getProperty(LOCATION_PROPERTY);
+        String story = (String) businessEntity.getProperty(STORY_PROPERTY);
+        String about = (String) businessEntity.getProperty(ABOUT_PROPERTY);
+        String support = (String) businessEntity.getProperty(SUPPORT_PROPERTY);
+
+        BusinessProfile business =
+            new BusinessProfile(id, name, location, bio, story, about, email, support, false);
+        profiles.add(business);
+      }
+    } except (SearchException e) {
+      if (StatusCode.TRANSIENT_ERROR.equals(e.getOperationResult().getCode())) {
+        // retry
+      }
     }
 
     response.setContentType("application/json");
