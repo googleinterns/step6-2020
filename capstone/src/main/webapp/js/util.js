@@ -61,6 +61,7 @@ export function setProfileUrl() {
 function buildLoginOrLogoutLink(url, isLoggedin) {    
   const aElement = document.createElement('a');
   aElement.setAttribute('href', url);
+  aElement.classList.add('nav-link');
   if (isLoggedin) {
     aElement.innerText = 'Logout';
   } else {
@@ -74,6 +75,7 @@ function buildProfileLink(isBusiness, userId) {
   const aElement = document.createElement('a');
   var url;
   aElement.innerText = 'Profile';
+  aElement.classList.add('nav-link');
   if (isBusiness === 'Yes') {
     url = 'business.html?id=' + userId;
   } else {
