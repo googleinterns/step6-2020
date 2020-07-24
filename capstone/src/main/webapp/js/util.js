@@ -76,7 +76,10 @@ function buildLoginOrLogoutLink(url, isLoggedin) {
     label = 'Login';
   }
   
-  return buildLinkElement(url, label);
+  const link = buildLinkElement(url, label);
+  link.classList.add('nav-link');
+
+  return link;
 }
 
 /** Helper function for building the profile link. */
