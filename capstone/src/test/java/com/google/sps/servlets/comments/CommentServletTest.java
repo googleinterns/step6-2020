@@ -18,9 +18,9 @@ import static com.google.appengine.api.datastore.FetchOptions.Builder.withDefaul
 import static com.google.sps.data.CommentDatastoreUtil.BUSINESS_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.COMMENT_TASK_NAME;
 import static com.google.sps.data.CommentDatastoreUtil.CONTENT_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.HAS_REPLIES_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.PARENT_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.USER_ID_PROPERTY;
-import static com.google.sps.data.CommentDatastoreUtil.HAS_REPLIES_PROPERTY;
 import static com.google.sps.util.CommentTestUtil.createCommentEntity;
 import static com.google.sps.util.CommentTestUtil.generateUniqueCommentId;
 import static com.google.sps.util.TestUtil.assertResponseWithArbitraryTextRaised;
@@ -29,6 +29,7 @@ import static org.mockito.Mockito.doReturn;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
@@ -104,8 +105,13 @@ public class CommentServletTest {
   }
 
   private int countCommentOccurences(
-      DatastoreService ds, String content, String userId, String businessId, String parentId, boolean hasReplies) {
-    Query query = 
+      DatastoreService ds,
+      String content,
+      String userId,
+      String businessId,
+      String parentId,
+      boolean hasReplies) {
+    Query query =
         new Query(COMMENT_TASK_NAME)
             .setFilter(
                 new CompositeFilter(
@@ -114,9 +120,10 @@ public class CommentServletTest {
                         new FilterPredicate(CONTENT_PROPERTY, FilterOperator.EQUAL, content),
                         new FilterPredicate(USER_ID_PROPERTY, FilterOperator.EQUAL, userId),
                         new FilterPredicate(BUSINESS_ID_PROPERTY, FilterOperator.EQUAL, businessId),
-                        new FilterPredicate(PARENT_ID_PROPERTY, FilterOperator.EQUAL, parentId), 
-                        new FilterPredicate(HAS_REPLIES_PROPERTY, FilterOperator.EQUAL, hasReplies))));
-    
+                        new FilterPredicate(PARENT_ID_PROPERTY, FilterOperator.EQUAL, parentId),
+                        new FilterPredicate(
+                            HAS_REPLIES_PROPERTY, FilterOperator.EQUAL, hasReplies))));
+
     return ds.prepare(query).countEntities(withDefaults());
   }
 
@@ -124,14 +131,12 @@ public class CommentServletTest {
   @Test
   public void testBasicDoPost() throws IOException {
     assertEquals(
-        0,
-        countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, "", false));
+        0, countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, "", false));
 
     servlet.doPost(request, response);
 
     assertEquals(
-        1,
-        countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, "", false));
+        1, countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, "", false));
   }
 
   // Make sure that when we add two comments with the same properties we still save two seperate
@@ -139,15 +144,13 @@ public class CommentServletTest {
   @Test
   public void testSameCommentTwice() throws IOException {
     assertEquals(
-        0,
-        countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, "", false));
+        0, countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, "", false));
 
     servlet.doPost(request, response);
     servlet.doPost(request, response);
 
     assertEquals(
-        2,
-        countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, "", false));
+        2, countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, "", false));
   }
 
   // Make requests where one parameter is missing, we expect that to lead to an error
@@ -195,7 +198,8 @@ public class CommentServletTest {
     doReturn(null).when(request).getParameter(PARENT_ID_PROPERTY);
     servlet.doPost(request, response);
 
-    assertEquals(1, countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, "", false));
+    assertEquals(
+        1, countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, "", false));
   }
 
   @Test
@@ -224,25 +228,16 @@ public class CommentServletTest {
     // The Id that gets generated when the comment is added
     String parentId = generateUniqueCommentId(timestamp, MOCK_USER_ID, MOCK_BUSINESS_ID);
 
-    assertEquals(
-        0, 
-        countCommentOccurences(
-            ds, parentId, MOCK_USER_ID, MOCK_BUSINESS_ID, "", true));
+    assertEquals(0, countCommentOccurences(ds, parentId, MOCK_USER_ID, MOCK_BUSINESS_ID, "", true));
 
     // Add reply
     doReturn(parentId).when(request).getParameter(PARENT_ID_PROPERTY);
 
     servlet.doPost(request, response);
 
-    
+    assertEquals(1, countCommentOccurences(ds, parentId, MOCK_USER_ID, MOCK_BUSINESS_ID, "", true));
     assertEquals(
-        1, 
-        countCommentOccurences(
-            ds, parentId, MOCK_USER_ID, MOCK_BUSINESS_ID, "", true));
-    assertEquals(
-        0, 
-        countCommentOccurences(
-            ds, parentId, MOCK_USER_ID, MOCK_BUSINESS_ID, "", false));
+        0, countCommentOccurences(ds, parentId, MOCK_USER_ID, MOCK_BUSINESS_ID, "", false));
   }
 
   @Test

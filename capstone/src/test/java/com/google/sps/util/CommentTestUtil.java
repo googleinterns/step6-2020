@@ -17,20 +17,16 @@ package com.google.sps.util;
 import static com.google.sps.data.CommentDatastoreUtil.BUSINESS_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.COMMENT_TASK_NAME;
 import static com.google.sps.data.CommentDatastoreUtil.CONTENT_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.HAS_REPLIES_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.PARENT_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.TIMESTAMP_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.USER_ID_PROPERTY;
-import static com.google.sps.data.CommentDatastoreUtil.HAS_REPLIES_PROPERTY;
-
 
 import com.google.appengine.api.datastore.Entity;
 
 public class CommentTestUtil {
   public static Entity createCommentEntity(
-      long timestamp, 
-      String userId, 
-      String businessId, 
-      boolean hasReplies) {
+      long timestamp, String userId, String businessId, boolean hasReplies) {
     Entity commentEntity = createCommentEntity(timestamp, userId, businessId, "");
 
     commentEntity.setProperty(HAS_REPLIES_PROPERTY, hasReplies);

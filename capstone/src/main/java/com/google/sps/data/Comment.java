@@ -55,7 +55,13 @@ public final class Comment {
   }
 
   public Comment(
-      String id, String content, long timestamp, String userId, String name, String businessId, boolean hasReplies) {
+      String id,
+      String content,
+      long timestamp,
+      String userId,
+      String name,
+      String businessId,
+      boolean hasReplies) {
     this.id = id;
     this.content = content;
     this.timestamp = timestamp;
