@@ -20,6 +20,7 @@ import static com.google.sps.data.CommentDatastoreUtil.CONTENT_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.PARENT_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.TIMESTAMP_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.USER_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.HAS_REPLIES_PROPERTY;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -27,6 +28,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +37,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import com.google.appengine.api.datastore.KeyFactory;
 
 /** Servlet that manages indidual comments */
 @WebServlet("/comment/*")
@@ -61,12 +64,27 @@ public class CommentServlet extends HttpServlet {
 
     // Verify that a user is logged in
     User currentUser = userService.getCurrentUser();
-    if (currentUser != null) {
-      datastore.put(buildCommentEntity(request, currentUser.getUserId()));
-    } else {
+    if (currentUser == null) {
       response.sendError(
           HttpServletResponse.SC_UNAUTHORIZED, "User must be logged in to post comment");
+      return;
     }
+
+    String parentId = request.getParameter(PARENT_ID_PROPERTY);
+    if (parentId != null && !parentId.equals("")) {
+      try {
+        Entity parentEntity = datastore.get(KeyFactory.createKey(COMMENT_TASK_NAME, parentId));
+        parentEntity.setProperty(HAS_REPLIES_PROPERTY, true);
+        datastore.put(parentEntity);
+      } catch (EntityNotFoundException e) {
+        response.sendError(
+            HttpServletResponse.SC_BAD_REQUEST,
+            "Cannot post replies to non-existent comments.");
+        return;
+      }
+    }
+
+    datastore.put(buildCommentEntity(request, currentUser.getUserId()));
 
     response.sendRedirect("/business.html?id=" + request.getParameter(BUSINESS_ID_PROPERTY));
   }
@@ -86,6 +104,7 @@ public class CommentServlet extends HttpServlet {
     }
 
     commentEntity.setProperty(TIMESTAMP_PROPERTY, System.currentTimeMillis());
+    commentEntity.setProperty(HAS_REPLIES_PROPERTY, false);
 
     return commentEntity;
   }
