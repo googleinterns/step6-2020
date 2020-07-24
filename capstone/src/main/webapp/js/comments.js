@@ -136,6 +136,8 @@ function buildCommentElement(comment) {
   
   commentElement.className = 'comment'
   commentElement.id = comment.id;
+  commentElement.appendChild(buildElement('small', comment.timestampStr));
+  commentElement.appendChild(document.createElement('br'));
   commentElement.appendChild(buildElement('small', comment.name + ' says:'));
   commentElement.appendChild(document.createElement('br'));
   commentElement.innerHTML += comment.content + '\n';
@@ -166,24 +168,17 @@ function showReplyTextArea(parentId, businessId) {
 * Build div for the field in which you can reply to a given comment. 
 * If the user is not logged in the div will tell the user to log in to reply.
 */
-function buildReplyToCommentDiv(parentId, userIsLoggedIn, businessId) {
+function buildReplyToCommentDiv(parentId, businessId) {
   const div = document.createElement('div');
 
   div.className = 'reply-to-comment-div';
   
-  div.innerHTML = '';
-
-  if (userIsLoggedIn) {
-    div.appendChild(
-      buildButton(
-        'reply-to-comment-button', 
-        () => showReplyTextArea(parentId, businessId), 
-        'Reply',
-      ));
-  } else {
-    div.appendChild(
-      buildButton('reply-to-comment-button', null, 'Please log in to write a comment'));
-  }
+  div.appendChild(
+    buildButton(
+      'reply-to-comment-button', 
+      () => showReplyTextArea(parentId, businessId), 
+      'Reply',
+    ));
   
   return div
 }
@@ -192,10 +187,12 @@ function buildTopLevelCommentElement(comment, userIsLoggedIn) {
   const commentElement = buildCommentElement(comment);
   
   commentElement.appendChild(document.createElement('br'));
-  commentElement.appendChild(
-      buildReplyToCommentDiv(comment.id, userIsLoggedIn, comment.businessId));
-  commentElement.appendChild(buildRepliesDiv(comment.id));
+  if (userIsLoggedIn) {
+    commentElement.appendChild(
+          buildReplyToCommentDiv(comment.id, comment.businessId));
+  }
   
+  commentElement.appendChild(buildRepliesDiv(comment.id));
 
   return commentElement;
 }

@@ -84,6 +84,7 @@ function buildProfileLink(isBusiness, userId) {
   const aElement = document.createElement('a');
   var url;
   aElement.innerText = 'Profile';
+  aElement.classList.add('nav-link');
   if (isBusiness === 'Yes') {
     url = 'business.html?id=' + userId;
   } else {
