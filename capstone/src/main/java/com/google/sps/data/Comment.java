@@ -34,6 +34,7 @@ public final class Comment {
   private final String businessId;
   private final String parentId;
   private final String name;
+  private final boolean hasReplies;
 
   public Comment(
       String id,
@@ -50,10 +51,18 @@ public final class Comment {
     this.name = name;
     this.businessId = businessId;
     this.parentId = parentId;
+    this.hasReplies = false;
   }
 
   public Comment(
-      String id, String content, long timestamp, String userId, String name, String businessId) {
-    this(id, content, timestamp, userId, name, businessId, "");
+      String id, String content, long timestamp, String userId, String name, String businessId, boolean hasReplies) {
+    this.id = id;
+    this.content = content;
+    this.timestamp = timestamp;
+    this.userId = userId;
+    this.name = name;
+    this.businessId = businessId;
+    this.parentId = "";
+    this.hasReplies = false;
   }
 }
