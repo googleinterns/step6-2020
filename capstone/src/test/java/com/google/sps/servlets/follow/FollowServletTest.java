@@ -52,6 +52,7 @@ public class FollowServletTest {
   private static final String MOCK_EMAIL = "tutorguy@gmail.com";
   private static final String MOCK_DOMAIN = "microsoft.com";
   private static final String MOCK_USER_ID_1 = "1";
+  private static final String MOCK_USER_ID_2 = "2";
   private static final String MOCK_BUSINESS_ID_1 = "3";
   private static final String MOCK_BUSINESS_ID_2 = "4";
   private static final String NON_EXISTENT_BUSINESS_ID = "99";
@@ -100,18 +101,27 @@ public class FollowServletTest {
     return businessEntity;
   }
 
-  private Query queryFollow(String userId, String businessId) {
-    return new Query(FOLLOW_TASK_NAME)
-        .setFilter(
-            new CompositeFilter(
-                CompositeFilterOperator.AND,
-                Arrays.asList(
-                    new FilterPredicate(USER_ID_PROPERTY, FilterOperator.EQUAL, userId),
-                    new FilterPredicate(BUSINESS_ID_PROPERTY, FilterOperator.EQUAL, businessId))));
+  private Entity createMockFollowEntity(String userId, String businessId) {
+    Entity followEntity = new Entity(FOLLOW_TASK_NAME);
+
+    followEntity.setProperty(USER_ID_PROPERTY, userId);
+    followEntity.setProperty(BUSINESS_ID_PROPERTY, businessId);
+
+    return followEntity;
   }
 
   private int countFollowOccurences(String userId, String businessId) {
-    return ds.prepare(queryFollow(userId, businessId)).countEntities(withDefaults());
+    Query followQuery =
+        new Query(FOLLOW_TASK_NAME)
+            .setFilter(
+                new CompositeFilter(
+                    CompositeFilterOperator.AND,
+                    Arrays.asList(
+                        new FilterPredicate(USER_ID_PROPERTY, FilterOperator.EQUAL, userId),
+                        new FilterPredicate(
+                            BUSINESS_ID_PROPERTY, FilterOperator.EQUAL, businessId))));
+
+    return ds.prepare(followQuery).countEntities(withDefaults());
   }
 
   /** Add a single follow. */
@@ -130,12 +140,13 @@ public class FollowServletTest {
    * When the user sends two requests to follow the same business only one follow should be saved.
    */
   @Test
-  public void testSameFollowTwice() throws IOException {
+  public void testDoPostSameFollowTwice() throws IOException {
     doReturn(MOCK_BUSINESS_ID_1).when(request).getParameter(BUSINESS_ID_PROPERTY);
 
     assertEquals(0, countFollowOccurences(MOCK_USER_ID_1, MOCK_BUSINESS_ID_1));
 
     servlet.doPost(request, response);
+
     assertEquals(1, countFollowOccurences(MOCK_USER_ID_1, MOCK_BUSINESS_ID_1));
 
     servlet.doPost(request, response);
@@ -145,7 +156,7 @@ public class FollowServletTest {
 
   /** Make sure a user can follow multiple businesses */
   @Test
-  public void testTwoBusinesses() throws IOException {
+  public void testDoPostWithTwoBusinesses() throws IOException {
     assertEquals(0, countFollowOccurences(MOCK_USER_ID_1, MOCK_BUSINESS_ID_1));
     assertEquals(0, countFollowOccurences(MOCK_USER_ID_1, MOCK_BUSINESS_ID_2));
 
@@ -161,7 +172,7 @@ public class FollowServletTest {
 
   /** Make sure the servlet rejects requests when the user isn't logged in. */
   @Test
-  public void testUserNotLoggedIn() throws IOException {
+  public void testDoPostWithUserNotLoggedIn() throws IOException {
     helper.setEnvIsLoggedIn(false);
 
     servlet.doPost(request, response);
@@ -170,7 +181,7 @@ public class FollowServletTest {
   }
 
   @Test
-  public void testBusinessDoesNotExist() throws IOException {
+  public void testDoPostWhereBusinessDoesNotExist() throws IOException {
     doReturn(NON_EXISTENT_BUSINESS_ID).when(request).getParameter(BUSINESS_ID_PROPERTY);
 
     servlet.doPost(request, response);
@@ -179,7 +190,7 @@ public class FollowServletTest {
   }
 
   @Test
-  public void testNoBusinessSpecified() throws IOException {
+  public void testDoPostWithNoBusinessSpecified() throws IOException {
     servlet.doPost(request, response);
 
     assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_BAD_REQUEST, response);
@@ -202,6 +213,79 @@ public class FollowServletTest {
     doReturn(MOCK_BUSINESS_ID_1).when(request).getParameter(BUSINESS_ID_PROPERTY);
 
     servlet.doPost(request, response);
+
+    assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_BAD_REQUEST, response);
+  }
+
+  /**
+   * Run the most basic doDeleteTest you can do. The standard user deletes a business with a
+   * specified id. This assumes the follow being deleted is already in the database.
+   */
+  private void runBasicDoDeleteTest(String businessId) throws IOException {
+    doReturn(businessId).when(request).getParameter(BUSINESS_ID_PROPERTY);
+
+    servlet.doDelete(request, response);
+
+    assertEquals(0, countFollowOccurences(MOCK_USER_ID_1, businessId));
+  }
+
+  @Test
+  public void testBasicDoDelete() throws IOException {
+    ds.put(createMockFollowEntity(MOCK_USER_ID_1, MOCK_BUSINESS_ID_1));
+    runBasicDoDeleteTest(MOCK_BUSINESS_ID_1);
+  }
+
+  @Test
+  public void testTwoDoDeletes() throws IOException {
+    ds.put(createMockFollowEntity(MOCK_USER_ID_1, MOCK_BUSINESS_ID_1));
+    ds.put(createMockFollowEntity(MOCK_USER_ID_1, MOCK_BUSINESS_ID_2));
+
+    runBasicDoDeleteTest(MOCK_BUSINESS_ID_1);
+    runBasicDoDeleteTest(MOCK_BUSINESS_ID_2);
+  }
+
+  @Test
+  public void testDoDeleteWithMultipleEntitiesInDatabase() throws IOException {
+    ds.put(createMockFollowEntity(MOCK_USER_ID_1, MOCK_BUSINESS_ID_1));
+    ds.put(createMockFollowEntity(MOCK_USER_ID_1, MOCK_BUSINESS_ID_2));
+    ds.put(createMockFollowEntity(MOCK_USER_ID_2, MOCK_BUSINESS_ID_1));
+    ds.put(createMockFollowEntity(MOCK_USER_ID_2, MOCK_BUSINESS_ID_2));
+
+    doReturn(MOCK_BUSINESS_ID_1).when(request).getParameter(BUSINESS_ID_PROPERTY);
+
+    servlet.doDelete(request, response);
+
+    assertEquals(0, countFollowOccurences(MOCK_USER_ID_1, MOCK_BUSINESS_ID_1));
+    assertEquals(1, countFollowOccurences(MOCK_USER_ID_1, MOCK_BUSINESS_ID_2));
+    assertEquals(1, countFollowOccurences(MOCK_USER_ID_2, MOCK_BUSINESS_ID_1));
+    assertEquals(1, countFollowOccurences(MOCK_USER_ID_2, MOCK_BUSINESS_ID_2));
+  }
+
+  @Test
+  public void testDoDeleteOnFollowThatDoesntExist() throws IOException {
+    doReturn(MOCK_BUSINESS_ID_1).when(request).getParameter(BUSINESS_ID_PROPERTY);
+    servlet.doDelete(request, response);
+
+    assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_NOT_FOUND, response);
+  }
+
+  @Test
+  public void testDoDeleteWithNoUserLoggedIn() throws IOException {
+    ds.put(createMockFollowEntity(MOCK_USER_ID_1, MOCK_BUSINESS_ID_1));
+    doReturn(MOCK_BUSINESS_ID_1).when(request).getParameter(BUSINESS_ID_PROPERTY);
+
+    helper.setEnvIsLoggedIn(false);
+    helper.setUp();
+
+    servlet.doDelete(request, response);
+
+    assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_UNAUTHORIZED, response);
+  }
+
+  @Test
+  public void testDoDeleteWithNoBusinessSpecified() throws IOException {
+    ds.put(createMockFollowEntity(MOCK_USER_ID_1, MOCK_BUSINESS_ID_1));
+    servlet.doDelete(request, response);
 
     assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_BAD_REQUEST, response);
   }

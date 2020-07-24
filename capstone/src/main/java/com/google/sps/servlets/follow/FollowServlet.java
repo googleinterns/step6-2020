@@ -14,7 +14,7 @@
 
 package com.google.sps.servlets;
 
-import static com.google.appengine.api.datastore.FetchOptions.Builder.withLimit;
+import static com.google.appengine.api.datastore.FetchOptions.Builder.withDefaults;
 import static com.google.sps.data.FollowDatastoreUtil.BUSINESS_ID_PROPERTY;
 import static com.google.sps.data.FollowDatastoreUtil.FOLLOW_TASK_NAME;
 import static com.google.sps.data.FollowDatastoreUtil.USER_ID_PROPERTY;
@@ -29,6 +29,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
@@ -77,7 +78,7 @@ public class FollowServlet extends HttpServlet {
     }
 
     String userId = currentUser.getUserId();
-    if (followAlreadyStored(userId, businessId)) {
+    if (followExistsInDatastore(userId, businessId)) {
       response.sendError(
           HttpServletResponse.SC_BAD_REQUEST, "Cannot follow the same business twice.");
       return;
@@ -88,6 +89,8 @@ public class FollowServlet extends HttpServlet {
     }
 
     datastore.put(buildFollowEntity(userId, businessId));
+
+    response.sendRedirect("/business.html?id=" + businessId);
   }
 
   private boolean doesBusinessExist(String businessId) {
@@ -101,7 +104,13 @@ public class FollowServlet extends HttpServlet {
     }
   }
 
-  private boolean followAlreadyStored(String userId, String businessId) {
+  private boolean followExistsInDatastore(String userId, String businessId) {
+    int numberOfMatches = prepareFollowQuery(userId, businessId).countEntities(withDefaults());
+
+    return numberOfMatches > 0;
+  }
+
+  private PreparedQuery prepareFollowQuery(String userId, String businessId) {
     Query followQuery =
         new Query(FOLLOW_TASK_NAME)
             .setFilter(
@@ -112,9 +121,39 @@ public class FollowServlet extends HttpServlet {
                         new FilterPredicate(
                             BUSINESS_ID_PROPERTY, FilterOperator.EQUAL, businessId))));
 
-    int numberOfMatches =
-        datastore.prepare(followQuery).countEntities(withLimit(ENTITY_COUNTING_LIMIT));
+    return datastore.prepare(followQuery);
+  }
 
-    return numberOfMatches > 0;
+  @Override
+  public void doDelete(HttpServletRequest request, HttpServletResponse response)
+      throws IOException {
+    User currentUser = userService.getCurrentUser();
+    if (currentUser == null) {
+      response.sendError(
+          HttpServletResponse.SC_UNAUTHORIZED, "User must be logged in to unfollow a business.");
+      return;
+    }
+
+    String businessId = request.getParameter(BUSINESS_ID_PROPERTY);
+    if (businessId == null) {
+      response.sendError(
+          HttpServletResponse.SC_BAD_REQUEST,
+          "Please specify the ID of the business you would like to unfollow.");
+      return;
+    }
+
+    String userId = currentUser.getUserId();
+    if (!followExistsInDatastore(userId, businessId)) {
+      response.sendError(
+          HttpServletResponse.SC_NOT_FOUND,
+          "In order to unfollow a business you must be following it.");
+      return;
+    }
+
+    Entity followToDelete = prepareFollowQuery(userId, businessId).asList(withDefaults()).get(0);
+
+    datastore.delete(followToDelete.getKey());
+
+    response.sendRedirect("/business.html?id=" + businessId);
   }
 }
