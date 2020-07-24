@@ -24,6 +24,7 @@ import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
 import static com.google.sps.data.ProfileDatastoreUtil.getProfileName;
 import static com.google.sps.util.TestUtil.assertResponseWithArbitraryTextRaised;
+import static com.google.sps.util.TestUtil.assertSameJsonObject;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.reset;
 
@@ -192,15 +193,9 @@ public class CommentsServletTest {
     return "1" + timestamp + userId + businessId;
   }
 
-  /** Assert that the response by the server was just an empty JSON object */
+  /** Assert that the response by the server was just an empty object */
   private void assertEmptyResponse() {
     assertSameJsonObject("[]", servletResponseWriter.toString());
-  }
-
-  /** Assert that two JSON strings specify the same JSON object */
-  private void assertSameJsonObject(String a, String b) {
-    JsonParser parser = new JsonParser();
-    Assert.assertEquals(parser.parse(a), parser.parse(b));
   }
 
   /**

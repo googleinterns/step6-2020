@@ -22,6 +22,7 @@ import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
 import static com.google.sps.data.ProfileDatastoreUtil.YES;
 import static com.google.sps.util.TestUtil.assertResponseWithArbitraryTextRaised;
+import static com.google.sps.util.TestUtil.assertSameJsonObject;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
 
@@ -35,7 +36,11 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import org.junit.Assert;
 import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
+import com.google.gson.JsonParser;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.util.Arrays;
@@ -72,6 +77,7 @@ public class FollowServletTest {
   @Mock private HttpServletRequest request;
   @Mock private HttpServletResponse response;
 
+  private StringWriter servletResponseWriter;
   private FollowServlet servlet;
   private DatastoreService ds;
 
@@ -85,6 +91,8 @@ public class FollowServletTest {
     ds.put(createMockBusinessEntity(MOCK_BUSINESS_ID_1));
     ds.put(createMockBusinessEntity(MOCK_BUSINESS_ID_2));
 
+    servletResponseWriter = new StringWriter();
+    doReturn(new PrintWriter(servletResponseWriter)).when(response).getWriter();
     servlet = new FollowServlet();
   }
 
@@ -173,7 +181,9 @@ public class FollowServletTest {
   /** Make sure the servlet rejects requests when the user isn't logged in. */
   @Test
   public void testDoPostWithUserNotLoggedIn() throws IOException {
+    doReturn(MOCK_BUSINESS_ID_1).when(request).getParameter(BUSINESS_ID_PROPERTY);
     helper.setEnvIsLoggedIn(false);
+    
 
     servlet.doPost(request, response);
 
@@ -286,6 +296,49 @@ public class FollowServletTest {
   public void testDoDeleteWithNoBusinessSpecified() throws IOException {
     ds.put(createMockFollowEntity(MOCK_USER_ID_1, MOCK_BUSINESS_ID_1));
     servlet.doDelete(request, response);
+
+    assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_BAD_REQUEST, response);
+  }
+
+  @Test
+  public void testBasicDoGetPositive() throws IOException {
+    ds.put(createMockFollowEntity(MOCK_USER_ID_1, MOCK_BUSINESS_ID_1));
+    doReturn(MOCK_BUSINESS_ID_1).when(request).getParameter(BUSINESS_ID_PROPERTY);
+
+    servlet.doGet(request, response);
+
+    assertSameJsonObject("true", servletResponseWriter.toString());
+  }
+
+  @Test
+  public void testBasicDoGetNegative() throws IOException {
+    // Add different follow
+    ds.put(createMockFollowEntity(MOCK_USER_ID_1, MOCK_BUSINESS_ID_2));
+    doReturn(MOCK_BUSINESS_ID_1).when(request).getParameter(BUSINESS_ID_PROPERTY);
+
+    servlet.doGet(request, response);
+
+    assertSameJsonObject("false", servletResponseWriter.toString());
+  }
+
+  @Test
+  public void testDoGetUserNotLoggedIn() throws IOException {
+    helper.setEnvIsLoggedIn(false);
+    helper.setUp();
+
+    ds.put(createMockFollowEntity(MOCK_USER_ID_1, MOCK_BUSINESS_ID_1));
+    doReturn(MOCK_BUSINESS_ID_1).when(request).getParameter(BUSINESS_ID_PROPERTY);
+
+    servlet.doGet(request, response);
+
+    assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_UNAUTHORIZED, response);
+  }
+  
+  @Test
+  public void testDoGetNoBusinessId() throws IOException {
+    ds.put(createMockFollowEntity(MOCK_USER_ID_1, MOCK_BUSINESS_ID_1));
+
+    servlet.doGet(request, response);
 
     assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_BAD_REQUEST, response);
   }

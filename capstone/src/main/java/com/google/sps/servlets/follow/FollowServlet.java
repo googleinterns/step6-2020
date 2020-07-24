@@ -25,6 +25,7 @@ import static com.google.sps.data.ProfileDatastoreUtil.YES;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.gson.Gson;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
@@ -155,5 +156,27 @@ public class FollowServlet extends HttpServlet {
     datastore.delete(followToDelete.getKey());
 
     response.sendRedirect("/business.html?id=" + businessId);
+  }
+
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    User currentUser = userService.getCurrentUser();
+    if (currentUser == null) {
+      response.sendError(
+          HttpServletResponse.SC_UNAUTHORIZED, "User must be logged in to unfollow a business.");
+      return;
+    }
+
+    String businessId = request.getParameter(BUSINESS_ID_PROPERTY);
+    if (businessId == null) {
+      response.sendError(
+          HttpServletResponse.SC_BAD_REQUEST,
+          "Must specify a business ID.");
+      return;
+    }
+
+    response.setContentType("application/json;");
+    response.getWriter().println(
+        new Gson().toJson(followExistsInDatastore(currentUser.getUserId(), businessId)));
   }
 }
