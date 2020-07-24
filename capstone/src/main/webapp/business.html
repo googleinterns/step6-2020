@@ -3,135 +3,201 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Business Profile</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/business.css">
     <link rel="stylesheet" href="css/style.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" a href="css/businessBS.css"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCuIcAn0GsCDsALoF3puLLDADHNzmc44R8&libraries=places"
         async defer></script>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="js/business.js" type="module"></script>
   </head>
   <body>
-        <!-- Navigation Bar -->
-    <nav class="navbar navbar-inverse">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="/">Support Local Businesses</a>
+    <!-- Navigation Bar -->
+    <div id="Header">
+      <nav class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <button class="navbar-toggler" data-toggle="collapse" data-target="#Navbar">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <a href="#" class="navbar-brand"><h3>Support Local Businesses</h3></a>
+          <div class="collapse navbar-collapse" id="Navbar">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+              <li class="nav-item" id="profile-button"></li>
+              <li class="nav-item" id="auth-button"></li>
+            </ul>
+          </div>
         </div>
-        <ul class="nav navbar-nav navbar-right">
-          <li><a href="index.html">Home</a></li>
-          <li id="profile-button"></li>
-          <li id="auth-button"></li>
-        </ul>
-      </div>
-    </nav>
-
-    <div class="container">
-      <!-- View Profile Page -->
-      <div id="view-business-section">
-        <button onclick="toggleProfile()" id="edit-button">Edit Profile</button>
-
-        <h1 id="business-name"></h1>
-        <h2 id="business-location"></h2>
-        <div id="business-calendar"></div>
-        <h3> My Pandemic Story </h3>
-        <p id="business-story"></p>
-
-        <h3>Short bio</h3>
-        <p id="business-bio"></p>
-        
-        <h3>More About The Business</h3>
-        <p id="business-about"></p>
-        
-        <h3>How You Can Help Us</h3>
-
-        <p id="business-support"></p>
-      </div>
-
-      <!-- Edit Profile Page -->
-      <div id="edit-business-section" style="display: none">
-        
-        <form id="edit-profile">
-          <div id="first-question">
-            <label for="isBusiness">Are you a business owner?</label><br>
-
-            <label for="yes"><input type="radio" id="yes" name="isBusiness" value="Yes" onclick="hasAnswerQuestionnaire()" checked>
-            Yes</label><br>
-
-            <label for="no"><input type="radio" id="no" name="isBusiness" value="No" onclick="hasAnswerQuestionnaire()">
-            No</label><br>
-          </div>
-          
-          <div id="basic-questionnaire">
-            <div id="name-section">
-              <label for="name">Name:</label><br>
-              <input id="edit-name" type="text" name="name" required><br>
-            </div>
-          
-            <div id="location-section">
-              <label for="location">Location:</label><br>
-              <input id="edit-location" name="location" placeholder="Enter your address" onFocus="geolocate()" type="text" /><br>
-            </div>
-
-            <div id="lat-long">
-              <input name="lat" id="edit-lat" value="" />
-              <input name="long" id="edit-long" value="" />
-            </div>
-          
-            <div id="bio-section">
-              <label for="bio">Short bio:</label><br>
-              <textarea id="edit-bio" name="bio" rows="10" cols="30"></textarea>
-            </div>
-          </div>
-
-          <!-- Business Owner Additional Questionnaires -->
-          <div id="business-questionnaire">
-            <div id="story-section">
-              <label for="story">How did the pandemic affect your business?</label><br>
-              <textarea id="edit-story" name="story" rows="10" cols="30"></textarea>
-            </div>
-
-            <div id="about-section">
-              <label for="about">Share your business.</label><br>
-              <textarea id="edit-about" name="about" rows="10" cols="30"
-                  placeholder="You can share your business website, grubhub delivery link, or describe what your business has to offer!"></textarea>
-            </div>
-
-            <div id="calendar-section">
-              <p>If you have a Google Calendar of events, feel free to share the linked email below.</p>
-              <p><strong>NOTE</strong>: Other users may be able to see this email address and events that are not intended to be marked as public.</p>
-              <p>If the email address entered does not have a linked Google Calendar, it won't display properly</p>
-              <input id="edit-calendar" type="text" name="calendarEmail" onchange="previewCalendar()"></input>
-              <div id="calendar-warning" style="display: none">
-                <p><strong>NOTE</strong> This is what other users when they navigate to your business profile page.</p>
-                <p>Make sure the calendar is public so that other users can see the events on the calendar.</p>
-                <p>You can do so by following <a href="https://support.google.com/calendar/answer/37083?hl=en">these instructions</a>.</p>
-              </div>
-              <iframe id="edit-calendar-preview" height="500px" width="700px" style="display: none"></iframe>
-            </div>
-
-            <div id="support-section">
-              <label for="support">How can we support you?</label><br>
-              <textarea id="edit-support" name="support" rows="10" cols="30"
-                  placeholder="You can share your gofundme link, share a transfer giftcard link, your PO box, or simply ask people to post a generous comment"></textarea>
-            </div>
-          </div>
-
-          <input type="button" value="Submit" id="submit-button" onclick="submitProfileForm()">
-        </form> 
-      </div>
-
-      <div id="map"></div>
-
-      <div id="comment-section"></div>
+      </nav>
     </div>
 
-    <div class="footer">
-      <p>If you have questions, click on this link to contact us! :)</p>
+    <!-- ShowCase -->
+    <div id="bg-img"></div>
+
+    <div id="view-business-section">
+      <!-- View Profile Page -->
+      <div id="view-profile">
+        <div class="container">
+          <div class="row">
+            <div class="col">
+              <div id="AboutData">
+                <div class="card bg-white">
+                  <div class="card-title my-5">
+                    <div class="media">
+                      <img src="../img/business_icon.png" width="300" height="300" class="img-fluid rounded-top mx-5 d-none d-lg-block">
+                      <div class="media-body">
+                        <h3 id="business-name" class="display-3 ml-5"></h3>
+                        <p id="business-location" class="display-5 text-muted ml-5"></p>
+                        <p id="business-bio" class="display-7 ml-5"></p>
+                        <div id="map" class="lead text-justify ml-5"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card-footer bg-danger">
+                    <button onclick="toggleProfile()" id="edit-button" class="btn btn-primary float-left"><a href="#">Edit Profile</a></button>
+                    <button class="btn btn-success float-right"><a href="#">Follow Business</a></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container mt-5">
+          <div class="row">
+            <div class="col">
+              <div class="business-details">
+                <span class="bg-danger text-white">Pandemic Story</span><hr class="bg-danger">
+                <p id="business-story" class="lead text-justify"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="container mt-5">
+          <div class="row">
+            <div class="col">
+              <div class="business-details">
+                <span class="bg-danger text-white">About The Business</span><hr class="bg-danger">
+                <p id="business-about" class="lead text-justify"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container mt-5">
+          <div class="row">
+            <div class="col">
+              <div class="business-details">
+                <span class="bg-danger text-white">How You Can Support</span><hr class="bg-danger">
+                <p id="business-support" class="lead text-justify"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container mt-5">
+          <div class="row">
+            <div class="col">
+              <div class="business-details">
+                <span class="bg-danger text-white">Calendar of Events</span><hr class="bg-danger">
+                <div id="business-calendar"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container mt-5">
+          <div class="row">
+            <div class="col">
+              <div class="business-details">
+                <span class="bg-dark text-white">Comments</span><hr class="bg-dark">
+                <div id="comment-section"></div>
+              </div>
+            </div>
+          </div>
+        </div>  
+      </div>
+    </div>
+
+    <!-- Edit Profile Page -->
+    <div id="edit-business-section" style="display: none">
+      <form id="edit-profile">
+        <div id="first-question">
+        <label for="isBusiness">Are you a business owner?</label><br>
+
+        <label for="yes"><input type="radio" id="yes" name="isBusiness" value="Yes" onclick="hasAnswerQuestionnaire()" checked>
+        Yes</label><br>
+
+        <label for="no"><input type="radio" id="no" name="isBusiness" value="No" onclick="hasAnswerQuestionnaire()">
+        No</label><br>
+        </div>
+        
+        <div id="basic-questionnaire">
+        <div id="name-section">
+            <label for="name">Name:</label><br>
+            <input id="edit-name" type="text" name="name" required><br>
+        </div>
+        
+        <div id="location-section">
+            <label for="location">Location:</label><br>
+            <input id="edit-location" name="location" placeholder="Enter your address" onFocus="geolocate()" type="text" /><br>
+        </div>
+
+        <div id="lat-long">
+            <input name="lat" id="edit-lat" value="" />
+            <input name="long" id="edit-long" value="" />
+        </div>
+        
+        <div id="bio-section">
+            <label for="bio">Short bio:</label><br>
+            <textarea id="edit-bio" name="bio" rows="10" cols="30"></textarea>
+        </div>
+        </div>
+
+        <!-- Business Owner Additional Questionnaires -->
+        <div id="business-questionnaire">
+        <div id="story-section">
+            <label for="story">How did the pandemic affect your business?</label><br>
+            <textarea id="edit-story" name="story" rows="10" cols="30"></textarea>
+        </div>
+
+        <div id="about-section">
+            <label for="about">Share your business.</label><br>
+            <textarea id="edit-about" name="about" rows="10" cols="30"
+                placeholder="You can share your business website, grubhub delivery link, or describe what your business has to offer!"></textarea>
+        </div>
+
+        <div id="calendar-section">
+            <p>If you have a Google Calendar of events, feel free to share the linked email below.</p>
+            <p><strong>NOTE</strong>: Other users may be able to see this email address and events that are not intended to be marked as public.</p>
+            <p>If the email address entered does not have a linked Google Calendar, it won't display properly</p>
+            <input id="edit-calendar" type="text" name="calendarEmail" onchange="previewCalendar()"></input>
+            <div id="calendar-warning" style="display: none">
+            <p><strong>NOTE</strong> This is what other users when they navigate to your business profile page.</p>
+            <p>Make sure the calendar is public so that other users can see the events on the calendar.</p>
+            <p>You can do so by following <a href="https://support.google.com/calendar/answer/37083?hl=en">these instructions</a>.</p>
+            </div>
+            <iframe id="edit-calendar-preview" height="500px" width="700px" style="display: none"></iframe>
+        </div>
+
+        <div id="support-section">
+            <label for="support">How can we support you?</label><br>
+            <textarea id="edit-support" name="support" rows="10" cols="30"
+                placeholder="You can share your gofundme link, share a transfer giftcard link, your PO box, or simply ask people to post a generous comment"></textarea>
+        </div>
+        </div>
+        <input type="button" value="Submit" id="submit-button" onclick="submitProfileForm()">
+      </form> 
     </div>
   </body>
 </html>
