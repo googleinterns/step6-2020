@@ -36,13 +36,11 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import org.junit.Assert;
 import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
-import com.google.gson.JsonParser;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
@@ -183,7 +181,6 @@ public class FollowServletTest {
   public void testDoPostWithUserNotLoggedIn() throws IOException {
     doReturn(MOCK_BUSINESS_ID_1).when(request).getParameter(BUSINESS_ID_PROPERTY);
     helper.setEnvIsLoggedIn(false);
-    
 
     servlet.doPost(request, response);
 
@@ -333,7 +330,7 @@ public class FollowServletTest {
 
     assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_UNAUTHORIZED, response);
   }
-  
+
   @Test
   public void testDoGetNoBusinessId() throws IOException {
     ds.put(createMockFollowEntity(MOCK_USER_ID_1, MOCK_BUSINESS_ID_1));

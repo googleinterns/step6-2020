@@ -14,11 +14,11 @@
 
 package com.google.sps.util;
 
+import com.google.gson.JsonParser;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
-import org.mockito.Mockito;
-import com.google.gson.JsonParser;
 import org.junit.Assert;
+import org.mockito.Mockito;
 
 /** Assert that a certain response code was raised, not caring about what the associated text is. */
 public class TestUtil {

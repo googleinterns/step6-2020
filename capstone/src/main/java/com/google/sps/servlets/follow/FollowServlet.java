@@ -25,7 +25,6 @@ import static com.google.sps.data.ProfileDatastoreUtil.YES;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.gson.Gson;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
@@ -39,6 +38,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.Arrays;
 import javax.servlet.annotation.WebServlet;
@@ -169,14 +169,13 @@ public class FollowServlet extends HttpServlet {
 
     String businessId = request.getParameter(BUSINESS_ID_PROPERTY);
     if (businessId == null) {
-      response.sendError(
-          HttpServletResponse.SC_BAD_REQUEST,
-          "Must specify a business ID.");
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Must specify a business ID.");
       return;
     }
 
     response.setContentType("application/json;");
-    response.getWriter().println(
-        new Gson().toJson(followExistsInDatastore(currentUser.getUserId(), businessId)));
+    response
+        .getWriter()
+        .println(new Gson().toJson(followExistsInDatastore(currentUser.getUserId(), businessId)));
   }
 }
