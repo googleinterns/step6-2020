@@ -20,8 +20,8 @@ import org.mockito.Mockito;
 
 public class TestUtil {
   /**
-  * Assert that a certain response code was raised, not caring about what the associated text is. 
-  */
+   * Assert that a certain response code was raised, not caring about what the associated text is.
+   */
   public static void assertResponseWithArbitraryTextRaised(
       int targetResponse, HttpServletResponse response) throws IOException {
     Mockito.verify(response, Mockito.times(1))

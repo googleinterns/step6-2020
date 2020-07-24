@@ -17,18 +17,19 @@ package com.google.sps.servlets;
 import static com.google.sps.data.CommentDatastoreUtil.BUSINESS_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.COMMENT_TASK_NAME;
 import static com.google.sps.data.CommentDatastoreUtil.CONTENT_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.HAS_REPLIES_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.PARENT_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.TIMESTAMP_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.USER_ID_PROPERTY;
-import static com.google.sps.data.CommentDatastoreUtil.HAS_REPLIES_PROPERTY;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
-import com.google.appengine.api.datastore.EntityNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +38,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import com.google.appengine.api.datastore.KeyFactory;
 
 /** Servlet that manages indidual comments */
 @WebServlet("/comment/*")
@@ -78,8 +78,7 @@ public class CommentServlet extends HttpServlet {
         datastore.put(parentEntity);
       } catch (EntityNotFoundException e) {
         response.sendError(
-            HttpServletResponse.SC_BAD_REQUEST,
-            "Cannot post replies to non-existent comments.");
+            HttpServletResponse.SC_BAD_REQUEST, "Cannot post replies to non-existent comments.");
         return;
       }
     }
