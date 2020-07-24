@@ -53,6 +53,7 @@ public final class Comment {
     this.name = name;
     this.businessId = businessId;
     this.parentId = parentId;
+    // Epoch timestamp is formatted in UTC time
     this.timestampStr = new SimpleDateFormat("MM/dd/yy HH:mm").format(timestamp);
   }
 
