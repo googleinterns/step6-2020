@@ -109,6 +109,8 @@ async function buildCommentElement(comment) {
   
   commentElement.className = 'comment'
   commentElement.id = comment.id;
+  commentElement.appendChild(buildElement('small', comment.timestampStr));
+  commentElement.appendChild(document.createElement('br'));
   commentElement.appendChild(buildElement('small', comment.name + ' says:'));
   commentElement.appendChild(document.createElement('br'));
   commentElement.innerHTML += comment.content + '\n';

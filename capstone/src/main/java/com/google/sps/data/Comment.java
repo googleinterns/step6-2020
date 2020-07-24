@@ -14,6 +14,8 @@
 
 package com.google.sps.data;
 
+import java.text.SimpleDateFormat;
+
 public final class Comment {
   /**
    * Represents a user's comment.
@@ -34,6 +36,7 @@ public final class Comment {
   private final String businessId;
   private final String parentId;
   private final String name;
+  private final String timestampStr;
 
   public Comment(
       String id,
@@ -50,6 +53,7 @@ public final class Comment {
     this.name = name;
     this.businessId = businessId;
     this.parentId = parentId;
+    this.timestampStr = new SimpleDateFormat("MM/dd/yy HH:mm").format(timestamp);
   }
 
   public Comment(
