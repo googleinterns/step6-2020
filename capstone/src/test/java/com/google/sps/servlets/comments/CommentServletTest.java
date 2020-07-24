@@ -52,8 +52,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import com.google.appengine.api.datastore.FetchOptions;
-
 public class CommentServletTest {
 
   private static final String MOCK_EMAIL = "tutorguy@gmail.com";
@@ -226,8 +224,6 @@ public class CommentServletTest {
     // The Id that gets generated when the comment is added
     String parentId = generateUniqueCommentId(timestamp, MOCK_USER_ID, MOCK_BUSINESS_ID);
 
-    System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@");
-    System.out.println(ds.prepare(new Query(COMMENT_TASK_NAME)).asList(FetchOptions.Builder.withLimit(10)));
     assertEquals(
         0, 
         countCommentOccurences(
