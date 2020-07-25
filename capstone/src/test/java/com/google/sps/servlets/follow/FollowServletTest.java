@@ -21,6 +21,7 @@ import static com.google.sps.data.FollowDatastoreUtil.USER_ID_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
 import static com.google.sps.data.ProfileDatastoreUtil.YES;
+import static com.google.sps.util.FollowTestUtil.createMockFollowEntity;
 import static com.google.sps.util.TestUtil.assertResponseWithArbitraryTextRaised;
 import static com.google.sps.util.TestUtil.assertSameJsonObject;
 import static org.junit.Assert.assertEquals;
@@ -105,15 +106,6 @@ public class FollowServletTest {
     businessEntity.setProperty(IS_BUSINESS_PROPERTY, YES);
 
     return businessEntity;
-  }
-
-  private Entity createMockFollowEntity(String userId, String businessId) {
-    Entity followEntity = new Entity(FOLLOW_TASK_NAME);
-
-    followEntity.setProperty(USER_ID_PROPERTY, userId);
-    followEntity.setProperty(BUSINESS_ID_PROPERTY, businessId);
-
-    return followEntity;
   }
 
   private int countFollowOccurences(String userId, String businessId) {
