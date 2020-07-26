@@ -35,6 +35,18 @@ body {
     text-decoration: none;
 }
 
+#edit-profile {
+    text-align: center;
+}
+
+#edit-profile-section, #edit-business-section {
+    margin-top: -300px;
+}
+
+#edit-profile-section, #edit-business-section span {
+    padding: 10px 20px 10px 20px;
+}
+
 #Header a:hover {
     color: #FFF;
 }
