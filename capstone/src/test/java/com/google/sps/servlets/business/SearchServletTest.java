@@ -12,15 +12,43 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.sps.servlets.business;
+package com.google.sps.servlets;
 
+import static com.google.sps.data.ProfileDatastoreUtil.ABOUT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.CALENDAR_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.GEO_PT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LAT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LONG_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.NO;
+import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
+import static com.google.sps.data.ProfileDatastoreUtil.STORY_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.SUPPORT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.YES;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.GeoPt;
+import com.google.appengine.api.search.Document;
+import com.google.appengine.api.search.Field;
+import com.google.appengine.api.search.Index;
+import com.google.appengine.api.search.IndexSpec;
+import com.google.appengine.api.search.PutException;
+import com.google.appengine.api.search.SearchService;
+import com.google.appengine.api.search.SearchServiceFactory;
+import com.google.appengine.api.search.StatusCode;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.appengine.tools.development.testing.LocalSearchServiceTestConfig;
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -37,15 +65,30 @@ import org.mockito.MockitoAnnotations;
 public class SearchServletTest {
 
   private final LocalServiceTestHelper helper =
-      new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
+      new LocalServiceTestHelper(
+          new LocalDatastoreServiceTestConfig(),
+          new LocalSearchServiceTestConfig());
   
   @Mock private HttpServletRequest request;
 
   @Mock private HttpServletResponse response;
 
+  private static final String NAME = "Pizzeria";
+  private static final String LOCATION = "Mountain View, CA";
+  private static final String LAT = "45.0";
+  private static final String LONG = "45.0";
+  private static final String BIO = "This is my business bio.";
+  private static final String STORY = "The pandemic has affected my business in X many ways.";
+  private static final String ABOUT = "Here is the Pizzeria's menu.";
+  private static final String SUPPORT = "Please donate at X website.";
+  private static final String USER_ID = "12345";
+  private static final String WRONG_USER = "54321";
+  private static final String EMAIL = "abc@gmail.com";
+
   private StringWriter servletResponseWriter;
   private SearchServlet servlet;
   private DatastoreService datastore;
+  private GeoPt GEO_PT;
 
   @Before
   public void setUp() throws IOException {
@@ -56,18 +99,57 @@ public class SearchServletTest {
     servletResponseWriter = new StringWriter();
     doReturn(new PrintWriter(servletResponseWriter)).when(response).getWriter();
     servlet = new SearchServlet();
+    GEO_PT = new GeoPt(Float.parseFloat(LAT), Float.parseFloat(LONG));
   }
 
   @After
   public void tearDown() {
+    helper.getLocalService("search").stop();
     helper.tearDown();
+  }
+
+  public Entity setBusinessData() {
+    Entity ent = new Entity(PROFILE_TASK_NAME, USER_ID);
+    ent.setProperty(NAME_PROPERTY, NAME);
+    ent.setProperty(LOCATION_PROPERTY, LOCATION);
+    ent.setProperty(GEO_PT_PROPERTY, GEO_PT);
+    ent.setProperty(BIO_PROPERTY, BIO);
+    ent.setProperty(STORY_PROPERTY, STORY);
+    ent.setProperty(ABOUT_PROPERTY, ABOUT);
+    ent.setProperty(CALENDAR_PROPERTY, EMAIL);
+    ent.setProperty(SUPPORT_PROPERTY, SUPPORT);
+
+    return ent;
+  }
+
+  public void createDocument(String id, String name) {
+    SearchService searchService = SearchServiceFactory.getSearchService();
+    Index index = searchService.getIndex(IndexSpec.newBuilder().setName("Business"));
+    Document document = Document.newBuilder().setId(id).addField(Field.newBuilder().setName("name").setText(name)).build();
+
+    try {
+      index.put(document);
+    } catch (PutException e) {
+      if (StatusCode.TRANSIENT_ERROR.equals(e.getOperationResult().getCode())) {
+        index.put(document);
+      }
+    }
   }
 
   /**
    *  Test retrieving a business by exact match to business name.
    */
    @Test
-   public void testDoGetByNameSuccess() throws IOException {
+  public void testDoGetByNameSuccess() throws IOException {
+    when(request.getPathInfo()).thenReturn(NAME);
 
-   }
+    Entity business = setBusinessData();
+    business.setProperty(IS_BUSINESS_PROPERTY, YES);
+    datastore.put(business);
+
+    createDocument(USER_ID, NAME);
+
+    servlet.doGet(request, response);
+    System.out.println(servletResponseWriter.toString());
+  }
 }

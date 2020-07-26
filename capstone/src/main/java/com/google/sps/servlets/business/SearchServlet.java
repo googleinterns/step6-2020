@@ -14,9 +14,18 @@
 
 package com.google.sps.servlets;
 
+import static com.google.sps.data.ProfileDatastoreUtil.ABOUT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.CALENDAR_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.GEO_PT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LAT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LONG_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
+import static com.google.sps.data.ProfileDatastoreUtil.STORY_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.SUPPORT_PROPERTY;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -38,6 +47,7 @@ import com.google.appengine.api.search.SearchServiceFactory;
 import com.google.appengine.api.search.StatusCode;
 import com.google.gson.Gson;
 import com.google.sps.data.BusinessProfile;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.annotation.WebServlet;
@@ -50,17 +60,19 @@ import javax.servlet.http.HttpServletResponse;
 public class SearchServlet extends HttpServlet {
 
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) {
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String searchItem = request.getParameter("searchItem");
 
     SearchService searchService = SearchServiceFactory.getSearchService();
-    Index index = searchService.getIndex(IndexSpec.newBuilder().setIndexName("Business"));
+    Index index = searchService.getIndex(IndexSpec.newBuilder().setName("Business"));
 
+    List<BusinessProfile> businesses = new ArrayList<>();
     try {
-      Results<ScoredDocument> searchResults = index.search(Query.newBuilder().build("name:" + searchItem));
+      Results<ScoredDocument> searchResults = index.search(
+          com.google.appengine.api.search.Query
+          .newBuilder().build("name:" + searchItem));
 
       DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-      List<BusinessProfile> profiles = new ArrayList<>();
       for (ScoredDocument document: searchResults) {
         String businessId = document.getId();
         Query businessQuery =
@@ -70,7 +82,7 @@ public class SearchServlet extends HttpServlet {
                         FilterOperator.EQUAL.of(IS_BUSINESS_PROPERTY, "Yes"),
                         FilterOperator.EQUAL.of(
                             Entity.KEY_RESERVED_PROPERTY,
-                            KeyFactory.createKey(PROFILE_TASK_NAME, businessID))));
+                            KeyFactory.createKey(PROFILE_TASK_NAME, businessId))));
         Entity businessEntity = datastore.prepare(businessQuery).asSingleEntity();
         String id = businessEntity.getKey().getName();
         String name = (String) businessEntity.getProperty(NAME_PROPERTY);
@@ -83,12 +95,13 @@ public class SearchServlet extends HttpServlet {
 
         BusinessProfile business =
             new BusinessProfile(id, name, location, bio, story, about, email, support, false);
-        profiles.add(business);
+        businesses.add(business);
       }
-    } except (SearchException e) {
-      if (StatusCode.TRANSIENT_ERROR.equals(e.getOperationResult().getCode())) {
-        // retry
-      }
+    } catch (SearchException e) {
+      response.sendError(
+          HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+          "The server was unable to handle the search request.");
+      return;
     }
 
     response.setContentType("application/json");
