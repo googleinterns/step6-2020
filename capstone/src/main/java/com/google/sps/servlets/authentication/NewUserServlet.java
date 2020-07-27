@@ -68,7 +68,7 @@ public class NewUserServlet extends HttpServlet {
 
       datastore.put(userEntity);
 
-      response.sendRedirect("/profile.html?id="+userId);
+      response.sendRedirect("/profile.html?id=" + userId);
     }
   }
 }
