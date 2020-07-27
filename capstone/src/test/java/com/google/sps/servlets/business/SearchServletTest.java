@@ -19,9 +19,7 @@ import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.CALENDAR_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.GEO_PT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.LAT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.LONG_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NO;
 import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
@@ -29,7 +27,6 @@ import static com.google.sps.data.ProfileDatastoreUtil.STORY_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.SUPPORT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.YES;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -44,9 +41,8 @@ import com.google.appengine.api.search.SearchService;
 import com.google.appengine.api.search.SearchServiceFactory;
 import com.google.appengine.api.search.StatusCode;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalSearchServiceTestConfig;
-import com.google.common.collect.ImmutableMap;
+import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.google.sps.data.BusinessProfile;
@@ -69,9 +65,8 @@ public class SearchServletTest {
 
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(
-          new LocalDatastoreServiceTestConfig(),
-          new LocalSearchServiceTestConfig());
-  
+          new LocalDatastoreServiceTestConfig(), new LocalSearchServiceTestConfig());
+
   @Mock private HttpServletRequest request;
 
   @Mock private HttpServletResponse response;
@@ -130,7 +125,11 @@ public class SearchServletTest {
   public void createDocument(String id, String name) {
     SearchService searchService = SearchServiceFactory.getSearchService();
     Index index = searchService.getIndex(IndexSpec.newBuilder().setName("Business"));
-    Document document = Document.newBuilder().setId(id).addField(Field.newBuilder().setName("name").setTokenizedPrefix(name)).build();
+    Document document =
+        Document.newBuilder()
+            .setId(id)
+            .addField(Field.newBuilder().setName("name").setTokenizedPrefix(name))
+            .build();
 
     try {
       index.put(document);
@@ -141,9 +140,7 @@ public class SearchServletTest {
     }
   }
 
-  /**
-   *  Test retrieving a business by exact match to business name.
-   */
+  /** Test retrieving a business by exact match to business name. */
   @Test
   public void testDoGetExactMatch() throws IOException {
     doReturn(NAME).when(request).getParameter("searchItem");
@@ -161,15 +158,13 @@ public class SearchServletTest {
         new BusinessProfile(USER_ID_1, NAME, LOCATION, BIO, STORY, ABOUT, EMAIL, SUPPORT, false);
     expectedResults.add(expectedProfile);
     String servletResponse = servletResponseWriter.toString();
-    
+
     Gson gson = new Gson();
     JsonParser parser = new JsonParser();
     Assert.assertEquals(parser.parse(servletResponse), parser.parse(gson.toJson(expectedResults)));
   }
 
-  /**
-   *  Test retrieving a business by partial match to business name.
-   */
+  /** Test retrieving a business by partial match to business name. */
   @Test
   public void testDoGetPartialMatch() throws IOException {
     doReturn("Pizzeria").when(request).getParameter("searchItem");
@@ -187,15 +182,13 @@ public class SearchServletTest {
         new BusinessProfile(USER_ID_1, NAME, LOCATION, BIO, STORY, ABOUT, EMAIL, SUPPORT, false);
     expectedResults.add(expectedProfile);
     String servletResponse = servletResponseWriter.toString();
-    
+
     Gson gson = new Gson();
     JsonParser parser = new JsonParser();
     Assert.assertEquals(parser.parse(servletResponse), parser.parse(gson.toJson(expectedResults)));
   }
 
-  /**
-   *  Test retrieving multiple businesses by partial match to business name.
-   */
+  /** Test retrieving multiple businesses by partial match to business name. */
   @Test
   public void testDoGetMultiplePartialMatch() throws IOException {
     doReturn("pizzeria").when(request).getParameter("searchItem");
@@ -227,9 +220,7 @@ public class SearchServletTest {
     Assert.assertEquals(parser.parse(servletResponse), parser.parse(gson.toJson(expectedResults)));
   }
 
-  /**
-   * Test retrieving business with a user account decoy.
-   */
+  /** Test retrieving business with a user account decoy. */
   @Test
   public void testDoGetPartialMatchWithUserAccount() throws IOException {
     doReturn("pizzeria").when(request).getParameter("searchItem");

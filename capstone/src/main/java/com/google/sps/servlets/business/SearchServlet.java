@@ -17,11 +17,8 @@ package com.google.sps.servlets;
 import static com.google.sps.data.ProfileDatastoreUtil.ABOUT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.CALENDAR_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.GEO_PT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.LAT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.LONG_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
 import static com.google.sps.data.ProfileDatastoreUtil.STORY_PROPERTY;
@@ -34,17 +31,13 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.search.Document;
-import com.google.appengine.api.search.Field;
 import com.google.appengine.api.search.Index;
 import com.google.appengine.api.search.IndexSpec;
-import com.google.appengine.api.search.PutException;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.google.appengine.api.search.SearchException;
 import com.google.appengine.api.search.SearchService;
 import com.google.appengine.api.search.SearchServiceFactory;
-import com.google.appengine.api.search.StatusCode;
 import com.google.gson.Gson;
 import com.google.sps.data.BusinessProfile;
 import java.io.IOException;
@@ -68,12 +61,13 @@ public class SearchServlet extends HttpServlet {
 
     List<BusinessProfile> businesses = new ArrayList<>();
     try {
-      Results<ScoredDocument> searchResults = index.search(
-          com.google.appengine.api.search.Query
-          .newBuilder().build("name:\"" + searchItem + "\""));
+      Results<ScoredDocument> searchResults =
+          index.search(
+              com.google.appengine.api.search.Query.newBuilder()
+                  .build("name:\"" + searchItem + "\""));
 
       DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-      for (ScoredDocument document: searchResults) {
+      for (ScoredDocument document : searchResults) {
         String businessId = document.getId();
         Query businessQuery =
             new Query(PROFILE_TASK_NAME)
