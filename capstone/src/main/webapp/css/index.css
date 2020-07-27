@@ -9,10 +9,14 @@ body {
 }
 
 #businesses {
-  margin-left: auto;
-  margin-right: auto;
-  overflow: scroll;
-  position: fixed;
+  height: 94vh;
+  overflow-y: auto;
+  padding-bottom: 50px;
+}
+
+#business-sidebar {
+  margin-right: 10px;
+  width: 30%;
 }
 
 .business-card {
@@ -22,12 +26,15 @@ body {
   margin-right: 10px;
   max-height: 150px;
   overflow: hidden;
+  padding: 10px;
   position: relative;
 }
 
 .business-container {
+  display: flex;
   height: 100%;
-  padding: 15px;
+  margin-top: 75px;
+  padding: 10px 15px;
 }
 
 .business-info {
@@ -51,6 +58,10 @@ body {
   font-size: 14px;
 }
 
+#Header a:hover {
+  color: #fff;
+}
+
 #home-page-map {   
   display: flex;
 }
@@ -62,7 +73,7 @@ body {
 
 #listing {
   cursor: pointer;
-  height: 470px;
+  height: 83vh;
   overflow: auto;
   overflow-x: hidden;
   width: 200px;
@@ -76,8 +87,12 @@ body {
 }
 
 #map {
-  height: 1000px;
-  width: 1400px;
+  height: 83vh;
+  width: 55vw;
+}
+
+#map-search {
+  flex-grow: 1;
 }
 
 .map_link_row, .map_location_row, .map_name_row {
