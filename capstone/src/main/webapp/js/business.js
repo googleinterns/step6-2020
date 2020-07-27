@@ -47,9 +47,6 @@ window.hasAnswerQuestionnaire = function() {
   if (isNotBusiness.checked == true) {
     businessQuesionnaire.style.display = 'none';
   }
-
-  let submit = document.getElementById("submit-button");
-  submit.style.display = 'block';
 }
 
 // Submit the edit-profile form to servlet based on whether they're a business or not.

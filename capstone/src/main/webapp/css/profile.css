@@ -6,10 +6,6 @@
     display: none;
 }
 
-#edit-button {
-    display: none;
-}
-
 #edit-profile-section {
     display: none;
 }
@@ -24,8 +20,8 @@
 
 #map {
     display: none;
-    height: 425px;
-    width:  50%
+    height: 150px;
+    width:  30%
 }
 
 #view-profile-section {

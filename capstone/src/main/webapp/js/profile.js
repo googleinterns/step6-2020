@@ -54,9 +54,6 @@ window.hasAnswerQuestionnaire = function() {
   if (isNotBusiness.checked == true) {
     businessQuesionnaire.style.display = 'none';
   }
-
-  let submit = document.getElementById('submit-button');
-  submit.style.display = 'block';
 }
 
 // Display the correct profile information.

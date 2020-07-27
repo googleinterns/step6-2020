@@ -5,6 +5,22 @@
     min-height: 500px;
 }
 
+#user-bg-img {
+    background: url('../img/user_bg.jpg');
+    background-size: 100%;
+    background-repeat: no-repeat;
+    min-height: 500px;
+}
+
+.bio-section span {
+    padding: 10px 20px 10px 20px;
+}
+
+.bio-section hr {
+    border-width: 2px;
+    margin-top: 6px;
+}
+
 body {
     background: #CCC;
 }
@@ -17,6 +33,18 @@ body {
 .card-footer a:hover {
     color: #FFF;
     text-decoration: none;
+}
+
+#edit-profile {
+    text-align: center;
+}
+
+#edit-profile-section, #edit-business-section {
+    margin-top: -300px;
+}
+
+#edit-profile-section, #edit-business-section span {
+    padding: 10px 20px 10px 20px;
 }
 
 #Header a:hover {
