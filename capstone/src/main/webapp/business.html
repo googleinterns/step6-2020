@@ -63,8 +63,9 @@
                   </div>
 
                   <div class="card-footer bg-danger">
-                    <button onclick="toggleProfile()" id="edit-button" class="btn btn-primary float-left"><a href="#">Edit Profile</a></button>
+                    <button onclick="toggleProfile()" id="edit-button" class="btn btn-info float-left"><a href="#">Edit Profile</a></button>
                     <button class="btn btn-success float-right"><a href="#">Follow Business</a></button>
+                    <button class="btn btn-warning float-right mx-2" id="getStarted-button"><a href="#" data-toggle="modal" data-target="#getStarted">Get Started</a></button>
                   </div>
                 </div>
               </div>
@@ -216,6 +217,72 @@
                       <input type="button" value="Save" class="btn btn-primary" id="submit-button" onclick="submitProfileForm()">
                     </form>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Get Started Modal -->
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="modal fade" id="getStarted">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h2>Getting Started With Your Profile</h2>
+                </div>
+
+                <div class="modal-body">
+                  <div>
+                    <h5>Welcome to our platform for supporting local businesses!</h5>
+                    <p>This guide will help you get started with using our platform. First, let's build your profile!</p>
+                  </div>
+
+                  <div>
+                    <h5>Where to edit your profile?</h5>
+                    <p>
+                      Across from the "Get Started" button, there's an "Edit Profile" button.<br> 
+                      Click on that to get started in creating your profile.<br>
+                      There are two main users: Business owners and Local people.<br> 
+                      Based on your selection, there will be associated questions for you to fill out.<br>
+                    </p>
+                  </div>
+
+                  <div>
+                    <h5>How to edit your profile?</h5>
+                    <p>
+                      Enter your name that everyone will see when others view your profile or when you post a comment.<br>
+                      If you're a business owner, you would want to enter your full business address so others can find you easily.<br>
+                      For local people, you can just enter a generic location like a city or state! :)<br>
+                    </p>
+                    <p>
+                      Fill out the rest of your profile however you like. There will be suggestions to guide you along the way!
+                    </p>
+                  </div> 
+                  
+                  <div>
+                    <h5>Done!</h5>
+                    <p>
+                      Great! After you're done with editing your profile, you can go ahead and click "Save". You can always come back and
+                      edit your profile anytime! 
+                    </p>
+                    <p>
+                      Now you can explore the platform! Feel free to checkout other businesses, follow them, post comments, share their profile, and support one another during this pandemic time. 
+                    </p>
+                    <p>
+                      Thank you for helping your local businesses! 
+                    </p>
+                    <p>
+                      If there's any questions, feel free to find support at this email.
+                    </p>
+                </div>
+
+                <div class="modal-footer">
+                  <input type="button" class="btn btn-primary" data-dismiss="modal" value="Close">
                 </div>
               </div>
             </div>

@@ -107,8 +107,10 @@ function constructBusinessProfile(id) {
       }).then(info => {
         if (info.isCurrentUser) {
           document.getElementById('edit-button').style.display = 'block';
+          document.getElementById('getStarted-button').style.display = 'block';
         } else {
           document.getElementById('edit-button').style.display = 'none';
+          document.getElementById('getStarted-button').style.display = 'none';
         }
         
         const calendarDiv = document.getElementById('business-calendar');
