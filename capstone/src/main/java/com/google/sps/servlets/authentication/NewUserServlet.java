@@ -56,6 +56,7 @@ public class NewUserServlet extends HttpServlet {
 
     try {
       Entity entity = datastore.get(userKey);
+      response.sendRedirect("/index.html");
     } catch (EntityNotFoundException e) {
       // Add user to database with default values.
       Entity userEntity = new Entity(PROFILE_TASK_NAME, userId);
@@ -66,8 +67,8 @@ public class NewUserServlet extends HttpServlet {
       userEntity.setProperty(BIO_PROPERTY, NULL_STRING);
 
       datastore.put(userEntity);
-    }
 
-    response.sendRedirect("/index.html");
+      response.sendRedirect("/profile.html?id=" + userId);
+    }
   }
 }
