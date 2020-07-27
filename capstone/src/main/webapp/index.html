@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8">
     <title>Home</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script type="module" src="js/index.js"></script>
@@ -14,71 +14,72 @@
   </head>
   <body>
     <!-- Navigation Bar -->
-    <nav class="navbar navbar-inverse">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="/">Support Local Businesses</a>
+    <div id="Header" height="75px">
+      <nav class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <button class="navbar-toggler" data-toggle="collapse" data-target="#Navbar">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <a href="index.html" class="navbar-brand"><h3>Support Local Businesses</h3></a>
+          <div class="collapse navbar-collapse" id="Navbar">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+              <li class="nav-item" id="profile-button"></li>
+              <li class="nav-item" id="auth-button"></li>
+            </ul>
+          </div>
         </div>
-        <ul class="nav navbar-nav navbar-right">
-          <li class="active"><a href="index.html">Home</a></li>
-          <li id="profile-button"></li>
-          <li id="auth-button"></li>
-        </ul>
-      </div>
-    </nav>
+      </nav>
+    </div>
 
     <div class="business-container">
-      <table id="business-table">
-        <tr>
-          <td width="30%">
-            <!-- List of Business Cards -->
-            <div id="businesses"></div>
-          </td>
+      <div id="business-sidebar">
+        <!-- List of Business Cards -->
+        <div id="businesses"></div>
+      </div>
 
-          <td width="70%">
-            <!-- Home Page Map Search Box -->
-            <div class="business-search">
-              <div id="findBusinesses"> Find local businesses in: </div>
+      <div id="map-search">
+        <!-- Home Page Map Search Box -->
+        <div class="business-search">
+          <div id="findBusinesses"> Find local businesses in: </div>
 
-              <div id="locationField">
-                <input id="autocomplete" placeholder="Enter a location" type="text" />
-              </div>
+          <div id="locationField">
+            <input id="autocomplete" placeholder="Enter a location" type="text" />
+          </div>
+        </div>
+
+        <!-- Home Page Map -->
+        <div id="home-page-map">
+          <div id="map"></div>
+            <div id="listing">
+              <!-- The Results Table From Map -->
+              <table id="resultsTable">
+                <tbody id="results"></tbody>
+              </table>
             </div>
+          </div>
 
-            <!-- Home Page Map -->
-            <div id="home-page-map">
-              <div id="map"></div>
-                <div id="listing">
-                  <!-- The Results Table From Map -->
-                  <table id="resultsTable">
-                    <tbody id="results"></tbody>
-                  </table>
-                </div>
-              </div>
-
-              <!-- Individual Map Marker's Info Window  -->
-              <div style="display: none">
-                <div id="info-content">
-                  <table>
-                    <tr id="map-name-row" class="iw_table_row">
-                      <td class="iw_heading">Business Name: </td>
-                      <td id="map-name"></td>
-                    </tr>
-                    <tr id="map-location-row" class="iw_table_row">
-                      <td class="iw_heading">Business Address: </td>
-                      <td id="map-location"></td>
-                    </tr>
-                    <tr id="map-link-row" class="iw_table_row">
-                      <td class="iw_heading">Business Profile: </td>
-                      <td><a id="map-link">Click Here!</a></td>
-                    </tr>
-                  </table>
-                </div>
-              </div>
+          <!-- Individual Map Marker's Info Window  -->
+          <div style="display: none">
+            <div id="info-content">
+              <table>
+                <tr id="map-name-row" class="iw_table_row">
+                  <td class="iw_heading">Business Name: </td>
+                  <td id="map-name"></td>
+                </tr>
+                <tr id="map-location-row" class="iw_table_row">
+                  <td class="iw_heading">Business Address: </td>
+                  <td id="map-location"></td>
+                </tr>
+                <tr id="map-link-row" class="iw_table_row">
+                  <td class="iw_heading">Business Profile: </td>
+                  <td><a id="map-link">Click Here!</a></td>
+                </tr>
+              </table>
             </div>
-          </td>
-        </tr>
-      </table>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
 </html>
