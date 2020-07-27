@@ -70,7 +70,7 @@ public class SearchServlet extends HttpServlet {
     try {
       Results<ScoredDocument> searchResults = index.search(
           com.google.appengine.api.search.Query
-          .newBuilder().build("name:" + searchItem));
+          .newBuilder().build("name:\"" + searchItem + "\""));
 
       DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
       for (ScoredDocument document: searchResults) {
@@ -84,6 +84,9 @@ public class SearchServlet extends HttpServlet {
                             Entity.KEY_RESERVED_PROPERTY,
                             KeyFactory.createKey(PROFILE_TASK_NAME, businessId))));
         Entity businessEntity = datastore.prepare(businessQuery).asSingleEntity();
+        if (businessEntity == null) {
+          continue;
+        }
         String id = businessEntity.getKey().getName();
         String name = (String) businessEntity.getProperty(NAME_PROPERTY);
         String email = (String) businessEntity.getProperty(CALENDAR_PROPERTY);

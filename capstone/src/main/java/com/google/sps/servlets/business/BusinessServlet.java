@@ -151,7 +151,7 @@ public class BusinessServlet extends HttpServlet {
 
     // Create a Document for searching through businesses.
     Index index = searchService.getIndex(IndexSpec.newBuilder().setName("Business"));
-    Document document = Document.newBuilder().setId(id).addField(Field.newBuilder().setName("name").setText((String) businessEntity.getProperty(NAME_PROPERTY))).build();
+    Document document = Document.newBuilder().setId(id).addField(Field.newBuilder().setName("name").setTokenizedPrefix((String) businessEntity.getProperty(NAME_PROPERTY))).build();
 
     try {
       index.put(document);
