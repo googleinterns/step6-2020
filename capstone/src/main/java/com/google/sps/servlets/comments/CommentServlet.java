@@ -71,7 +71,7 @@ public class CommentServlet extends HttpServlet {
     }
 
     String parentId = request.getParameter(PARENT_ID_PROPERTY);
-    if (parentId != null && !parentId.equals("")) {
+    if (parentId != null) {
       try {
         Entity parentEntity = datastore.get(KeyFactory.createKey(COMMENT_TASK_NAME, parentId));
         parentEntity.setProperty(HAS_REPLIES_PROPERTY, true);
@@ -104,6 +104,7 @@ public class CommentServlet extends HttpServlet {
 
     commentEntity.setProperty(TIMESTAMP_PROPERTY, System.currentTimeMillis());
     commentEntity.setProperty(HAS_REPLIES_PROPERTY, false);
+
 
     return commentEntity;
   }
