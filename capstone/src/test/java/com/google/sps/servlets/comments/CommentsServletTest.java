@@ -15,15 +15,13 @@
 package com.google.sps.servlets;
 
 import static com.google.sps.data.CommentDatastoreUtil.BUSINESS_ID_PROPERTY;
-import static com.google.sps.data.CommentDatastoreUtil.COMMENT_TASK_NAME;
-import static com.google.sps.data.CommentDatastoreUtil.CONTENT_PROPERTY;
-import static com.google.sps.data.CommentDatastoreUtil.HAS_REPLIES_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.PARENT_ID_PROPERTY;
-import static com.google.sps.data.CommentDatastoreUtil.TIMESTAMP_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.USER_ID_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
 import static com.google.sps.data.ProfileDatastoreUtil.getProfileName;
+import static com.google.sps.util.CommentTestUtil.createCommentEntity;
+import static com.google.sps.util.CommentTestUtil.generateUniqueCommentId;
 import static com.google.sps.util.TestUtil.assertResponseWithArbitraryTextRaised;
 import static com.google.sps.util.TestUtil.assertSameJsonObject;
 import static org.mockito.Mockito.doReturn;
@@ -100,52 +98,52 @@ public class CommentsServletTest {
             /*timestamp*/ 1,
             USER_ID_0,
             BUSINESS_ID_0, /*parentId*/
-            generateUniqueId(0, USER_ID_0, BUSINESS_ID_0)));
+            generateUniqueCommentId(0, USER_ID_0, BUSINESS_ID_0)));
     ds.put(
         createCommentEntity(
             /*timestamp*/ 2,
             USER_ID_1,
             BUSINESS_ID_0, /*parentId*/
-            generateUniqueId(0, USER_ID_0, BUSINESS_ID_0)));
+            generateUniqueCommentId(0, USER_ID_0, BUSINESS_ID_0)));
 
     ds.put(
         createCommentEntity(
             /*timestamp*/ 4,
             USER_ID_0,
             BUSINESS_ID_0, /*parentId*/
-            generateUniqueId(3, USER_ID_1, BUSINESS_ID_0)));
+            generateUniqueCommentId(3, USER_ID_1, BUSINESS_ID_0)));
     ds.put(
         createCommentEntity(
             /*timestamp*/ 5,
             USER_ID_1,
             BUSINESS_ID_0, /*parentId*/
-            generateUniqueId(3, USER_ID_1, BUSINESS_ID_0)));
+            generateUniqueCommentId(3, USER_ID_1, BUSINESS_ID_0)));
 
     ds.put(
         createCommentEntity(
             /*timestamp*/ 7,
             USER_ID_0,
             BUSINESS_ID_1, /*parentId*/
-            generateUniqueId(6, USER_ID_0, BUSINESS_ID_1)));
+            generateUniqueCommentId(6, USER_ID_0, BUSINESS_ID_1)));
     ds.put(
         createCommentEntity(
             /*timestamp*/ 8,
             USER_ID_1,
             BUSINESS_ID_1, /*parentId*/
-            generateUniqueId(6, USER_ID_0, BUSINESS_ID_1)));
+            generateUniqueCommentId(6, USER_ID_0, BUSINESS_ID_1)));
 
     ds.put(
         createCommentEntity(
             /*timestamp*/ 10,
             USER_ID_0,
             BUSINESS_ID_1, /*parentId*/
-            generateUniqueId(9, USER_ID_1, BUSINESS_ID_1)));
+            generateUniqueCommentId(9, USER_ID_1, BUSINESS_ID_1)));
     ds.put(
         createCommentEntity(
             /*timestamp*/ 11,
             USER_ID_1,
             BUSINESS_ID_1, /*parentId*/
-            generateUniqueId(9, USER_ID_1, BUSINESS_ID_1)));
+            generateUniqueCommentId(9, USER_ID_1, BUSINESS_ID_1)));
 
     // Create a top level comment without replies
     ds.put(createCommentEntity(/*timestamp*/ 100, USER_ID_2, BUSINESS_ID_1, false));
@@ -158,51 +156,21 @@ public class CommentsServletTest {
     return profileEntity;
   }
 
-  private Entity createCommentEntity(
-      long timestamp, String userId, String businessId, boolean hasReplies) {
-    Entity commentEntity = createCommentEntity(timestamp, userId, businessId, "");
-
-    commentEntity.setProperty(HAS_REPLIES_PROPERTY, true);
-
-    return commentEntity;
-  }
-
-  private Entity createCommentEntity(
-      long timestamp, String userId, String businessId, String parentId) {
-    String id = generateUniqueId(timestamp, userId, businessId);
-
-    Entity comment = new Entity(COMMENT_TASK_NAME, id);
-
-    comment.setProperty(CONTENT_PROPERTY, id);
-    comment.setProperty(TIMESTAMP_PROPERTY, timestamp);
-    comment.setProperty(USER_ID_PROPERTY, userId);
-    comment.setProperty(BUSINESS_ID_PROPERTY, businessId);
-    comment.setProperty(PARENT_ID_PROPERTY, parentId);
-    comment.setProperty(HAS_REPLIES_PROPERTY, false);
-
-    return comment;
-  }
-
   private Comment generateCommentForTest(
       long timestamp, String userId, String businessId, boolean hasReplies) {
-    String id = generateUniqueId(timestamp, userId, businessId);
-
+    String id = generateUniqueCommentId(timestamp, userId, businessId);
     return new Comment(
         id, id, timestamp, userId, getProfileName(userId, ds), businessId, hasReplies);
   }
 
   private Comment generateCommentForTest(
       long timestamp, String userId, String businessId, String parentId) {
-    String id = generateUniqueId(timestamp, userId, businessId);
+    String id = generateUniqueCommentId(timestamp, userId, businessId);
 
     return new Comment(id, id, timestamp, userId, getProfileName(userId, ds), businessId, parentId);
   }
 
-  private String generateUniqueId(long timestamp, String userId, String businessId) {
-    return "1" + timestamp + userId + businessId;
-  }
-
-  /** Assert that the response by the server was just an empty object */
+  /** Assert that the response by the server was just an empty JSON object */
   private void assertEmptyResponse() {
     assertSameJsonObject("[]", servletResponseWriter.toString());
   }
@@ -283,23 +251,23 @@ public class CommentsServletTest {
               /*timestamp*/ 10,
               USER_ID_0,
               BUSINESS_ID_1,
-              generateUniqueId(9, USER_ID_1, BUSINESS_ID_1)),
+              generateUniqueCommentId(9, USER_ID_1, BUSINESS_ID_1)),
           generateCommentForTest(
               /*timestamp*/ 7,
               USER_ID_0,
               BUSINESS_ID_1,
-              generateUniqueId(6, USER_ID_0, BUSINESS_ID_1)),
+              generateUniqueCommentId(6, USER_ID_0, BUSINESS_ID_1)),
           generateCommentForTest(/*timestamp*/ 6, USER_ID_0, BUSINESS_ID_1, true),
           generateCommentForTest(
               /*timestamp*/ 4,
               USER_ID_0,
               BUSINESS_ID_0,
-              generateUniqueId(3, USER_ID_1, BUSINESS_ID_0)),
+              generateUniqueCommentId(3, USER_ID_1, BUSINESS_ID_0)),
           generateCommentForTest(
               /*timestamp*/ 1,
               USER_ID_0,
               BUSINESS_ID_0,
-              generateUniqueId(0, USER_ID_0, BUSINESS_ID_0)),
+              generateUniqueCommentId(0, USER_ID_0, BUSINESS_ID_0)),
           generateCommentForTest(/*timestamp*/ 0, USER_ID_0, BUSINESS_ID_0, true),
         };
 
@@ -310,7 +278,7 @@ public class CommentsServletTest {
   @Test
   public void testReplyRequest() throws IOException {
     String parameterName = PARENT_ID_PROPERTY;
-    String parameterVal = generateUniqueId(0, "0", "0");
+    String parameterVal = generateUniqueCommentId(0, "0", "0");
 
     Comment[] expectedReturnedComments =
         new Comment[] {
@@ -352,7 +320,7 @@ public class CommentsServletTest {
 
     doReturn(USER_ID_0).when(request).getParameter(USER_ID_PROPERTY);
     doReturn(BUSINESS_ID_0).when(request).getParameter(BUSINESS_ID_PROPERTY);
-    doReturn(generateUniqueId(0, USER_ID_0, BUSINESS_ID_0))
+    doReturn(generateUniqueCommentId(0, USER_ID_0, BUSINESS_ID_0))
         .when(request)
         .getParameter(PARENT_ID_PROPERTY);
 
