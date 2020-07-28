@@ -162,12 +162,17 @@ public class FollowsServletTest {
   @Test
   public void testDoGetNoParameters() throws IOException {
     servlet.doGet(request, response);
+
+    assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_BAD_REQUEST, response);
   }
 
   @Test
   public void testDoGetBothParameters() throws IOException {
-    
+    doReturn(MOCK_BUSINESS_ID_1).when(request).getParameter(BUSINESS_ID_PROPERTY);
+    doReturn(MOCK_USER_ID_1).when(request).getParameter(USER_ID_PROPERTY);
+
+    servlet.doGet(request, response);
+
+    assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_BAD_REQUEST, response);
   }
 }
-
-
