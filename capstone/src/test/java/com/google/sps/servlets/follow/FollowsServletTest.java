@@ -17,9 +17,9 @@ package com.google.sps.servlets;
 import static com.google.sps.data.FollowDatastoreUtil.BUSINESS_ID_PROPERTY;
 import static com.google.sps.data.FollowDatastoreUtil.USER_ID_PROPERTY;
 import static com.google.sps.util.FollowTestUtil.createMockFollowEntity;
+import static com.google.sps.util.TestUtil.assertResponseWithArbitraryTextRaised;
 import static com.google.sps.util.TestUtil.assertSameJsonObject;
 import static org.mockito.Mockito.doReturn;
-import static com.google.sps.util.TestUtil.assertResponseWithArbitraryTextRaised;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
