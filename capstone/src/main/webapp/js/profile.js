@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { loadCommentList } from '/js/comments.js'
+import { loadCommentList, loadUserCommentList } from '/js/comments.js'
 import { setLoginOrLogoutUrl, setProfileUrl, getJsonObject } from '/js/util.js';
 
 // Toggle between view and edit profile options.
@@ -21,14 +21,12 @@ window.addEventListener('load', function() {
   setLoginOrLogoutUrl();
   setProfileUrl();
   displayProfile();
-
-  getJsonObject('/login').then(user => {
-    const url = new URLSearchParams(window.location.search);
-    const profileId = url.get('id');
-    document
-        .getElementById('comment-section')
-        .appendChild(loadCommentList(user.isLoggedIn, 'userId', profileId));
-  });       
+  
+  const url = new URLSearchParams(window.location.search);
+  const profileId = url.get('id');
+  document
+      .getElementById('comment-section')
+      .appendChild(loadUserCommentList(profileId));
 })
 
 // Toggle between view and edit profile options.

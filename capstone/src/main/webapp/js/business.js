@@ -29,7 +29,7 @@ window.addEventListener('load', function() {
   const commentSection = document.getElementById('comment-section');
   checkUserLoggedIn().then(userIsLoggedIn => {
     commentSection.appendChild(buildCommentForm(userIsLoggedIn, businessId));
-    commentSection.appendChild(loadCommentList(userIsLoggedIn, 'businessId', businessId));
+    commentSection.appendChild(loadCommentList('businessId', businessId));
   })
 })
 

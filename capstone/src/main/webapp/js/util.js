@@ -57,17 +57,29 @@ export function setProfileUrl() {
   });
 }
 
+export function buildLinkElement(url, text) {
+  const linkElement = document.createElement('a');
+
+  linkElement.innerText = text;
+  linkElement.href = url;
+
+  return linkElement;
+}
+
 /** Helper function for building the login/logout link. */
 function buildLoginOrLogoutLink(url, isLoggedin) {    
-  const aElement = document.createElement('a');
-  aElement.setAttribute('href', url);
-  aElement.classList.add('nav-link');
+  let label;
+
   if (isLoggedin) {
-    aElement.innerText = 'Logout';
+    label = 'Logout';
   } else {
-    aElement.innerText = 'Login';
+    label = 'Login';
   }
-  return aElement;
+  
+  const link = buildLinkElement(url, label);
+  link.classList.add('nav-link');
+
+  return link;
 }
 
 /** Helper function for building the profile link. */
