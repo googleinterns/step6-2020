@@ -250,10 +250,14 @@ public class CommentServletTest {
 
   @Test
   public void testPostParentIdEmptyString() throws IOException {
+    assertEquals(
+        0, countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, "", false));
+
     doReturn("").when(request).getParameter(PARENT_ID_PROPERTY);
 
     servlet.doPost(request, response);
 
-    assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_BAD_REQUEST, response);
+    assertEquals(
+        1, countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, "", false));
   }
 }

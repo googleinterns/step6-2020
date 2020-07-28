@@ -21,6 +21,8 @@ import static com.google.sps.data.CommentDatastoreUtil.HAS_REPLIES_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.PARENT_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.TIMESTAMP_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.USER_ID_PROPERTY;
+import static com.google.common.base.Strings.isNullOrEmpty;
+
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -72,13 +74,7 @@ public class CommentServlet extends HttpServlet {
 
     String parentId = request.getParameter(PARENT_ID_PROPERTY);
 
-    if (parentId != null) {
-      if (parentId == "") {
-        response.sendError(
-            HttpServletResponse.SC_BAD_REQUEST, "parentId cannot be an empty String. Either set a specific parentId or don't set the parameter at all.");
-        return;
-      }
-
+    if (!isNullOrEmpty(parentId)) {
       try {
         Entity parentEntity = datastore.get(KeyFactory.createKey(COMMENT_TASK_NAME, parentId));
         parentEntity.setProperty(HAS_REPLIES_PROPERTY, true);

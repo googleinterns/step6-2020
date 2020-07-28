@@ -51,6 +51,6 @@ public class CommentTestUtil {
   }
 
   public static String generateUniqueCommentId(long timestamp, String userId, String businessId) {
-    return "1" + timestamp + userId + businessId;
+    return timestamp + userId + businessId;
   }
 }
