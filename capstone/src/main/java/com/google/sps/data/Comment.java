@@ -36,6 +36,7 @@ public final class Comment {
   private final String businessId;
   private final String parentId;
   private final String name;
+  private final boolean hasReplies;
   private final String timestampStr;
 
   public Comment(
@@ -53,12 +54,28 @@ public final class Comment {
     this.name = name;
     this.businessId = businessId;
     this.parentId = parentId;
+    this.hasReplies = false;
     // Epoch timestamp is formatted in UTC time
     this.timestampStr = new SimpleDateFormat("MM/dd/yy HH:mm").format(timestamp);
   }
 
   public Comment(
-      String id, String content, long timestamp, String userId, String name, String businessId) {
-    this(id, content, timestamp, userId, name, businessId, "");
+      String id,
+      String content,
+      long timestamp,
+      String userId,
+      String name,
+      String businessId,
+      boolean hasReplies) {
+    this.id = id;
+    this.content = content;
+    this.timestamp = timestamp;
+    this.userId = userId;
+    this.name = name;
+    this.businessId = businessId;
+    this.parentId = "";
+    this.hasReplies = false;
+    // Epoch timestamp is formatted in UTC time
+    this.timestampStr = new SimpleDateFormat("MM/dd/yy HH:mm").format(timestamp);
   }
 }
