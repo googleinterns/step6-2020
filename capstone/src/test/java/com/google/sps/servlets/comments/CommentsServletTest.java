@@ -160,7 +160,6 @@ public class CommentsServletTest {
   private Comment generateCommentForTest(
       long timestamp, String userId, String businessId, boolean hasReplies) {
     String id = generateUniqueCommentId(timestamp, userId, businessId);
-
     return new Comment(
         id, id, timestamp, userId, getProfileName(userId, ds), businessId, hasReplies);
   }

@@ -14,6 +14,8 @@
 
 package com.google.sps.data;
 
+import java.text.SimpleDateFormat;
+
 public final class Comment {
   /**
    * Represents a user's comment.
@@ -35,6 +37,7 @@ public final class Comment {
   private final String parentId;
   private final String name;
   private final boolean hasReplies;
+  private final String timestampStr;
 
   public Comment(
       String id,
@@ -52,6 +55,8 @@ public final class Comment {
     this.businessId = businessId;
     this.parentId = parentId;
     this.hasReplies = false;
+    // Epoch timestamp is formatted in UTC time
+    this.timestampStr = new SimpleDateFormat("MM/dd/yy HH:mm").format(timestamp);
   }
 
   public Comment(
@@ -70,5 +75,7 @@ public final class Comment {
     this.businessId = businessId;
     this.parentId = "";
     this.hasReplies = false;
+    // Epoch timestamp is formatted in UTC time
+    this.timestampStr = new SimpleDateFormat("MM/dd/yy HH:mm").format(timestamp);
   }
 }

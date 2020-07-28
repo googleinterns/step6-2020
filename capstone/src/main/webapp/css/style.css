@@ -1,10 +1,8 @@
-* {
-  margin-left: auto;
-  margin-right: auto;
-  width: 650px;
-}
-
 .comment {
   border-style: solid;
   margin: 10px;
+}
+
+#Header a:hover {
+    color: #FFF;
 }

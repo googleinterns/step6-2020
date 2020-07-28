@@ -15,16 +15,9 @@
 import { 
   buildElement,
   buildButton,
+  buildLinkElement,
   getJsonObject, 
   } from '/js/util.js';
-
-
-// The div in which comments are shown
-let commentContainer = undefined;
-
-// The property and corresponding value by which comments are filtered
-let filterProperty = undefined;
-let filterValue = undefined;
 
 /** Build form for submitting comments. */
 export function buildCommentForm(userIsLoggedIn, businessId, parentId=null) {
@@ -70,18 +63,31 @@ function buildHiddenStaticFormField(name, value) {
   return field;
 }
 
+/** Load a list of comments that the user posted */
+export function loadUserCommentList(userId) {
+  commentContainer = document.createElement('div');
+  commentContainer.id = 'comments';
+
+  getJsonObject('/comments', {'userId': userId})
+      .then(comments => comments.forEach(comment => 
+          commentContainer.appendChild(buildUserPageCommentWrapper(comment))
+      ));
+
+  return commentContainer;
+}
+
 /** 
 * Load comment section given the parentDiv in which to load the comments, the property to filter 
 * comments by ('businessId' or 'userId') and the value to filter the comments by 
 */
-export function loadCommentList(userIsLoggedIn, filterProperty_, filterValue_) {  
+export function loadCommentList(userIsLoggedIn, businessId) {
   commentContainer = document.createElement('div');
   commentContainer.id = 'comments';
-
-  filterProperty = filterProperty_;
-  filterValue = filterValue_;
   
-  showComments(userIsLoggedIn);
+  getJsonObject('/comments', {'businessId': businessId})
+      .then(comments => comments.forEach(comment => 
+          commentContainer.appendChild(buildTopLevelCommentElement(comment, userIsLoggedIn))
+      ));
 
   return commentContainer
 }
@@ -103,12 +109,35 @@ function buildCommentTextArea(userIsLoggedIn) {
   return commentTextArea;
 }
 
-/** Given a comment object build a comment element on the web page. */
-async function buildCommentElement(comment) {
+/** 
+* Given a comment object build a comment element on the web page. 
+* This function is meant for comments appearing on a list of comments the user posted.
+*/
+function buildUserPageCommentWrapper(comment) {
+  const commentWrapper = document.createElement('div');
+
+  commentWrapper.class = 'comment-wrapper';
+
+  getJsonObject('/business/' + comment.businessId).then(business => {
+    commentWrapper.appendChild(
+        buildLinkElement('/business.html?id=' + comment.businessId, business.name));
+    commentWrapper.appendChild(buildCommentElement(comment));
+  });
+
+  return commentWrapper;
+}
+
+/** 
+* Given a comment object build a comment element on the web page. 
+* This function is meant for comments appearing on the page they where posted.
+*/
+function buildCommentElement(comment) {
   const commentElement = document.createElement('div');
   
   commentElement.className = 'comment'
   commentElement.id = comment.id;
+  commentElement.appendChild(buildElement('small', comment.timestampStr));
+  commentElement.appendChild(document.createElement('br'));
   commentElement.appendChild(buildElement('small', comment.name + ' says:'));
   commentElement.appendChild(document.createElement('br'));
   commentElement.innerHTML += comment.content + '\n';
@@ -139,55 +168,36 @@ function showReplyTextArea(parentId, businessId) {
 * Build div for the field in which you can reply to a given comment. 
 * If the user is not logged in the div will tell the user to log in to reply.
 */
-function buildReplyToCommentDiv(parentId, userIsLoggedIn, businessId) {
+function buildReplyToCommentDiv(parentId, businessId) {
   const div = document.createElement('div');
 
   div.className = 'reply-to-comment-div';
   
-  div.innerHTML = '';
-
-  if (userIsLoggedIn) {
-    div.appendChild(
-      buildButton(
-        'reply-to-comment-button', 
-        () => showReplyTextArea(parentId, businessId), 
-        'Reply',
-      ));
-  } else {
-    div.appendChild(
-      buildButton('reply-to-comment-button', null, 'Please log in to write a comment'));
-  }
+  div.appendChild(
+    buildButton(
+      'reply-to-comment-button', 
+      () => showReplyTextArea(parentId, businessId), 
+      'Reply',
+    ));
   
   return div
 }
 
-async function buildTopLevelCommentElement(comment, userIsLoggedIn) {
-  const commentElement = await buildCommentElement(comment);
+function buildTopLevelCommentElement(comment, userIsLoggedIn) {
+  const commentElement = buildCommentElement(comment);
   
   commentElement.appendChild(document.createElement('br'));
-  commentElement.appendChild(
-      buildReplyToCommentDiv(comment.id, userIsLoggedIn, comment.businessId));
-  commentElement.appendChild(buildRepliesDiv(comment.id));
+  if (userIsLoggedIn) {
+    commentElement.appendChild(
+          buildReplyToCommentDiv(comment.id, comment.businessId));
+  }
   
+  commentElement.appendChild(buildRepliesDiv(comment.id));
 
   return commentElement;
 }
 
-function showComments(userIsLoggedIn) {
-  const params = {};
-  params[filterProperty] = filterValue;
-
-  getJsonObject('/comments', params)
-      .then(
-        comments => comments.forEach(
-          comment => 
-            buildTopLevelCommentElement(comment, userIsLoggedIn).then(commentElement =>
-              commentContainer.appendChild(commentElement)
-            )
-        )
-      );
-}
-
+/** Show replies to a specific comment and display it below the comment */
 async function showReplies(commentId) {
   const replyDiv = document.getElementById(commentId).querySelector('.replies');
 
@@ -195,6 +205,6 @@ async function showReplies(commentId) {
 
   getJsonObject('/comments', {'parentId' : commentId})
       .then(replies => replies.forEach(reply =>
-          buildCommentElement(reply).then(commentElement =>
-            replyDiv.appendChild(commentElement))));
+          replyDiv.appendChild(buildCommentElement(reply))
+      ));
 }

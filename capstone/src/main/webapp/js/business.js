@@ -29,7 +29,7 @@ window.addEventListener('load', function() {
   const commentSection = document.getElementById('comment-section');
   checkUserLoggedIn().then(userIsLoggedIn => {
     commentSection.appendChild(buildCommentForm(userIsLoggedIn, businessId));
-    commentSection.appendChild(loadCommentList(userIsLoggedIn, 'businessId', businessId));
+    commentSection.appendChild(loadCommentList('businessId', businessId));
   })
 })
 
@@ -47,9 +47,6 @@ window.hasAnswerQuestionnaire = function() {
   if (isNotBusiness.checked == true) {
     businessQuesionnaire.style.display = 'none';
   }
-
-  let submit = document.getElementById("submit-button");
-  submit.style.display = 'block';
 }
 
 // Submit the edit-profile form to servlet based on whether they're a business or not.
@@ -110,8 +107,10 @@ function constructBusinessProfile(id) {
       }).then(info => {
         if (info.isCurrentUser) {
           document.getElementById('edit-button').style.display = 'block';
+          document.getElementById('getStarted-button').style.display = 'block';
         } else {
           document.getElementById('edit-button').style.display = 'none';
+          document.getElementById('getStarted-button').style.display = 'none';
         }
         
         const calendarDiv = document.getElementById('business-calendar');
