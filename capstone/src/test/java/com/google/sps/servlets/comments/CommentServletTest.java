@@ -247,4 +247,13 @@ public class CommentServletTest {
 
     assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_BAD_REQUEST, response);
   }
+
+  @Test
+  public void testPostParentIdEmptyString() throws IOException {
+    doReturn("").when(request).getParameter(PARENT_ID_PROPERTY);
+
+    servlet.doPost(request, response);
+
+    assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_BAD_REQUEST, response);
+  }
 }
