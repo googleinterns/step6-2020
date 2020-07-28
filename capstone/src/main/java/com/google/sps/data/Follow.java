@@ -20,11 +20,11 @@ public final class Follow {
   private String businessId;
 
   /**
-  * Follow Constructor
-  * 
-  * @param userId the id of the user following the business
-  * @param businessId the id of the business that the user follows
-  */
+   * Follow Constructor
+   *
+   * @param userId the id of the user following the business
+   * @param businessId the id of the business that the user follows
+   */
   public Follow(String userId, String businessId) {
     this.userId = userId;
     this.businessId = businessId;

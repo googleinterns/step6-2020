@@ -14,9 +14,6 @@
 
 package com.google.sps.util;
 
-import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
-import static com.google.sps.data.ProfileDatastoreUtil.YES;
 import static com.google.sps.data.FollowDatastoreUtil.BUSINESS_ID_PROPERTY;
 import static com.google.sps.data.FollowDatastoreUtil.FOLLOW_TASK_NAME;
 import static com.google.sps.data.FollowDatastoreUtil.USER_ID_PROPERTY;
