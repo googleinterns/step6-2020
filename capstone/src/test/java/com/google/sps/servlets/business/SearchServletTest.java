@@ -18,7 +18,6 @@ import static org.mockito.Mockito.doReturn;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import java.io.IOException;
@@ -27,7 +26,6 @@ import java.io.StringWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -38,7 +36,7 @@ public class SearchServletTest {
 
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
-  
+
   @Mock private HttpServletRequest request;
 
   @Mock private HttpServletResponse response;
@@ -63,11 +61,7 @@ public class SearchServletTest {
     helper.tearDown();
   }
 
-  /**
-   *  Test retrieving a business by exact match to business name.
-   */
-   @Test
-   public void testDoGetByNameSuccess() throws IOException {
-
-   }
+  /** Test retrieving a business by exact match to business name. */
+  @Test
+  public void testDoGetByNameSuccess() throws IOException {}
 }

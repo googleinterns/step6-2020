@@ -48,12 +48,12 @@ public class SearchServlet extends HttpServlet {
                 CompositeFilterOperator.and(
                     FilterOperator.EQUAL.of(IS_BUSINESS_PROPERTY, "Yes"),
                     FilterOperator.EQUAL.of(NAME_PROPERTY, searchFor)));
-    
+
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery searchResults = datastore.prepare(searchQuery);
 
     List<BusinessProfile> businesses = new ArrayList<>();
-    for (Entity business: searchResults.asIterable()) {
+    for (Entity business : searchResults.asIterable()) {
       String id = (String) entity.getKey().getName();
       String name = (String) entity.getProperty(NAME_PROPERTY);
       String location = (String) entity.getProperty(LOCATION_PROPERTY);
