@@ -80,10 +80,15 @@ public class CommentServlet extends HttpServlet {
         datastore.put(parentEntity);
       } catch (EntityNotFoundException e) {
         response.sendError(
-            HttpServletResponse.SC_BAD_REQUEST, "The parentId \'" + parentId + "\' does not exist in the datastore. Cannot post replies to non-existent comments.");
+            HttpServletResponse.SC_BAD_REQUEST,
+            "The parentId \'"
+                + parentId
+                + "\' does not exist in the datastore. Cannot post replies to non-existent"
+                + " comments.");
         return;
       } catch (IllegalArgumentException e) {
-        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "The parentId you specified is invalid");
+        response.sendError(
+            HttpServletResponse.SC_BAD_REQUEST, "The parentId you specified is invalid");
         return;
       }
     }

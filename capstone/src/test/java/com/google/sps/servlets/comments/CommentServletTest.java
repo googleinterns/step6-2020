@@ -22,15 +22,15 @@ import static com.google.sps.data.CommentDatastoreUtil.HAS_REPLIES_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.PARENT_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.USER_ID_PROPERTY;
 import static com.google.sps.util.CommentTestUtil.createCommentEntity;
-import static com.google.sps.util.CommentTestUtil.generateUniqueCommentId;
 import static com.google.sps.util.TestUtil.assertResponseWithArbitraryTextRaised;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
@@ -41,7 +41,6 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
 import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
-import com.google.appengine.api.datastore.EntityNotFoundException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -222,12 +221,13 @@ public class CommentServletTest {
   }
 
   @Test
-  public void testPostingCommentChangesHasRepliesField() throws IOException, EntityNotFoundException {
+  public void testPostingCommentChangesHasRepliesField()
+      throws IOException, EntityNotFoundException {
     // Add parent comment
 
-    Entity parentCommentEntity = 
+    Entity parentCommentEntity =
         createCommentEntity(/*Timestamp*/ 1, MOCK_USER_ID, MOCK_BUSINESS_ID, false);
-    
+
     ds.put(parentCommentEntity);
 
     String parentId = KeyFactory.keyToString(parentCommentEntity.getKey());
@@ -240,7 +240,6 @@ public class CommentServletTest {
     servlet.doPost(request, response);
 
     assertEquals(true, ds.get(KeyFactory.stringToKey(parentId)).getProperty(HAS_REPLIES_PROPERTY));
-
   }
 
   @Test

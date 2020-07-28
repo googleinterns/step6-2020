@@ -340,7 +340,8 @@ public class CommentsServletTest {
     servlet.doGet(request, response);
     String servletResponse = servletResponseWriter.toString();
 
-    Comment expectedRetrievedComment = generateCommentForTest(0, USER_ID_0, BUSINESS_ID_0, /*hasReplies*/ false);
+    Comment expectedRetrievedComment =
+        generateCommentForTest(0, USER_ID_0, BUSINESS_ID_0, /*hasReplies*/ false);
     String expectedResponse = new Gson().toJson(new Comment[] {expectedRetrievedComment});
 
     assertSameJsonObject(expectedResponse, servletResponse);
