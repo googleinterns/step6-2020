@@ -14,8 +14,10 @@
 
 package com.google.sps.util;
 
+import com.google.gson.JsonParser;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
+import org.junit.Assert;
 import org.mockito.Mockito;
 
 /** Assert that a certain response code was raised, not caring about what the associated text is. */
@@ -24,5 +26,11 @@ public class TestUtil {
       int targetResponse, HttpServletResponse response) throws IOException {
     Mockito.verify(response, Mockito.times(1))
         .sendError(Mockito.eq(targetResponse), Mockito.anyString());
+  }
+
+  /** Assert that two JSON strings specify the same JSON object */
+  public static void assertSameJsonObject(String a, String b) {
+    JsonParser parser = new JsonParser();
+    Assert.assertEquals(parser.parse(a), parser.parse(b));
   }
 }
