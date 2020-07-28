@@ -133,12 +133,16 @@ function getId() {
 function displayEditButton(isCurrentUser) {
   let editButton =  document.getElementById('edit-button');
   let getStartedButton =  document.getElementById('getStarted-button');
+  let profileButton = document.getElementById('profile-button');
+
   if (isCurrentUser) {
     editButton.style.display = 'block';
     getStartedButton.style.display = 'block';
+    profileButton.classList.add('active');
   } else {
     editButton.style.display = 'none';
     getStartedButton.style.display = 'none';
+    profileButton.classList.remove('active');
   }
 }
 
