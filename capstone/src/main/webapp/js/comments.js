@@ -65,7 +65,7 @@ function buildHiddenStaticFormField(name, value) {
 
 /** Load a list of comments that the user posted */
 export function loadUserCommentList(userId) {
-  commentContainer = document.createElement('div');
+  const commentContainer = document.createElement('div');
   commentContainer.id = 'comments';
 
   getJsonObject('/comments', {'userId': userId})
@@ -81,7 +81,7 @@ export function loadUserCommentList(userId) {
 * comments by ('businessId' or 'userId') and the value to filter the comments by 
 */
 export function loadCommentList(userIsLoggedIn, businessId) {
-  commentContainer = document.createElement('div');
+  const commentContainer = document.createElement('div');
   commentContainer.id = 'comments';
   
   getJsonObject('/comments', {'businessId': businessId})
