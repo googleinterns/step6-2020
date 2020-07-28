@@ -23,6 +23,7 @@ import static com.google.sps.data.ProfileDatastoreUtil.getProfileName;
 import static com.google.sps.util.CommentTestUtil.createCommentEntity;
 import static com.google.sps.util.CommentTestUtil.generateUniqueCommentId;
 import static com.google.sps.util.TestUtil.assertResponseWithArbitraryTextRaised;
+import static com.google.sps.util.TestUtil.assertSameJsonObject;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.reset;
 
@@ -32,7 +33,6 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.gson.Gson;
-import com.google.gson.JsonParser;
 import com.google.sps.data.Comment;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -40,7 +40,6 @@ import java.io.StringWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -174,12 +173,6 @@ public class CommentsServletTest {
   /** Assert that the response by the server was just an empty JSON object */
   private void assertEmptyResponse() {
     assertSameJsonObject("[]", servletResponseWriter.toString());
-  }
-
-  /** Assert that two JSON strings specify the same JSON object */
-  private void assertSameJsonObject(String a, String b) {
-    JsonParser parser = new JsonParser();
-    Assert.assertEquals(parser.parse(a), parser.parse(b));
   }
 
   /**
