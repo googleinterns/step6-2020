@@ -75,7 +75,9 @@ public class CommentServlet extends HttpServlet {
     if (parentId != null) {
       if (parentId == "") {
         response.sendError(
-            HttpServletResponse.SC_BAD_REQUEST, "parentId cannot be an empty String. Either set a specific parentId or don't set the parameter at all.");
+            HttpServletResponse.SC_BAD_REQUEST,
+            "parentId cannot be an empty String. Either set a specific parentId or don't set the"
+                + " parameter at all.");
         return;
       }
 
