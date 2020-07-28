@@ -105,7 +105,6 @@ public class CommentServlet extends HttpServlet {
     commentEntity.setProperty(TIMESTAMP_PROPERTY, System.currentTimeMillis());
     commentEntity.setProperty(HAS_REPLIES_PROPERTY, false);
 
-
     return commentEntity;
   }
 }
