@@ -39,7 +39,7 @@ public final class Comment {
   private final boolean hasReplies;
   private final String timestampStr;
 
-  public Comment (
+  public Comment(
       String id,
       String content,
       long timestamp,

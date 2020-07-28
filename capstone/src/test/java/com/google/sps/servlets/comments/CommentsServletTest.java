@@ -161,14 +161,29 @@ public class CommentsServletTest {
       long timestamp, String userId, String businessId, boolean hasReplies) {
     String id = generateUniqueCommentId(timestamp, userId, businessId);
     return new Comment(
-        id, id, timestamp, userId, getProfileName(userId, ds), businessId, /*parentId*/ "", hasReplies);
+        id,
+        id,
+        timestamp,
+        userId,
+        getProfileName(userId, ds),
+        businessId, /*parentId*/
+        "",
+        hasReplies);
   }
 
   private Comment generateCommentForTest(
       long timestamp, String userId, String businessId, String parentId) {
     String id = generateUniqueCommentId(timestamp, userId, businessId);
 
-    return new Comment(id, id, timestamp, userId, getProfileName(userId, ds), businessId, parentId, /*hasReplies*/ false);
+    return new Comment(
+        id,
+        id,
+        timestamp,
+        userId,
+        getProfileName(userId, ds),
+        businessId,
+        parentId, /*hasReplies*/
+        false);
   }
 
   /** Assert that the response by the server was just an empty JSON object */

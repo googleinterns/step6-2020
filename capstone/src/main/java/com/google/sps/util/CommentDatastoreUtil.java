@@ -44,7 +44,7 @@ public final class CommentDatastoreUtil {
     String businessId = (String) commentEntity.getProperty(BUSINESS_ID_PROPERTY);
     String parentId = (String) commentEntity.getProperty(PARENT_ID_PROPERTY);
     boolean hasReplies = (boolean) commentEntity.getProperty(HAS_REPLIES_PROPERTY);
-  
+
     return new Comment(id, content, timestamp, userId, name, businessId, parentId, hasReplies);
   }
 }
