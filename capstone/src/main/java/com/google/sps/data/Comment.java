@@ -15,6 +15,7 @@
 package com.google.sps.data;
 
 import java.text.SimpleDateFormat;
+import java.lang.IllegalArgumentException;
 
 public final class Comment {
   /**
@@ -47,7 +48,10 @@ public final class Comment {
       String name,
       String businessId,
       String parentId,
-      boolean hasReplies) {
+      boolean hasReplies) throws IllegalArgumentException {
+    if (hasReplies && !parentId.isEmpty()) {
+      throw new IllegalArgumentException("A reply comment cannot have it's own replies.");
+    }
     this.id = id;
     this.content = content;
     this.timestamp = timestamp;
