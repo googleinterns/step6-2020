@@ -74,7 +74,7 @@ public class BusinessesServlet extends HttpServlet {
       profiles.add(profile);
     }
 
-    response.setContentType("application/json;");
+    response.setContentType("application/json");
     Gson gson = new Gson();
     response.getWriter().println(gson.toJson(profiles));
   }
