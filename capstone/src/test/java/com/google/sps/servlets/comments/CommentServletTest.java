@@ -29,6 +29,8 @@ import static org.mockito.Mockito.doReturn;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
@@ -39,6 +41,7 @@ import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
 import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,7 +62,7 @@ public class CommentServletTest {
   private final String MOCK_CONTENT = "This is my comment content.";
   private final String MOCK_USER_ID = "1";
   private final String MOCK_BUSINESS_ID = "2";
-  private final String NON_EXISTENT_COMMENT_ID = "5000";
+  private final String INVALID_COMMENT_ID = "5000";
 
   private LocalServiceTestHelper helper =
       new LocalServiceTestHelper(
@@ -219,29 +222,43 @@ public class CommentServletTest {
   }
 
   @Test
-  public void testPostingCommentChangesHasRepliesField() throws IOException {
+  public void testPostingCommentChangesHasRepliesField() throws IOException, EntityNotFoundException {
     // Add parent comment
-    int timestamp = 1;
-    ds.put(createCommentEntity(timestamp, MOCK_USER_ID, MOCK_BUSINESS_ID, false));
 
-    // The Id that gets generated when the comment is added
-    String parentId = generateUniqueCommentId(timestamp, MOCK_USER_ID, MOCK_BUSINESS_ID);
+    Entity parentCommentEntity = 
+        createCommentEntity(/*Timestamp*/ 1, MOCK_USER_ID, MOCK_BUSINESS_ID, false);
+    
+    ds.put(parentCommentEntity);
 
-    assertEquals(0, countCommentOccurences(ds, parentId, MOCK_USER_ID, MOCK_BUSINESS_ID, "", true));
+    String parentId = KeyFactory.keyToString(parentCommentEntity.getKey());
+
+    assertEquals(false, ds.get(KeyFactory.stringToKey(parentId)).getProperty(HAS_REPLIES_PROPERTY));
 
     // Add reply
     doReturn(parentId).when(request).getParameter(PARENT_ID_PROPERTY);
 
     servlet.doPost(request, response);
 
-    assertEquals(1, countCommentOccurences(ds, parentId, MOCK_USER_ID, MOCK_BUSINESS_ID, "", true));
-    assertEquals(
-        0, countCommentOccurences(ds, parentId, MOCK_USER_ID, MOCK_BUSINESS_ID, "", false));
+    assertEquals(true, ds.get(KeyFactory.stringToKey(parentId)).getProperty(HAS_REPLIES_PROPERTY));
+
   }
 
   @Test
   public void testPostReplyToNonExistentComment() throws IOException {
-    doReturn(NON_EXISTENT_COMMENT_ID).when(request).getParameter(PARENT_ID_PROPERTY);
+    // Create an entity without adding it to datastore and use its key to make the request
+    Entity commentEntity = createCommentEntity(1, MOCK_USER_ID, MOCK_BUSINESS_ID, false);
+    String parentId = KeyFactory.keyToString(commentEntity.getKey());
+
+    doReturn(parentId).when(request).getParameter(PARENT_ID_PROPERTY);
+
+    servlet.doPost(request, response);
+
+    assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_BAD_REQUEST, response);
+  }
+
+  @Test
+  public void testPostReplyWithInvalidParentId() throws IOException {
+    doReturn(INVALID_COMMENT_ID).when(request).getParameter(PARENT_ID_PROPERTY);
 
     servlet.doPost(request, response);
 

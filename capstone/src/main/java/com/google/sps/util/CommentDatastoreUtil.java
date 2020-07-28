@@ -43,8 +43,13 @@ public final class CommentDatastoreUtil {
     String name = getProfileName(userId, datastore);
     String businessId = (String) commentEntity.getProperty(BUSINESS_ID_PROPERTY);
     String parentId = (String) commentEntity.getProperty(PARENT_ID_PROPERTY);
-    boolean hasReplies = (boolean) commentEntity.getProperty(HAS_REPLIES_PROPERTY);
 
-    return new Comment(id, content, timestamp, userId, name, businessId, parentId);
+    // Use two different constructors depending on whether the comment is a reply or not
+    if (parentId.isEmpty()) {
+      boolean hasReplies = (boolean) commentEntity.getProperty(HAS_REPLIES_PROPERTY);
+      return new Comment(id, content, timestamp, userId, name, businessId, hasReplies);
+    } else {
+      return new Comment(id, content, timestamp, userId, name, businessId, parentId);
+    }
   }
 }

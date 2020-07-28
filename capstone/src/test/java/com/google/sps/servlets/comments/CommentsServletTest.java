@@ -53,6 +53,7 @@ public class CommentsServletTest {
   private final String BUSINESS_ID_1 = "1";
   private final String USER_NAME_0 = "User 0";
   private final String USER_NAME_1 = "User 1";
+  private final long TIMESTAMP_0 = 0;
 
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
@@ -232,7 +233,7 @@ public class CommentsServletTest {
 
     Comment[] expectedReturnedComments =
         new Comment[] {
-          generateCommentForTest(/*timestamp*/ (long) 3, USER_ID_1, BUSINESS_ID_0, false),
+          generateCommentForTest(/*timestamp*/ (long) 3, USER_ID_1, BUSINESS_ID_0, true),
           generateCommentForTest(/*timestamp*/ 0, USER_ID_0, BUSINESS_ID_0, true),
         };
 
@@ -331,20 +332,15 @@ public class CommentsServletTest {
 
   @Test
   public void testShowsUserName() throws IOException {
-    long timestamp = 0;
-    String userId = "33";
-    String username = "Larry";
-    String businessId = "0";
+    ds.put(createProfileEntity(USER_ID_0, USER_ID_0));
+    ds.put(createCommentEntity(TIMESTAMP_0, USER_ID_0, BUSINESS_ID_0, /*hasReplies*/ false));
 
-    ds.put(createProfileEntity(userId, username));
-    ds.put(createCommentEntity(/*timestamp*/ 0, userId, /*businessId*/ businessId, false));
-
-    doReturn(userId).when(request).getParameter(USER_ID_PROPERTY);
+    doReturn(USER_ID_0).when(request).getParameter(USER_ID_PROPERTY);
 
     servlet.doGet(request, response);
     String servletResponse = servletResponseWriter.toString();
 
-    Comment expectedRetrievedComment = generateCommentForTest(0, userId, businessId, false);
+    Comment expectedRetrievedComment = generateCommentForTest(0, USER_ID_0, BUSINESS_ID_0, /*hasReplies*/ false);
     String expectedResponse = new Gson().toJson(new Comment[] {expectedRetrievedComment});
 
     assertSameJsonObject(expectedResponse, servletResponse);

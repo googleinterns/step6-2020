@@ -74,7 +74,7 @@ public final class Comment {
     this.name = name;
     this.businessId = businessId;
     this.parentId = "";
-    this.hasReplies = false;
+    this.hasReplies = hasReplies;
     // Epoch timestamp is formatted in UTC time
     this.timestampStr = new SimpleDateFormat("MM/dd/yy HH:mm").format(timestamp);
   }
