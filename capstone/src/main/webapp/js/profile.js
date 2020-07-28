@@ -134,10 +134,13 @@ function getId() {
 // Determine whether to display the edit button depends if user is viewing its profile page.
 function displayEditButton(isCurrentUser) {
   let editButton =  document.getElementById('edit-button');
+  let getStartedButton =  document.getElementById('getStarted-button');
   if (isCurrentUser) {
     editButton.style.display = 'block';
+    getStartedButton.style.display = 'block';
   } else {
     editButton.style.display = 'none';
+    getStartedButton.style.display = 'none';
   }
 }
 
