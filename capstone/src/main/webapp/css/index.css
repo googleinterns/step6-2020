@@ -9,7 +9,7 @@ body {
 }
 
 #businesses {
-  height: 94vh;
+  height: 91vh;
   overflow-y: auto;
   padding-bottom: 50px;
 }
@@ -34,7 +34,7 @@ body {
   display: flex;
   height: 100%;
   margin-top: 75px;
-  padding: 10px 15px;
+  padding: 10px 25px;
 }
 
 .business-info {
@@ -97,6 +97,10 @@ body {
 
 .map_link_row, .map_location_row, .map_name_row {
   height: 18px;
+}
+
+#results {
+  font-size: 16px;
 }
 
 #resultsTable {
