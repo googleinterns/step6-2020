@@ -1,9 +1,14 @@
 .carousel-item {
-  height: 65vh;
-  min-height: 350px;
   background: no-repeat center center scroll;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+  height: 65vh;
+  min-height: 350px;
+}
+
+.text-box {
+  background-color: #f8f8ff;
+  border-radius: 25px;
 }
