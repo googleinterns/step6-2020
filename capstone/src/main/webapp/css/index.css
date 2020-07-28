@@ -27,6 +27,7 @@ body {
   max-height: 150px;
   overflow: hidden;
   padding: 10px;
+  padding-bottom: 40px;
   position: relative;
 }
 
@@ -105,7 +106,7 @@ body {
 
 #resultsTable {
   border-collapse: collapse;
-  width: 240px;
+  width: 280px;
 }
 
 .show-more {
