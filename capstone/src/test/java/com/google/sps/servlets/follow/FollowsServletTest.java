@@ -15,25 +15,19 @@
 package com.google.sps.servlets;
 
 import static com.google.sps.data.FollowDatastoreUtil.BUSINESS_ID_PROPERTY;
-import static com.google.sps.data.FollowDatastoreUtil.FOLLOW_TASK_NAME;
 import static com.google.sps.data.FollowDatastoreUtil.USER_ID_PROPERTY;
+import static com.google.sps.util.FollowTestUtil.createMockFollowEntity;
+import static com.google.sps.util.TestUtil.assertSameJsonObject;
 import static org.mockito.Mockito.doReturn;
 import static com.google.sps.util.TestUtil.assertResponseWithArbitraryTextRaised;
-import static com.google.sps.util.TestUtil.assertSameJsonObject;
 
-import com.google.sps.data.Follow;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Query;
-import com.google.gson.Gson;
-import static com.google.sps.util.FollowTestUtil.createMockFollowEntity;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
-import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import com.google.sps.data.Follow;
 import java.io.IOException;
-import java.util.HashMap;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import javax.servlet.http.HttpServletRequest;
@@ -49,7 +43,7 @@ public class FollowsServletTest {
   private static final String MOCK_DOMAIN = "microsoft.com";
   private static final String MOCK_USER_ID_1 = "1";
   private static final String MOCK_USER_ID_2 = "2";
-  private static final String MOCK_USER_ID_3 = "3";  
+  private static final String MOCK_USER_ID_3 = "3";
   private static final String MOCK_BUSINESS_ID_1 = "4";
   private static final String MOCK_BUSINESS_ID_2 = "5";
   private static final String MOCK_BUSINESS_ID_3 = "6";
@@ -103,31 +97,34 @@ public class FollowsServletTest {
 
   @Test
   public void testDoGetBusinessMultipleResults() throws IOException {
-    Follow[] expectedReturnedFollows = 
-        new Follow[]{
-            new Follow(MOCK_USER_ID_1, MOCK_BUSINESS_ID_1), 
-            new Follow(MOCK_USER_ID_2, MOCK_BUSINESS_ID_1)};
-    
+    Follow[] expectedReturnedFollows =
+        new Follow[] {
+          new Follow(MOCK_USER_ID_1, MOCK_BUSINESS_ID_1),
+          new Follow(MOCK_USER_ID_2, MOCK_BUSINESS_ID_1)
+        };
+
     runTest(BUSINESS_ID_PROPERTY, MOCK_BUSINESS_ID_1, expectedReturnedFollows);
   }
 
   @Test
   public void testDoGetBusinessSingleResult() throws IOException {
-    Follow[] expectedReturnedFollows = new Follow[]{new Follow(MOCK_USER_ID_1, MOCK_BUSINESS_ID_2)};
-    
+    Follow[] expectedReturnedFollows =
+        new Follow[] {new Follow(MOCK_USER_ID_1, MOCK_BUSINESS_ID_2)};
+
     runTest(BUSINESS_ID_PROPERTY, MOCK_BUSINESS_ID_2, expectedReturnedFollows);
   }
 
   @Test
   public void testDoGetBusinessNoResults() throws IOException {
-    Follow[] expectedReturnedFollows = new Follow[]{};
-    
+    Follow[] expectedReturnedFollows = new Follow[] {};
+
     runTest(BUSINESS_ID_PROPERTY, MOCK_BUSINESS_ID_3, expectedReturnedFollows);
   }
 
-  private void runDoGetUserTest(String userId, Follow[] expectedReturnedFollows) throws IOException {
+  private void runDoGetUserTest(String userId, Follow[] expectedReturnedFollows)
+      throws IOException {
     doReturn(userId).when(request).getParameter(USER_ID_PROPERTY);
-    
+
     servlet.doGet(request, response);
 
     String expectedResponse = new Gson().toJson(expectedReturnedFollows);
@@ -137,25 +134,27 @@ public class FollowsServletTest {
 
   @Test
   public void testDoGetUserMultipleResults() throws IOException {
-    Follow[] expectedReturnedFollows = 
-        new Follow[]{
-            new Follow(MOCK_USER_ID_1, MOCK_BUSINESS_ID_1), 
-            new Follow(MOCK_USER_ID_1, MOCK_BUSINESS_ID_2)};
-    
+    Follow[] expectedReturnedFollows =
+        new Follow[] {
+          new Follow(MOCK_USER_ID_1, MOCK_BUSINESS_ID_1),
+          new Follow(MOCK_USER_ID_1, MOCK_BUSINESS_ID_2)
+        };
+
     runTest(USER_ID_PROPERTY, MOCK_USER_ID_1, expectedReturnedFollows);
   }
 
   @Test
   public void testDoGetUserSingleResult() throws IOException {
-    Follow[] expectedReturnedFollows = new Follow[]{new Follow(MOCK_USER_ID_2, MOCK_BUSINESS_ID_1)};
-    
+    Follow[] expectedReturnedFollows =
+        new Follow[] {new Follow(MOCK_USER_ID_2, MOCK_BUSINESS_ID_1)};
+
     runTest(USER_ID_PROPERTY, MOCK_USER_ID_2, expectedReturnedFollows);
   }
 
   @Test
   public void testDoGetUserNoResults() throws IOException {
-    Follow[] expectedReturnedFollows = new Follow[]{};
-    
+    Follow[] expectedReturnedFollows = new Follow[] {};
+
     runTest(USER_ID_PROPERTY, MOCK_USER_ID_3, expectedReturnedFollows);
   }
 
