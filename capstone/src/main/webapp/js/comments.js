@@ -66,7 +66,6 @@ function buildHiddenStaticFormField(name, value) {
 /** Load a list of comments that the user posted */
 export function loadUserCommentList(userId) {
   const commentContainer = document.createElement('div');
-  commentContainer.id = 'comments';
 
   getJsonObject('/comments', {'userId': userId})
       .then(comments => comments.forEach(comment => 
@@ -129,20 +128,17 @@ function buildUserPageCommentWrapper(comment) {
   return commentWrapper;
 }
 
-function buildCommentElement(comment) {
-  const commentElement = document.createElement('div');
-
-  commentElement.className = 'card';
-  commentElement.appendChild(buildCommentBody(comment));
-
-  return commentElement;
-}
-
 /** 
 * Given a comment object build a comment element on the web page. 
 * This function is meant for comments appearing on the page they where posted.
 */
-function buildCommentBody(comment) {
+function buildCommentElement(comment) {
+  const commentElement = document.createElement('div');
+
+  commentElement.className = 'card';
+  commentElement.id = comment.id;
+
+  // Build the body of the commentElement
   const commentBody = document.createElement('div');
   commentBody.className = 'card-body'
 
@@ -152,26 +148,9 @@ function buildCommentBody(comment) {
   commentBody.appendChild(headerElement);
   commentBody.appendChild(buildElement('p', comment.content));
   
-  return commentBody;
-}
+  commentElement.appendChild(commentBody);
 
-/** Build a div containing a 'show replies' button that can be expanded to show all replies. */
-function buildRepliesDiv(commentId) {
-  const div = document.createElement('div');
-
-  div.className = 'replies';
-  div.innerHTML = '';
-  div.appendChild(buildButton('show-replies-button btn btn-danger', () => showReplies(commentId), 'Show replies', 'btn btn-danger'));
-
-  return div;
-}
-
-function showReplyTextArea(parentId, businessId) {
-  const replyToCommentDiv = 
-      document.getElementById(parentId).querySelector('.reply-to-comment-div');
-
-  replyToCommentDiv.innerHTML = '';
-  replyToCommentDiv.appendChild(buildCommentForm(true, businessId, parentId));
+  return commentElement;
 }
 
 /** 
@@ -183,44 +162,58 @@ function buildReplyToCommentDiv(parentId, businessId) {
 
   div.className = 'reply-to-comment-div';
   
-  div.appendChild(
-    buildButton(
-      'reply-to-comment-button btn btn-danger', 
-      () => showReplyTextArea(parentId, businessId), 
-      'Reply',
-    ));
   
   return div
 }
 
 function buildTopLevelCommentElement(comment, userIsLoggedIn) {
-  const commentElement = document.createElement('div');
+  const commentElement = buildCommentElement(comment);
+  const commentBody = commentElement.querySelector('.card-body');
 
-  commentElement.className = 'card';
-  
-  const commentBody = buildCommentBody(comment);
-  commentBody.appendChild(document.createElement('br'));
+  // Area that is initially empty to which reply form can be later added
+  const replyFormDiv = document.createElement('div');
+
   if (userIsLoggedIn) {
+    // Add a button that opens a reply form bellow the comment
     commentBody.appendChild(
-          buildReplyToCommentDiv(comment.id, comment.businessId));
+        buildButton(
+          'btn btn-danger btn-space', 
+          () => 
+              replyFormDiv.appendChild(
+                  buildCommentForm(true, comment.businessId, comment.id)), 
+          'Reply',
+        ));
   }
   if (comment.hasReplies) {
     commentBody.appendChild(buildRepliesDiv(comment.id));
   }
 
+  if (comment.hasReply) {
+    // Add a button that shows replies bellow the comment
+    commentBody.appendChild(
+        buildButton(
+          'show-replies-button btn btn-danger btn-space', 
+          () => showReplies(comment.id), 
+          'Show replies',
+        ));
+  }
   commentElement.appendChild(commentBody);
+  
+  commentElement.appendChild(replyFormDiv);
 
   return commentElement;
 }
 
 /** Show replies to a specific comment and display it below the comment */
 async function showReplies(commentId) {
-  const replyDiv = document.getElementById(commentId).querySelector('.replies');
+  const parentComment = document.getElementById(commentId);
 
-  replyDiv.innerHTML = '';
+  const replyDiv = document.createElement('div');
 
   getJsonObject('/comments', {'parentId' : commentId})
       .then(replies => replies.forEach(reply =>
           replyDiv.appendChild(buildCommentElement(reply))
       ));
+
+  parentComment.appendChild(replyDiv);
 }

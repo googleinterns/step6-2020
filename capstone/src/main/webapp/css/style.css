@@ -1,6 +1,9 @@
+.btn-space {
+  margin-right: 10px;
+}
+
 .comment {
   border-style: solid;
-  margin: 10px;
 }
 
 #Header a:hover {
