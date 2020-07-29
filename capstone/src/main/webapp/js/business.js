@@ -97,6 +97,8 @@ function geocoderPromise(request) {
 // Set the correct values for both view and edit sections.
 function constructBusinessProfile(id) {
   const profileInfo = document.getElementById('view-business-section');
+  const profileButton = document.getElementById('profile-button');
+
   fetch('/business/' + id)
       .then(response => {
           if (!response.ok) {
@@ -108,9 +110,11 @@ function constructBusinessProfile(id) {
         if (info.isCurrentUser) {
           document.getElementById('edit-button').style.display = 'block';
           document.getElementById('getStarted-button').style.display = 'block';
+          profileButton.classList.add('active');
         } else {
           document.getElementById('edit-button').style.display = 'none';
           document.getElementById('getStarted-button').style.display = 'none';
+          profileButton.classList.remove('active');
         }
         
         const calendarDiv = document.getElementById('business-calendar');
