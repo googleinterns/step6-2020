@@ -165,14 +165,12 @@ public class SearchServletTest {
   }
 
   /**
-    * Test retrieving a business by partial match to business name.
-    *
-    * A partial match occurs if the search item matches any starting n characters of any word
-    * in the index.
-    * Ex. "Piz" matches "Pizzeria"
-    *     "Piz" matches "Famous Pizzeria"
-    *     "piz" matches "Pizzeria"
-    */
+   * Test retrieving a business by partial match to business name.
+   *
+   * <p>A partial match occurs if the search item matches any starting n characters of any word in
+   * the index. Ex. "Piz" matches "Pizzeria" "Piz" matches "Famous Pizzeria" "piz" matches
+   * "Pizzeria"
+   */
   @Test
   public void testDoGetPartialMatch() throws IOException {
     doReturn("Pizzeria").when(request).getParameter("searchItem");
