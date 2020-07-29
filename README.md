@@ -3,7 +3,7 @@
 ### Objective
 
 This is our Google 2020 [STEP internship](https://buildyourfuture.withgoogle.com/programs/step/) project. 
-Support Local Businesses is a platform where businesses can share how the COVID-19 Pandemic affected 
+Bloom is a platform where businesses can share how the COVID-19 Pandemic affected 
 them and reach out to the general public for assistance virtually. 
 
 We build for the small businesses around the world that are being affected 
