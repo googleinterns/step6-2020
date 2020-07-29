@@ -95,6 +95,8 @@ export function loadCommentList(userIsLoggedIn, businessId) {
 /** Build text field in which to enter a commment. */
 function buildCommentTextArea(userIsLoggedIn) {
   const commentTextArea = document.createElement('textarea');
+
+  commentTextArea.class = "container-fluid";
   commentTextArea.cols = 70;
   commentTextArea.name = 'content';
   
@@ -127,22 +129,30 @@ function buildUserPageCommentWrapper(comment) {
   return commentWrapper;
 }
 
+function buildCommentElement(comment) {
+  const commentElement = document.createElement('div');
+
+  commentElement.className = 'card';
+  commentElement.appendChild(buildCommentBody(comment));
+
+  return commentElement;
+}
+
 /** 
 * Given a comment object build a comment element on the web page. 
 * This function is meant for comments appearing on the page they where posted.
 */
-function buildCommentElement(comment) {
-  const commentElement = document.createElement('div');
+function buildCommentBody(comment) {
+  const commentBody = document.createElement('div');
+  commentBody.className = 'card-body'
+
+  const headerElement = buildElement('h5', comment.name + '  ');
+  headerElement.appendChild(buildElement('small', comment.timestampStr)); 
+
+  commentBody.appendChild(headerElement);
+  commentBody.appendChild(buildElement('p', comment.content));
   
-  commentElement.className = 'comment'
-  commentElement.id = comment.id;
-  commentElement.appendChild(buildElement('small', comment.timestampStr));
-  commentElement.appendChild(document.createElement('br'));
-  commentElement.appendChild(buildElement('small', comment.name + ' says:'));
-  commentElement.appendChild(document.createElement('br'));
-  commentElement.innerHTML += comment.content + '\n';
-  
-  return commentElement;
+  return commentBody;
 }
 
 /** Build a div containing a 'show replies' button that can be expanded to show all replies. */
@@ -151,7 +161,7 @@ function buildRepliesDiv(commentId) {
 
   div.className = 'replies';
   div.innerHTML = '';
-  div.appendChild(buildButton('show-replies-button', () => showReplies(commentId), 'Show replies'));
+  div.appendChild(buildButton('show-replies-button btn btn-danger', () => showReplies(commentId), 'Show replies', 'btn btn-danger'));
 
   return div;
 }
@@ -175,7 +185,7 @@ function buildReplyToCommentDiv(parentId, businessId) {
   
   div.appendChild(
     buildButton(
-      'reply-to-comment-button', 
+      'reply-to-comment-button btn btn-danger', 
       () => showReplyTextArea(parentId, businessId), 
       'Reply',
     ));
@@ -184,16 +194,21 @@ function buildReplyToCommentDiv(parentId, businessId) {
 }
 
 function buildTopLevelCommentElement(comment, userIsLoggedIn) {
-  const commentElement = buildCommentElement(comment);
+  const commentElement = document.createElement('div');
+
+  commentElement.className = 'card';
   
-  commentElement.appendChild(document.createElement('br'));
+  const commentBody = buildCommentBody(comment);
+  commentBody.appendChild(document.createElement('br'));
   if (userIsLoggedIn) {
-    commentElement.appendChild(
+    commentBody.appendChild(
           buildReplyToCommentDiv(comment.id, comment.businessId));
   }
   if (comment.hasReplies) {
     commentElement.appendChild(buildRepliesDiv(comment.id));
   }
+
+  commentElement.appendChild(commentBody);
 
   return commentElement;
 }
