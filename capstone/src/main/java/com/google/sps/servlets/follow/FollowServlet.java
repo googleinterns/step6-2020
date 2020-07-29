@@ -163,7 +163,7 @@ public class FollowServlet extends HttpServlet {
     User currentUser = userService.getCurrentUser();
     if (currentUser == null) {
       response.sendError(
-          HttpServletResponse.SC_UNAUTHORIZED, "User must be logged in to make a get request.");
+          HttpServletResponse.SC_UNAUTHORIZED, "User must be logged in to view followed business.");
       return;
     }
 
