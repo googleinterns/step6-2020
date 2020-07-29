@@ -15,6 +15,7 @@
 package com.google.sps.servlets;
 
 import static com.google.sps.data.CommentDatastoreUtil.BUSINESS_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.NULL_ID;
 import static com.google.sps.data.CommentDatastoreUtil.PARENT_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.USER_ID_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
@@ -53,6 +54,7 @@ public class CommentsServletTest {
   private final String BUSINESS_ID_1 = "1";
   private final String USER_NAME_0 = "User 0";
   private final String USER_NAME_1 = "User 1";
+  private final long TIMESTAMP_0 = 0;
 
   private final LocalServiceTestHelper helper =
       new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
@@ -160,14 +162,29 @@ public class CommentsServletTest {
       long timestamp, String userId, String businessId, boolean hasReplies) {
     String id = generateUniqueCommentId(timestamp, userId, businessId);
     return new Comment(
-        id, id, timestamp, userId, getProfileName(userId, ds), businessId, hasReplies);
+        id,
+        id,
+        timestamp,
+        userId,
+        getProfileName(userId, ds),
+        businessId, /*parentId*/
+        NULL_ID,
+        hasReplies);
   }
 
   private Comment generateCommentForTest(
       long timestamp, String userId, String businessId, String parentId) {
     String id = generateUniqueCommentId(timestamp, userId, businessId);
 
-    return new Comment(id, id, timestamp, userId, getProfileName(userId, ds), businessId, parentId);
+    return new Comment(
+        id,
+        id,
+        timestamp,
+        userId,
+        getProfileName(userId, ds),
+        businessId,
+        parentId, /*hasReplies*/
+        false);
   }
 
   /** Assert that the response by the server was just an empty JSON object */
@@ -232,7 +249,7 @@ public class CommentsServletTest {
 
     Comment[] expectedReturnedComments =
         new Comment[] {
-          generateCommentForTest(/*timestamp*/ (long) 3, USER_ID_1, BUSINESS_ID_0, false),
+          generateCommentForTest(/*timestamp*/ (long) 3, USER_ID_1, BUSINESS_ID_0, true),
           generateCommentForTest(/*timestamp*/ 0, USER_ID_0, BUSINESS_ID_0, true),
         };
 
@@ -331,20 +348,16 @@ public class CommentsServletTest {
 
   @Test
   public void testShowsUserName() throws IOException {
-    long timestamp = 0;
-    String userId = "33";
-    String username = "Larry";
-    String businessId = "0";
+    ds.put(createProfileEntity(USER_ID_0, USER_ID_0));
+    ds.put(createCommentEntity(TIMESTAMP_0, USER_ID_0, BUSINESS_ID_0, /*hasReplies*/ false));
 
-    ds.put(createProfileEntity(userId, username));
-    ds.put(createCommentEntity(/*timestamp*/ 0, userId, /*businessId*/ businessId, false));
-
-    doReturn(userId).when(request).getParameter(USER_ID_PROPERTY);
+    doReturn(USER_ID_0).when(request).getParameter(USER_ID_PROPERTY);
 
     servlet.doGet(request, response);
     String servletResponse = servletResponseWriter.toString();
 
-    Comment expectedRetrievedComment = generateCommentForTest(0, userId, businessId, false);
+    Comment expectedRetrievedComment =
+        generateCommentForTest(0, USER_ID_0, BUSINESS_ID_0, /*hasReplies*/ false);
     String expectedResponse = new Gson().toJson(new Comment[] {expectedRetrievedComment});
 
     assertSameJsonObject(expectedResponse, servletResponse);

@@ -46,7 +46,12 @@ public final class Comment {
       String userId,
       String name,
       String businessId,
-      String parentId) {
+      String parentId,
+      boolean hasReplies)
+      throws IllegalArgumentException {
+    if (hasReplies && !parentId.isEmpty()) {
+      throw new IllegalArgumentException("A reply comment cannot have it's own replies.");
+    }
     this.id = id;
     this.content = content;
     this.timestamp = timestamp;
@@ -54,27 +59,7 @@ public final class Comment {
     this.name = name;
     this.businessId = businessId;
     this.parentId = parentId;
-    this.hasReplies = false;
-    // Epoch timestamp is formatted in UTC time
-    this.timestampStr = new SimpleDateFormat("MM/dd/yy HH:mm").format(timestamp);
-  }
-
-  public Comment(
-      String id,
-      String content,
-      long timestamp,
-      String userId,
-      String name,
-      String businessId,
-      boolean hasReplies) {
-    this.id = id;
-    this.content = content;
-    this.timestamp = timestamp;
-    this.userId = userId;
-    this.name = name;
-    this.businessId = businessId;
-    this.parentId = "";
-    this.hasReplies = false;
+    this.hasReplies = hasReplies;
     // Epoch timestamp is formatted in UTC time
     this.timestampStr = new SimpleDateFormat("MM/dd/yy HH:mm").format(timestamp);
   }

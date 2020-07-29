@@ -30,6 +30,8 @@ public final class CommentDatastoreUtil {
   public static final String PARENT_ID_PROPERTY = "parentId";
   public static final String HAS_REPLIES_PROPERTY = "hasReplies";
 
+  public static final String NULL_ID = "";
+
   public static Comment generateComment(Entity commentEntity, DatastoreService datastore) {
     String id;
     if (commentEntity.getKey().getName() != null) {
@@ -45,6 +47,6 @@ public final class CommentDatastoreUtil {
     String parentId = (String) commentEntity.getProperty(PARENT_ID_PROPERTY);
     boolean hasReplies = (boolean) commentEntity.getProperty(HAS_REPLIES_PROPERTY);
 
-    return new Comment(id, content, timestamp, userId, name, businessId, parentId);
+    return new Comment(id, content, timestamp, userId, name, businessId, parentId, hasReplies);
   }
 }
