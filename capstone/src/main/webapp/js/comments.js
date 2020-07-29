@@ -64,12 +64,12 @@ function buildHiddenStaticFormField(name, value) {
 }
 
 /** Load a list of comments that the user posted */
-export function loadUserCommentList(userId) {
+export function loadUserPageCommentList(userId) {
   const commentContainer = document.createElement('div');
 
   getJsonObject('/comments', {'userId': userId})
       .then(comments => comments.forEach(comment => 
-          commentContainer.appendChild(buildUserPageCommentWrapper(comment))
+          commentContainer.appendChild(buildUserPageComment(comment))
       ));
 
   return commentContainer;
@@ -114,18 +114,20 @@ function buildCommentTextArea(userIsLoggedIn) {
 * Given a comment object build a comment element on the web page. 
 * This function is meant for comments appearing on a list of comments the user posted.
 */
-function buildUserPageCommentWrapper(comment) {
-  const commentWrapper = document.createElement('div');
-
-  commentWrapper.class = 'comment-wrapper';
+function buildUserPageComment(comment) {
+  const commentElement = buildCommentElement(comment);
+  const commentBody = commentElement.querySelector('.card-body');
 
   getJsonObject('/business/' + comment.businessId).then(business => {
-    commentWrapper.appendChild(
-        buildLinkElement('/business.html?id=' + comment.businessId, business.name));
-    commentWrapper.appendChild(buildCommentElement(comment));
+    const businessPageLink = 
+        buildLinkElement('/business.html?id=' + comment.businessId, 'On ' + business.name /*As in on ...'s page*/); 
+        
+    // change text color to red
+    businessPageLink.className = 'text-danger' 
+    commentBody.prepend(businessPageLink);
   });
 
-  return commentWrapper;
+  return commentElement;
 }
 
 /** 
@@ -135,7 +137,8 @@ function buildUserPageCommentWrapper(comment) {
 function buildCommentElement(comment) {
   const commentElement = document.createElement('div');
 
-  commentElement.className = 'card';
+  // Set to bootstrap card element and set margin-top to 2 via bootstrap
+  commentElement.className = 'card mt-2'; 
   commentElement.id = comment.id;
 
   // Build the body of the commentElement
@@ -152,6 +155,7 @@ function buildCommentElement(comment) {
 
   return commentElement;
 }
+
 
 function buildTopLevelCommentElement(comment, userIsLoggedIn) {
   const commentElement = buildCommentElement(comment);
