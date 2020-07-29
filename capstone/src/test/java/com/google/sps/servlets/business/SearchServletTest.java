@@ -27,6 +27,8 @@ import static com.google.sps.data.ProfileDatastoreUtil.STORY_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.SUPPORT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.YES;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -37,6 +39,8 @@ import com.google.appengine.api.search.Field;
 import com.google.appengine.api.search.Index;
 import com.google.appengine.api.search.IndexSpec;
 import com.google.appengine.api.search.PutException;
+import com.google.appengine.api.search.Query;
+import com.google.appengine.api.search.SearchException;
 import com.google.appengine.api.search.SearchService;
 import com.google.appengine.api.search.SearchServiceFactory;
 import com.google.appengine.api.search.StatusCode;
@@ -58,6 +62,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 /** Unit tests for SearchServlet. */
@@ -253,5 +258,14 @@ public class SearchServletTest {
     Gson gson = new Gson();
     JsonParser parser = new JsonParser();
     Assert.assertEquals(parser.parse(servletResponse), parser.parse(gson.toJson(expectedResults)));
+  }
+
+  /** Test retrieving a business with an invalid search term. */
+  @Test
+  public void testDoGetSearchException() throws IOException {
+    doReturn("\"invalid").when(request).getParameter("searchItem");
+    servlet.doGet(request, response);
+    Mockito.verify(response, Mockito.times(1))
+        .sendError(Mockito.eq(HttpServletResponse.SC_BAD_REQUEST), Mockito.anyString());
   }
 }

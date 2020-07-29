@@ -36,6 +36,7 @@ import com.google.appengine.api.search.IndexSpec;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.google.appengine.api.search.SearchException;
+import com.google.appengine.api.search.SearchQueryException;
 import com.google.appengine.api.search.SearchService;
 import com.google.appengine.api.search.SearchServiceFactory;
 import com.google.gson.Gson;
@@ -60,49 +61,54 @@ public class SearchServlet extends HttpServlet {
     // Gets the search index. If not created, it creates it.
     Index index = searchService.getIndex(IndexSpec.newBuilder().setName("Business"));
 
-    List<BusinessProfile> businesses = new ArrayList<>();
+    Results<ScoredDocument> searchResults;
     try {
       // Find index corresponding to the search item in datastore.
-      Results<ScoredDocument> searchResults =
-          index.search(
-              com.google.appengine.api.search.Query.newBuilder()
-                  .build("name:\"" + searchItem + "\""));
-
-      DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-      // Iterate through matching search results.
-      for (ScoredDocument document : searchResults) {
-        String businessId = document.getId();
-        // Retrieve datastore information about the business that corresponding to the index.
-        Query businessQuery =
-            new Query(PROFILE_TASK_NAME)
-                .setFilter(
-                    CompositeFilterOperator.and(
-                        FilterOperator.EQUAL.of(IS_BUSINESS_PROPERTY, "Yes"),
-                        FilterOperator.EQUAL.of(
-                            Entity.KEY_RESERVED_PROPERTY,
-                            KeyFactory.createKey(PROFILE_TASK_NAME, businessId))));
-        Entity businessEntity = datastore.prepare(businessQuery).asSingleEntity();
-        if (businessEntity == null) {
-          continue;
-        }
-        String id = businessEntity.getKey().getName();
-        String name = (String) businessEntity.getProperty(NAME_PROPERTY);
-        String email = (String) businessEntity.getProperty(CALENDAR_PROPERTY);
-        String bio = (String) businessEntity.getProperty(BIO_PROPERTY);
-        String location = (String) businessEntity.getProperty(LOCATION_PROPERTY);
-        String story = (String) businessEntity.getProperty(STORY_PROPERTY);
-        String about = (String) businessEntity.getProperty(ABOUT_PROPERTY);
-        String support = (String) businessEntity.getProperty(SUPPORT_PROPERTY);
-
-        BusinessProfile business =
-            new BusinessProfile(id, name, location, bio, story, about, email, support, false);
-        businesses.add(business);
-      }
+      searchResults = index.search(
+          com.google.appengine.api.search.Query.newBuilder()
+              .build("name:\"" + searchItem + "\""));
+    } catch (SearchQueryException e) {
+      response.sendError(
+          HttpServletResponse.SC_BAD_REQUEST,
+          "Enter a valid search term and try again.");
+      return;
     } catch (SearchException e) {
       response.sendError(
           HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
           "The server was unable to handle the search request.");
       return;
+    }
+
+    List<BusinessProfile> businesses = new ArrayList<>();
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    // Iterate through matching search results.
+    for (ScoredDocument document : searchResults) {
+      String businessId = document.getId();
+      // Retrieve datastore information about the business that corresponding to the index.
+      Query businessQuery =
+          new Query(PROFILE_TASK_NAME)
+              .setFilter(
+                  CompositeFilterOperator.and(
+                      FilterOperator.EQUAL.of(IS_BUSINESS_PROPERTY, "Yes"),
+                      FilterOperator.EQUAL.of(
+                          Entity.KEY_RESERVED_PROPERTY,
+                          KeyFactory.createKey(PROFILE_TASK_NAME, businessId))));
+      Entity businessEntity = datastore.prepare(businessQuery).asSingleEntity();
+      if (businessEntity == null) {
+        continue;
+      }
+      String id = businessEntity.getKey().getName();
+      String name = (String) businessEntity.getProperty(NAME_PROPERTY);
+      String email = (String) businessEntity.getProperty(CALENDAR_PROPERTY);
+      String bio = (String) businessEntity.getProperty(BIO_PROPERTY);
+      String location = (String) businessEntity.getProperty(LOCATION_PROPERTY);
+      String story = (String) businessEntity.getProperty(STORY_PROPERTY);
+      String about = (String) businessEntity.getProperty(ABOUT_PROPERTY);
+      String support = (String) businessEntity.getProperty(SUPPORT_PROPERTY);
+
+      BusinessProfile business =
+          new BusinessProfile(id, name, location, bio, story, about, email, support, false);
+      businesses.add(business);
     }
 
     response.setContentType("application/json");
