@@ -191,8 +191,9 @@ function buildTopLevelCommentElement(comment, userIsLoggedIn) {
     commentElement.appendChild(
           buildReplyToCommentDiv(comment.id, comment.businessId));
   }
-  
-  commentElement.appendChild(buildRepliesDiv(comment.id));
+  if (comment.hasReplies) {
+    commentElement.appendChild(buildRepliesDiv(comment.id));
+  }
 
   return commentElement;
 }
