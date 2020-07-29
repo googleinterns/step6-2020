@@ -205,7 +205,7 @@ function buildTopLevelCommentElement(comment, userIsLoggedIn) {
           buildReplyToCommentDiv(comment.id, comment.businessId));
   }
   if (comment.hasReplies) {
-    commentElement.appendChild(buildRepliesDiv(comment.id));
+    commentBody.appendChild(buildRepliesDiv(comment.id));
   }
 
   commentElement.appendChild(commentBody);
