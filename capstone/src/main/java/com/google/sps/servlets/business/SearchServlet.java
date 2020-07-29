@@ -57,18 +57,22 @@ public class SearchServlet extends HttpServlet {
     String searchItem = request.getParameter("searchItem");
 
     SearchService searchService = SearchServiceFactory.getSearchService();
+    // Gets the search index. If not created, it creates it.
     Index index = searchService.getIndex(IndexSpec.newBuilder().setName("Business"));
 
     List<BusinessProfile> businesses = new ArrayList<>();
     try {
+      // Find index corresponding to the search item in datastore.
       Results<ScoredDocument> searchResults =
           index.search(
               com.google.appengine.api.search.Query.newBuilder()
                   .build("name:\"" + searchItem + "\""));
 
       DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+      // Iterate through matching search results.
       for (ScoredDocument document : searchResults) {
         String businessId = document.getId();
+        // Retrieve datastore information about the business that corresponding to the index.
         Query businessQuery =
             new Query(PROFILE_TASK_NAME)
                 .setFilter(

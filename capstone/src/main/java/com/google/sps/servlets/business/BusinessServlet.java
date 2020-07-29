@@ -149,7 +149,7 @@ public class BusinessServlet extends HttpServlet {
 
     setEntityProperties(businessEntity, request, propertyNames);
 
-    // Create a Document for searching through businesses.
+    // Create a corresponding document for searching through businesses.
     Index index = searchService.getIndex(IndexSpec.newBuilder().setName("Business"));
     Document document =
         Document.newBuilder()
@@ -164,6 +164,7 @@ public class BusinessServlet extends HttpServlet {
       index.put(document);
     } catch (PutException e) {
       if (StatusCode.TRANSIENT_ERROR.equals(e.getOperationResult().getCode())) {
+        // retry putting the document to the index
         index.put(document);
       }
     }
