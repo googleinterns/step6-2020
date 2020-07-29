@@ -55,12 +55,12 @@ body {
   display: -ms-flexbox;
   display: flex;
   margin-bottom: 20px;
-  width: 440px;
+  width: 500px;
   z-index: 1;
 }
 
 #findBusinesses {
-  font-size: 14px;
+  font-size: 18px;
 }
 
 #Header a:hover {
