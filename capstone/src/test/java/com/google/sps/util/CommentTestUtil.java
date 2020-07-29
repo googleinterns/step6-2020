@@ -18,10 +18,10 @@ import static com.google.sps.data.CommentDatastoreUtil.BUSINESS_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.COMMENT_TASK_NAME;
 import static com.google.sps.data.CommentDatastoreUtil.CONTENT_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.HAS_REPLIES_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.NULL_ID;
 import static com.google.sps.data.CommentDatastoreUtil.PARENT_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.TIMESTAMP_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.USER_ID_PROPERTY;
-import static com.google.sps.data.CommentDatastoreUtil.NULL_ID;
 
 import com.google.appengine.api.datastore.Entity;
 

@@ -19,9 +19,9 @@ import static com.google.sps.data.CommentDatastoreUtil.BUSINESS_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.COMMENT_TASK_NAME;
 import static com.google.sps.data.CommentDatastoreUtil.CONTENT_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.HAS_REPLIES_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.NULL_ID;
 import static com.google.sps.data.CommentDatastoreUtil.PARENT_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.USER_ID_PROPERTY;
-import static com.google.sps.data.CommentDatastoreUtil.NULL_ID;
 import static com.google.sps.util.CommentTestUtil.createCommentEntity;
 import static com.google.sps.util.TestUtil.assertResponseWithArbitraryTextRaised;
 import static org.junit.Assert.assertEquals;
@@ -133,12 +133,14 @@ public class CommentServletTest {
   @Test
   public void testBasicDoPost() throws IOException {
     assertEquals(
-        0, countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, NULL_ID, false));
+        0,
+        countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, NULL_ID, false));
 
     servlet.doPost(request, response);
 
     assertEquals(
-        1, countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, NULL_ID, false));
+        1,
+        countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, NULL_ID, false));
   }
 
   // Make sure that when we add two comments with the same properties we still save two seperate
@@ -146,13 +148,15 @@ public class CommentServletTest {
   @Test
   public void testSameCommentTwice() throws IOException {
     assertEquals(
-        0, countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, NULL_ID, false));
+        0,
+        countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, NULL_ID, false));
 
     servlet.doPost(request, response);
     servlet.doPost(request, response);
 
     assertEquals(
-        2, countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, NULL_ID, false));
+        2,
+        countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, NULL_ID, false));
   }
 
   // Make requests where one parameter is missing, we expect that to lead to an error
@@ -201,7 +205,8 @@ public class CommentServletTest {
     servlet.doPost(request, response);
 
     assertEquals(
-        1, countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, NULL_ID, false));
+        1,
+        countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, NULL_ID, false));
   }
 
   @Test
@@ -268,13 +273,15 @@ public class CommentServletTest {
   @Test
   public void testPostParentIdEmptyString() throws IOException {
     assertEquals(
-        0, countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, NULL_ID, false));
+        0,
+        countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, NULL_ID, false));
 
     doReturn(NULL_ID).when(request).getParameter(PARENT_ID_PROPERTY);
 
     servlet.doPost(request, response);
 
     assertEquals(
-        1, countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, NULL_ID, false));
+        1,
+        countCommentOccurences(ds, MOCK_CONTENT, MOCK_USER_ID, MOCK_BUSINESS_ID, NULL_ID, false));
   }
 }
