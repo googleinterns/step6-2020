@@ -67,6 +67,7 @@ function createShowMoreButton(id) {
   // Creates the show more button at the bottom of the business card.
   let showMore = buildElement('p', '');
   let showMoreSpan = buildElement('span', 'Show More');
+  showMoreSpan.id = 'span-' + id;
   showMore.appendChild(showMoreSpan);
   showMore.classList.add('show-more');
   showMore.id = id;
@@ -75,15 +76,16 @@ function createShowMoreButton(id) {
 }
 
 function showMoreInfo(id) {
-  const showElement = document.getElementById(id);
+  const showElement = document.getElementById('span-' + id);
   const businessCard = document.getElementById('business-' + id);
 
-  // For now, it is just doing this with the first element.
-  // This will be handled better with unique IDs assigned via the servlets.
-  showElement.style.display = 'none';
-
-  // id.slice(-1) gets the index of the business as specified by the id
-  businessCard.style.maxHeight = 'none';
+  if (showElement.innerText == 'Show More') {
+    showElement.innerText = 'Show Less';
+    businessCard.style.maxHeight = 'none';
+  } else {
+    showElement.innerText = 'Show More';
+    businessCard.style.maxHeight = '150px';
+  }
 }
 
 // Create the home page map.

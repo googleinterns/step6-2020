@@ -9,7 +9,7 @@ body {
 }
 
 #businesses {
-  height: 94vh;
+  height: 91vh;
   overflow-y: auto;
   padding-bottom: 50px;
 }
@@ -20,21 +20,26 @@ body {
 }
 
 .business-card {
-  border: 5px solid silver;
+  border: 5px solid #17a2b8;
   border-radius: 20px;
   margin-bottom: 10px;
   margin-right: 10px;
   max-height: 150px;
   overflow: hidden;
   padding: 10px;
+  padding-bottom: 40px;
   position: relative;
+}
+
+.business-card a {
+  color: #dc3545;
 }
 
 .business-container {
   display: flex;
   height: 100%;
-  margin-top: 75px;
-  padding: 10px 15px;
+  margin-top: 90px;
+  padding: 10px 25px;
 }
 
 .business-info {
@@ -50,12 +55,12 @@ body {
   display: -ms-flexbox;
   display: flex;
   margin-bottom: 20px;
-  width: 440px;
+  width: 500px;
   z-index: 1;
 }
 
 #findBusinesses {
-  font-size: 14px;
+  font-size: 18px;
 }
 
 #Header a:hover {
@@ -99,15 +104,19 @@ body {
   height: 18px;
 }
 
+#results {
+  font-size: 16px;
+}
+
 #resultsTable {
   border-collapse: collapse;
-  width: 240px;
+  width: 280px;
 }
 
 .show-more {
   background-image: linear-gradient(transparent, white);
   bottom: 0;
-  color: darkgreen;
+  color: white;
   margin: 0;
   padding: 20px 0px;
   position: absolute;
@@ -116,9 +125,9 @@ body {
 }
 
 .show-more span {
-  background-color: silver;
+  background-color: #17a2b8;
   border-radius: 5px;
-  padding: 5px;
+  padding: 10px;
 }
 
 .show-more span:hover {
