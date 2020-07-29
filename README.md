@@ -7,10 +7,10 @@ Support Local Businesses is a platform where businesses can share how the COVID-
 them and reach out to the general public for assistance virtually. 
 
 We build for the local and global small businesses around the world that are being affected 
-from the COVID-19 Pandemic. We know that this pandemic has affected numerous small businesses 
-and we want to create a platform to support and bridge the community together during this time.
+by the COVID-19 Pandemic. We know that this pandemic has affected numerous small businesses 
+and we want to create a platform to support and unite communities during this difficult time.
 
-Link to our website: https://cloud-build-step-2020.uc.r.appspot.com/
+Link to our website: https://cloud-build-step-2020.appspot.com/
 
 ### Authors
 
