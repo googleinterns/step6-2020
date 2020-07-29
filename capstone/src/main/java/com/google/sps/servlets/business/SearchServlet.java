@@ -69,6 +69,7 @@ public class SearchServlet extends HttpServlet {
               com.google.appengine.api.search.Query.newBuilder()
                   .build("name:\"" + searchItem + "\""));
     } catch (SearchQueryException e) {
+      // Error raised if searchItem contains " or \ or any other illegal characters.
       response.sendError(
           HttpServletResponse.SC_BAD_REQUEST, "Enter a valid search term and try again.");
       return;

@@ -256,11 +256,45 @@ public class SearchServletTest {
     Assert.assertEquals(parser.parse(servletResponse), parser.parse(gson.toJson(expectedResults)));
   }
 
+  /** Test retrieving a business with no matches found. */
+  @Test
+  public void testDoGetNoMatchesFound() throws IOException {
+    doReturn("Wings").when(request).getParameter("searchItem");
+
+    Entity business1 = setBusinessData(USER_ID_1, NAME);
+    business1.setProperty(IS_BUSINESS_PROPERTY, YES);
+    datastore.put(business1);
+
+    Entity business2 = setBusinessData(USER_ID_2, NAME_2);
+    business2.setProperty(IS_BUSINESS_PROPERTY, YES);
+    datastore.put(business2);
+
+    createDocument(USER_ID_1, NAME);
+    createDocument(USER_ID_2, NAME_2);
+
+    servlet.doGet(request, response);
+
+    List<BusinessProfile> expectedResults = new ArrayList<>();
+    String servletResponse = servletResponseWriter.toString();
+
+    Gson gson = new Gson();
+    JsonParser parser = new JsonParser();
+    Assert.assertEquals(parser.parse(servletResponse), parser.parse(gson.toJson(expectedResults)));
+  }
+
   /** Test retrieving a business with an invalid search term. */
   @Test
   public void testDoGetSearchException() throws IOException {
-    doReturn("\"invalid").when(request).getParameter("searchItem");
+    doReturn("\"\\").when(request).getParameter("searchItem");
+
+    Entity business = setBusinessData(USER_ID_1, NAME);
+    business.setProperty(IS_BUSINESS_PROPERTY, YES);
+    datastore.put(business);
+
+    createDocument(USER_ID_1, NAME);
+
     servlet.doGet(request, response);
+
     Mockito.verify(response, Mockito.times(1))
         .sendError(Mockito.eq(HttpServletResponse.SC_BAD_REQUEST), Mockito.anyString());
   }
