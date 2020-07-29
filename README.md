@@ -1,4 +1,4 @@
-# Support Local Businesses
+# Bloom
 
 ### Objective
 
@@ -6,7 +6,7 @@ This is our Google 2020 [STEP internship](https://buildyourfuture.withgoogle.com
 Support Local Businesses is a platform where businesses can share how the COVID-19 Pandemic affected 
 them and reach out to the general public for assistance virtually. 
 
-We build for the local and global small businesses around the world that are being affected 
+We build for the small businesses around the world that are being affected 
 by the COVID-19 Pandemic. We know that this pandemic has affected numerous small businesses 
 and we want to create a platform to support and unite communities during this difficult time.
 
