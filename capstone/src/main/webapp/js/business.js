@@ -122,14 +122,16 @@ function constructBusinessProfile(id) {
           calendarDiv.style.display = 'block';
           let calendar = document.createElement('iframe');
           calendar.src = calendarBaseURL + info.calendarEmail;
-          calendar.height = '500px';
-          calendar.width = '700px';
+          calendar.height = '900px';
+          calendar.width = '1110px';
           calendarDiv.appendChild(calendar);
           
           document.getElementById('edit-calendar').value = info.calendarEmail;
           const previewCalendar = document.getElementById('edit-calendar-preview');
           previewCalendar.style.display = 'block';
           previewCalendar.src = calendarBaseURL + info.calendarEmail;
+          previewCalendar.height = '900px';
+          previewCalendar.width = '1110px';
           document.getElementById('calendar-warning').style.display = 'block';
         }
 
