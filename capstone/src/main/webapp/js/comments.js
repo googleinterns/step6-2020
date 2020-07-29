@@ -153,19 +153,6 @@ function buildCommentElement(comment) {
   return commentElement;
 }
 
-/** 
-* Build div for the field in which you can reply to a given comment. 
-* If the user is not logged in the div will tell the user to log in to reply.
-*/
-function buildReplyToCommentDiv(parentId, businessId) {
-  const div = document.createElement('div');
-
-  div.className = 'reply-to-comment-div';
-  
-  
-  return div
-}
-
 function buildTopLevelCommentElement(comment, userIsLoggedIn) {
   const commentElement = buildCommentElement(comment);
   const commentBody = commentElement.querySelector('.card-body');
@@ -184,11 +171,8 @@ function buildTopLevelCommentElement(comment, userIsLoggedIn) {
           'Reply',
         ));
   }
-  if (comment.hasReplies) {
-    commentBody.appendChild(buildRepliesDiv(comment.id));
-  }
 
-  if (comment.hasReply) {
+  if (comment.hasReplies) {
     // Add a button that shows replies bellow the comment
     commentBody.appendChild(
         buildButton(
@@ -198,7 +182,7 @@ function buildTopLevelCommentElement(comment, userIsLoggedIn) {
         ));
   }
   commentElement.appendChild(commentBody);
-  
+
   commentElement.appendChild(replyFormDiv);
 
   return commentElement;
