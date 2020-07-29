@@ -64,13 +64,13 @@ public class SearchServlet extends HttpServlet {
     Results<ScoredDocument> searchResults;
     try {
       // Find index corresponding to the search item in datastore.
-      searchResults = index.search(
-          com.google.appengine.api.search.Query.newBuilder()
-              .build("name:\"" + searchItem + "\""));
+      searchResults =
+          index.search(
+              com.google.appengine.api.search.Query.newBuilder()
+                  .build("name:\"" + searchItem + "\""));
     } catch (SearchQueryException e) {
       response.sendError(
-          HttpServletResponse.SC_BAD_REQUEST,
-          "Enter a valid search term and try again.");
+          HttpServletResponse.SC_BAD_REQUEST, "Enter a valid search term and try again.");
       return;
     } catch (SearchException e) {
       response.sendError(

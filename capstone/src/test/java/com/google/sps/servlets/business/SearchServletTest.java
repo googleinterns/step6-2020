@@ -27,8 +27,6 @@ import static com.google.sps.data.ProfileDatastoreUtil.STORY_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.SUPPORT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.YES;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -39,8 +37,6 @@ import com.google.appengine.api.search.Field;
 import com.google.appengine.api.search.Index;
 import com.google.appengine.api.search.IndexSpec;
 import com.google.appengine.api.search.PutException;
-import com.google.appengine.api.search.Query;
-import com.google.appengine.api.search.SearchException;
 import com.google.appengine.api.search.SearchService;
 import com.google.appengine.api.search.SearchServiceFactory;
 import com.google.appengine.api.search.StatusCode;
