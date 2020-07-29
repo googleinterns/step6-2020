@@ -17,6 +17,7 @@ package com.google.sps.servlets;
 import static com.google.sps.data.CommentDatastoreUtil.BUSINESS_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.PARENT_ID_PROPERTY;
 import static com.google.sps.data.CommentDatastoreUtil.USER_ID_PROPERTY;
+import static com.google.sps.data.CommentDatastoreUtil.NULL_ID;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.PROFILE_TASK_NAME;
 import static com.google.sps.data.ProfileDatastoreUtil.getProfileName;
@@ -167,7 +168,7 @@ public class CommentsServletTest {
         userId,
         getProfileName(userId, ds),
         businessId, /*parentId*/
-        "",
+        NULL_ID,
         hasReplies);
   }
 
