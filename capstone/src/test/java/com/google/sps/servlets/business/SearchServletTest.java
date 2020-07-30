@@ -74,6 +74,7 @@ public class SearchServletTest {
 
   private static final String NAME = "Famous Pizzeria";
   private static final String NAME_2 = "Infamous Pizzeria";
+  private static final String NAME_3 = "Italy's Finest Pizza";
   private static final String LOCATION = "Mountain View, CA";
   private static final String LAT = "45.0";
   private static final String LONG = "45.0";
@@ -297,5 +298,29 @@ public class SearchServletTest {
 
     Mockito.verify(response, Mockito.times(1))
         .sendError(Mockito.eq(HttpServletResponse.SC_BAD_REQUEST), Mockito.anyString());
+  }
+
+  /** Test retrieving a business with a special character. */
+  @Test
+  public void testDoGetSpecialCharacters() throws IOException {
+    doReturn("Italy's Fine").when(request).getParameter("searchItem");
+
+    Entity business = setBusinessData(USER_ID_1, NAME_3);
+    business.setProperty(IS_BUSINESS_PROPERTY, YES);
+    datastore.put(business);
+
+    createDocument(USER_ID_1, NAME_3);
+
+    servlet.doGet(request, response);
+
+    List<BusinessProfile> expectedResults = new ArrayList<>();
+    BusinessProfile expectedProfile =
+        new BusinessProfile(USER_ID_1, NAME_3, LOCATION, BIO, STORY, ABOUT, EMAIL, SUPPORT, false);
+    expectedResults.add(expectedProfile);
+    String servletResponse = servletResponseWriter.toString();
+
+    Gson gson = new Gson();
+    JsonParser parser = new JsonParser();
+    Assert.assertEquals(parser.parse(servletResponse), parser.parse(gson.toJson(expectedResults)));
   }
 }
