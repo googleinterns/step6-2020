@@ -64,13 +64,12 @@ function buildHiddenStaticFormField(name, value) {
 }
 
 /** Load a list of comments that the user posted */
-export function loadUserCommentList(userId) {
+export function loadUserPageCommentList(userId) {
   const commentContainer = document.createElement('div');
-  commentContainer.id = 'comments';
 
   getJsonObject('/comments', {'userId': userId})
       .then(comments => comments.forEach(comment => 
-          commentContainer.appendChild(buildUserPageCommentWrapper(comment))
+          commentContainer.appendChild(buildUserPageComment(comment))
       ));
 
   return commentContainer;
@@ -95,6 +94,8 @@ export function loadCommentList(userIsLoggedIn, businessId) {
 /** Build text field in which to enter a commment. */
 function buildCommentTextArea(userIsLoggedIn) {
   const commentTextArea = document.createElement('textarea');
+
+  commentTextArea.class = "container-fluid";
   commentTextArea.cols = 70;
   commentTextArea.name = 'content';
   
@@ -113,18 +114,20 @@ function buildCommentTextArea(userIsLoggedIn) {
 * Given a comment object build a comment element on the web page. 
 * This function is meant for comments appearing on a list of comments the user posted.
 */
-function buildUserPageCommentWrapper(comment) {
-  const commentWrapper = document.createElement('div');
-
-  commentWrapper.class = 'comment-wrapper';
+function buildUserPageComment(comment) {
+  const commentElement = buildCommentElement(comment);
+  const commentBody = commentElement.querySelector('.card-body');
 
   getJsonObject('/business/' + comment.businessId).then(business => {
-    commentWrapper.appendChild(
-        buildLinkElement('/business.html?id=' + comment.businessId, business.name));
-    commentWrapper.appendChild(buildCommentElement(comment));
+    const businessPageLink = 
+        buildLinkElement('/business.html?id=' + comment.businessId, 'On ' + business.name /*As in on ...'s page*/); 
+        
+    // change text color to red
+    businessPageLink.className = 'text-danger' 
+    commentBody.prepend(businessPageLink);
   });
 
-  return commentWrapper;
+  return commentElement;
 }
 
 /** 
@@ -133,79 +136,72 @@ function buildUserPageCommentWrapper(comment) {
 */
 function buildCommentElement(comment) {
   const commentElement = document.createElement('div');
-  
-  commentElement.className = 'comment'
+
+  // Set to bootstrap card element and set margin-top to 2 via bootstrap
+  commentElement.className = 'card mt-2'; 
   commentElement.id = comment.id;
-  commentElement.appendChild(buildElement('small', comment.timestampStr));
-  commentElement.appendChild(document.createElement('br'));
-  commentElement.appendChild(buildElement('small', comment.name + ' says:'));
-  commentElement.appendChild(document.createElement('br'));
-  commentElement.innerHTML += comment.content + '\n';
+
+  // Build the body of the commentElement
+  const commentBody = document.createElement('div');
+  commentBody.className = 'card-body'
+
+  const headerElement = buildElement('h5', comment.name + '  ');
+  headerElement.appendChild(buildElement('small', comment.timestampStr)); 
+
+  commentBody.appendChild(headerElement);
+  commentBody.appendChild(buildElement('p', comment.content));
   
+  commentElement.appendChild(commentBody);
+
   return commentElement;
 }
 
-/** Build a div containing a 'show replies' button that can be expanded to show all replies. */
-function buildRepliesDiv(commentId) {
-  const div = document.createElement('div');
-
-  div.className = 'replies';
-  div.innerHTML = '';
-  div.appendChild(buildButton('show-replies-button', () => showReplies(commentId), 'Show replies'));
-
-  return div;
-}
-
-function showReplyTextArea(parentId, businessId) {
-  const replyToCommentDiv = 
-      document.getElementById(parentId).querySelector('.reply-to-comment-div');
-
-  replyToCommentDiv.innerHTML = '';
-  replyToCommentDiv.appendChild(buildCommentForm(true, businessId, parentId));
-}
-
-/** 
-* Build div for the field in which you can reply to a given comment. 
-* If the user is not logged in the div will tell the user to log in to reply.
-*/
-function buildReplyToCommentDiv(parentId, businessId) {
-  const div = document.createElement('div');
-
-  div.className = 'reply-to-comment-div';
-  
-  div.appendChild(
-    buildButton(
-      'reply-to-comment-button', 
-      () => showReplyTextArea(parentId, businessId), 
-      'Reply',
-    ));
-  
-  return div
-}
 
 function buildTopLevelCommentElement(comment, userIsLoggedIn) {
   const commentElement = buildCommentElement(comment);
-  
-  commentElement.appendChild(document.createElement('br'));
+  const commentBody = commentElement.querySelector('.card-body');
+
+  // Area that is initially empty to which reply form can be later added
+  const replyFormDiv = document.createElement('div');
+
   if (userIsLoggedIn) {
-    commentElement.appendChild(
-          buildReplyToCommentDiv(comment.id, comment.businessId));
+    // Add a button that opens a reply form bellow the comment
+    commentBody.appendChild(
+        buildButton(
+          'btn btn-danger btn-space', 
+          () => 
+              replyFormDiv.appendChild(
+                  buildCommentForm(true, comment.businessId, comment.id)), 
+          'Reply',
+        ));
   }
+
   if (comment.hasReplies) {
-    commentElement.appendChild(buildRepliesDiv(comment.id));
+    // Add a button that shows replies bellow the comment
+    commentBody.appendChild(
+        buildButton(
+          'show-replies-button btn btn-danger btn-space', 
+          () => showReplies(comment.id), 
+          'Show replies',
+        ));
   }
+  commentElement.appendChild(commentBody);
+
+  commentElement.appendChild(replyFormDiv);
 
   return commentElement;
 }
 
 /** Show replies to a specific comment and display it below the comment */
 async function showReplies(commentId) {
-  const replyDiv = document.getElementById(commentId).querySelector('.replies');
+  const parentComment = document.getElementById(commentId);
 
-  replyDiv.innerHTML = '';
+  const replyDiv = document.createElement('div');
 
   getJsonObject('/comments', {'parentId' : commentId})
       .then(replies => replies.forEach(reply =>
           replyDiv.appendChild(buildCommentElement(reply))
       ));
+
+  parentComment.appendChild(replyDiv);
 }
