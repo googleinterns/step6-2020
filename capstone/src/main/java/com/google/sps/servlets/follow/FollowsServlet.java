@@ -41,33 +41,35 @@ import javax.servlet.http.HttpServletResponse;
 /** Servlet for listing 'follows', that is instances of a User following a business. */
 @WebServlet("/follows")
 public class FollowsServlet extends HttpServlet {
-  private final String[] POSSIBLE_FILTER_PARAMETERS =
-      new String[] {BUSINESS_ID_PROPERTY, USER_ID_PROPERTY};
+  // private final String[] POSSIBLE_FILTER_PARAMETERS =
+  //     new String[] {BUSINESS_ID_PROPERTY, USER_ID_PROPERTY};
 
   private UserService userService = UserServiceFactory.getUserService();
   private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    List<String> requestFilters =
-        Arrays.stream(POSSIBLE_FILTER_PARAMETERS)
-            .filter(parameter -> request.getParameter(parameter) != null)
-            .collect(Collectors.toList());
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {    
+    String filterParameter;
+    String filterValue;
 
-    if (requestFilters.size() != 1) {
-      response.sendError(
-          HttpServletResponse.SC_BAD_REQUEST,
-          "Must specify either businessId or userId, but not both.");
-      return;
+    String businessId = request.getParameter(BUSINESS_ID_PROPERTY);
+    if (businessId != null) {
+      filterParameter = BUSINESS_ID_PROPERTY;
+      filterValue = businessId;
+    } else if (userService.getCurrentUser() != null) {
+      filterParameter = USER_ID_PROPERTY;
+      filterValue = userService.getCurrentUser().getUserId();
+    } else {
+        response.sendError(
+            HttpServletResponse.SC_BAD_REQUEST, "A user must be logged in or a businessId must be spcified.");
+        return;
     }
 
-    String filterParameter = requestFilters.get(0);
     Query query =
         new Query(FOLLOW_TASK_NAME)
             .setFilter(
                 new FilterPredicate(
-                    filterParameter, FilterOperator.EQUAL, request.getParameter(filterParameter)));
-
+                    filterParameter, FilterOperator.EQUAL, filterValue));
     List<Entity> followEntities = datastore.prepare(query).asList(withDefaults());
     List<Follow> follows =
         followEntities.stream()

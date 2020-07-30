@@ -26,6 +26,8 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.gson.Gson;
+import com.google.common.collect.ImmutableMap;
+import java.util.HashMap;
 import com.google.sps.data.Follow;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -49,7 +51,14 @@ public class FollowsServletTest {
   private static final String MOCK_BUSINESS_ID_3 = "6";
 
   private final LocalServiceTestHelper helper =
-      new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
+      new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig())
+          .setEnvEmail(MOCK_EMAIL)
+          .setEnvAuthDomain(MOCK_DOMAIN)
+          .setEnvIsLoggedIn(true)
+          .setEnvAttributes(
+              new HashMap(
+                  ImmutableMap.of(
+                      "com.google.appengine.api.users.UserService.user_id_key", MOCK_USER_ID_1)));
 
   @Mock private HttpServletRequest request;
   @Mock private HttpServletResponse response;
@@ -63,16 +72,6 @@ public class FollowsServletTest {
     MockitoAnnotations.initMocks(this);
     helper.setUp();
 
-    ds = DatastoreServiceFactory.getDatastoreService();
-
-    // These are the follows that exist by default.
-    // User 1 follows the first and second business.
-    // User 2 follows only the first business.
-    // Nobody follows user three. Sad!
-    ds.put(createMockFollowEntity(MOCK_USER_ID_1, MOCK_BUSINESS_ID_1));
-    ds.put(createMockFollowEntity(MOCK_USER_ID_1, MOCK_BUSINESS_ID_2));
-    ds.put(createMockFollowEntity(MOCK_USER_ID_2, MOCK_BUSINESS_ID_1));
-
     servletResponseWriter = new StringWriter();
     doReturn(new PrintWriter(servletResponseWriter)).when(response).getWriter();
 
@@ -84,9 +83,37 @@ public class FollowsServletTest {
     helper.tearDown();
   }
 
-  private void runTest(String filterParameter, String filterValue, Follow[] expectedReturnedFollows)
+  private void initDatastore() {
+    ds = DatastoreServiceFactory.getDatastoreService();
+
+    // These are the follows that exist by default.
+    // User 1 follows the first and second business.
+    // User 2 follows only the first business.
+    // Nobody follows business three. Sad!
+    ds.put(createMockFollowEntity(MOCK_USER_ID_1, MOCK_BUSINESS_ID_1));
+    ds.put(createMockFollowEntity(MOCK_USER_ID_1, MOCK_BUSINESS_ID_2));
+    ds.put(createMockFollowEntity(MOCK_USER_ID_2, MOCK_BUSINESS_ID_1));
+  }
+
+  private void runTestDoGetBusiness(String businessId, Follow[] expectedReturnedFollows)
       throws IOException {
-    doReturn(filterValue).when(request).getParameter(filterParameter);
+    initDatastore();
+    doReturn(businessId).when(request).getParameter(BUSINESS_ID_PROPERTY);
+
+    servlet.doGet(request, response);
+
+    String expectedResponse = new Gson().toJson(expectedReturnedFollows);
+
+    assertSameJsonObject(expectedResponse, servletResponseWriter.toString());
+  }
+
+  private void runTestDoGetUser(String userId, Follow[] expectedReturnedFollows) throws IOException {
+    helper.setEnvAttributes(
+              new HashMap(
+                  ImmutableMap.of(
+                      "com.google.appengine.api.users.UserService.user_id_key", userId)));
+    helper.setUp();
+    initDatastore();
 
     servlet.doGet(request, response);
 
@@ -103,7 +130,7 @@ public class FollowsServletTest {
           new Follow(MOCK_USER_ID_2, MOCK_BUSINESS_ID_1)
         };
 
-    runTest(BUSINESS_ID_PROPERTY, MOCK_BUSINESS_ID_1, expectedReturnedFollows);
+    runTestDoGetBusiness(MOCK_BUSINESS_ID_1, expectedReturnedFollows);
   }
 
   @Test
@@ -111,25 +138,14 @@ public class FollowsServletTest {
     Follow[] expectedReturnedFollows =
         new Follow[] {new Follow(MOCK_USER_ID_1, MOCK_BUSINESS_ID_2)};
 
-    runTest(BUSINESS_ID_PROPERTY, MOCK_BUSINESS_ID_2, expectedReturnedFollows);
+    runTestDoGetBusiness(MOCK_BUSINESS_ID_2, expectedReturnedFollows);
   }
 
   @Test
   public void testDoGetBusinessNoResults() throws IOException {
     Follow[] expectedReturnedFollows = new Follow[] {};
 
-    runTest(BUSINESS_ID_PROPERTY, MOCK_BUSINESS_ID_3, expectedReturnedFollows);
-  }
-
-  private void runDoGetUserTest(String userId, Follow[] expectedReturnedFollows)
-      throws IOException {
-    doReturn(userId).when(request).getParameter(USER_ID_PROPERTY);
-
-    servlet.doGet(request, response);
-
-    String expectedResponse = new Gson().toJson(expectedReturnedFollows);
-
-    assertSameJsonObject(expectedResponse, servletResponseWriter.toString());
+    runTestDoGetBusiness(MOCK_BUSINESS_ID_3, expectedReturnedFollows);
   }
 
   @Test
@@ -140,7 +156,7 @@ public class FollowsServletTest {
           new Follow(MOCK_USER_ID_1, MOCK_BUSINESS_ID_2)
         };
 
-    runTest(USER_ID_PROPERTY, MOCK_USER_ID_1, expectedReturnedFollows);
+    runTestDoGetUser(MOCK_USER_ID_1, expectedReturnedFollows);
   }
 
   @Test
@@ -148,28 +164,21 @@ public class FollowsServletTest {
     Follow[] expectedReturnedFollows =
         new Follow[] {new Follow(MOCK_USER_ID_2, MOCK_BUSINESS_ID_1)};
 
-    runTest(USER_ID_PROPERTY, MOCK_USER_ID_2, expectedReturnedFollows);
+    runTestDoGetUser(MOCK_USER_ID_2, expectedReturnedFollows);
   }
 
   @Test
   public void testDoGetUserNoResults() throws IOException {
     Follow[] expectedReturnedFollows = new Follow[] {};
 
-    runTest(USER_ID_PROPERTY, MOCK_USER_ID_3, expectedReturnedFollows);
+    runTestDoGetUser(MOCK_USER_ID_3, expectedReturnedFollows);
   }
 
   @Test
   public void testDoGetNoParameters() throws IOException {
-    servlet.doGet(request, response);
-
-    assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_BAD_REQUEST, response);
-  }
-
-  @Test
-  public void testDoGetBothParameters() throws IOException {
-    doReturn(MOCK_BUSINESS_ID_1).when(request).getParameter(BUSINESS_ID_PROPERTY);
-    doReturn(MOCK_USER_ID_1).when(request).getParameter(USER_ID_PROPERTY);
-
+    helper.setEnvIsLoggedIn(false);
+    helper.setUp();
+    
     servlet.doGet(request, response);
 
     assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_BAD_REQUEST, response);
