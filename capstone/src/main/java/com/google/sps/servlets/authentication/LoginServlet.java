@@ -52,9 +52,7 @@ public class LoginServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     User userData;
     Entity entity;
-    System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-System.out.println("logouturl: " + LOGOUT_URL);
-
+    
     if (userService.isUserLoggedIn()) {
       String userId = userService.getCurrentUser().getUserId();
       String keyString = KeyFactory.createKeyString(PROFILE_TASK_NAME, userId);
