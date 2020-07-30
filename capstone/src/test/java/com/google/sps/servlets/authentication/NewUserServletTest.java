@@ -16,7 +16,8 @@ package com.google.sps.servlets.authentication;
 
 import static com.google.sps.data.ProfileDatastoreUtil.ANONYMOUS_NAME;
 import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.GEO_PT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LAT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LONG_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
@@ -56,7 +57,6 @@ public class NewUserServletTest {
   private static final String USER_ID = "12345";
   private static final String EMAIL = "abc@gmail.com";
   private static final String AUTHDOMAIN = "gmail.com";
-  private static final GeoPt GEO_PT = new GeoPt(Float.parseFloat(LAT), Float.parseFloat(LONG));
 
   @Mock private HttpServletRequest request;
 
@@ -105,7 +105,8 @@ public class NewUserServletTest {
     Assert.assertEquals(capEntity.getProperty(IS_BUSINESS_PROPERTY), NO);
     Assert.assertEquals(capEntity.getProperty(NAME_PROPERTY), ANONYMOUS_NAME);
     Assert.assertEquals(capEntity.getProperty(LOCATION_PROPERTY), NULL_STRING);
-    Assert.assertEquals(capEntity.getProperty(GEO_PT_PROPERTY), NULL_STRING);
+    Assert.assertEquals(capEntity.getProperty(LAT_PROPERTY), NULL_STRING);
+    Assert.assertEquals(capEntity.getProperty(LONG_PROPERTY), NULL_STRING);
     Assert.assertEquals(capEntity.getProperty(BIO_PROPERTY), NULL_STRING);
   }
 
@@ -122,7 +123,8 @@ public class NewUserServletTest {
     ent.setProperty(IS_BUSINESS_PROPERTY, NO);
     ent.setProperty(NAME_PROPERTY, NAME);
     ent.setProperty(LOCATION_PROPERTY, LOCATION);
-    ent.setProperty(GEO_PT_PROPERTY, GEO_PT);
+    ent.setProperty(LAT_PROPERTY, LAT);
+    ent.setProperty(LONG_PROPERTY, LONG);
     ent.setProperty(BIO_PROPERTY, BIO);
     datastore.put(ent);
 
@@ -132,7 +134,8 @@ public class NewUserServletTest {
     Assert.assertEquals(capEntity.getProperty(IS_BUSINESS_PROPERTY), NO);
     Assert.assertEquals(capEntity.getProperty(NAME_PROPERTY), NAME);
     Assert.assertEquals(capEntity.getProperty(LOCATION_PROPERTY), LOCATION);
-    Assert.assertEquals(capEntity.getProperty(GEO_PT_PROPERTY), GEO_PT);
+    Assert.assertEquals(capEntity.getProperty(LAT_PROPERTY), LAT);
+    Assert.assertEquals(capEntity.getProperty(LONG_PROPERTY), LONG);
     Assert.assertEquals(capEntity.getProperty(BIO_PROPERTY), BIO);
   }
 }

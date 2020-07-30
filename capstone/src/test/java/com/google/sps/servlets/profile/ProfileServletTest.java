@@ -15,7 +15,6 @@
 package com.google.sps.servlets.profile;
 
 import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.GEO_PT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LAT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
@@ -29,7 +28,6 @@ import static org.mockito.Mockito.when;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
@@ -81,7 +79,6 @@ public class ProfileServletTest {
   private LocalServiceTestHelper helper;
   private ProfileServlet profileServlet;
   private DatastoreService datastore;
-  private GeoPt GEO_PT;
 
   @Before
   public void setUp() throws Exception {
@@ -100,7 +97,6 @@ public class ProfileServletTest {
 
     datastore = DatastoreServiceFactory.getDatastoreService();
     profileServlet = new ProfileServlet();
-    GEO_PT = new GeoPt(Float.parseFloat(LAT), Float.parseFloat(LONG));
   }
 
   @After
@@ -259,7 +255,8 @@ public class ProfileServletTest {
     Assert.assertEquals(capEntity.getProperty(IS_BUSINESS_PROPERTY), NO);
     Assert.assertEquals(capEntity.getProperty(NAME_PROPERTY), NAME);
     Assert.assertEquals(capEntity.getProperty(LOCATION_PROPERTY), LOCATION);
-    Assert.assertEquals(capEntity.getProperty(GEO_PT_PROPERTY), GEO_PT);
+    Assert.assertEquals(capEntity.getProperty(LAT_PROPERTY), LAT);
+    Assert.assertEquals(capEntity.getProperty(LONG_PROPERTY), LONG);
     Assert.assertEquals(capEntity.getProperty(BIO_PROPERTY), BIO);
   }
 
@@ -286,7 +283,8 @@ public class ProfileServletTest {
 
     ent.setProperty(NAME_PROPERTY, NAME);
     ent.setProperty(LOCATION_PROPERTY, LOCATION);
-    ent.setProperty(GEO_PT_PROPERTY, GEO_PT);
+    ent.setProperty(LAT_PROPERTY, LAT);
+    ent.setProperty(LONG_PROPERTY, LONG);
     ent.setProperty(BIO_PROPERTY, BIO);
 
     return ent;

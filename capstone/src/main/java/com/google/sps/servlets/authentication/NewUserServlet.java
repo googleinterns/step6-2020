@@ -16,7 +16,8 @@ package com.google.sps.servlets.authentication;
 
 import static com.google.sps.data.ProfileDatastoreUtil.ANONYMOUS_NAME;
 import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.GEO_PT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LAT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LONG_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
@@ -63,7 +64,8 @@ public class NewUserServlet extends HttpServlet {
       userEntity.setProperty(IS_BUSINESS_PROPERTY, NO);
       userEntity.setProperty(NAME_PROPERTY, ANONYMOUS_NAME);
       userEntity.setProperty(LOCATION_PROPERTY, NULL_STRING);
-      userEntity.setProperty(GEO_PT_PROPERTY, NULL_STRING);
+      userEntity.setProperty(LAT_PROPERTY, NULL_STRING);
+      userEntity.setProperty(LONG_PROPERTY, NULL_STRING);
       userEntity.setProperty(BIO_PROPERTY, NULL_STRING);
 
       datastore.put(userEntity);

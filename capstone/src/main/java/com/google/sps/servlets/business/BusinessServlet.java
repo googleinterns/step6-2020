@@ -17,7 +17,6 @@ package com.google.sps.servlets;
 import static com.google.sps.data.ProfileDatastoreUtil.ABOUT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.CALENDAR_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.GEO_PT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LAT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
@@ -30,7 +29,6 @@ import static com.google.sps.data.ProfileDatastoreUtil.SUPPORT_PROPERTY;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
@@ -140,6 +138,8 @@ public class BusinessServlet extends HttpServlet {
       IS_BUSINESS_PROPERTY,
       NAME_PROPERTY,
       LOCATION_PROPERTY,
+      LAT_PROPERTY,
+      LONG_PROPERTY,
       BIO_PROPERTY,
       STORY_PROPERTY,
       ABOUT_PROPERTY,
@@ -180,24 +180,5 @@ public class BusinessServlet extends HttpServlet {
     for (String property : propertyNames) {
       targetEntity.setProperty(property, Objects.toString(request.getParameter(property), ""));
     }
-
-    targetEntity.setProperty(
-        GEO_PT_PROPERTY,
-        getGeoPt(getParam(LAT_PROPERTY, request), getParam(LONG_PROPERTY, request)));
-  }
-
-  public GeoPt getGeoPt(String lat, String lng) {
-    if (lat.equals("") || lng.equals("")) {
-      return null;
-    }
-
-    return new GeoPt(Float.parseFloat(lat), Float.parseFloat(lng));
-  }
-
-  public String getParam(String property, HttpServletRequest request) {
-    if (request.getParameter(property) == null) {
-      return "";
-    }
-    return request.getParameter(property);
   }
 }

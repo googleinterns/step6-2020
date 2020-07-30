@@ -15,7 +15,6 @@
 package com.google.sps.servlets.profile;
 
 import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.GEO_PT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LAT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
@@ -28,7 +27,6 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.users.UserService;
@@ -134,22 +132,13 @@ public class ProfileServlet extends HttpServlet {
     profileEntity.setProperty(IS_BUSINESS_PROPERTY, getParam(IS_BUSINESS_PROPERTY, request));
     profileEntity.setProperty(NAME_PROPERTY, getParam(NAME_PROPERTY, request));
     profileEntity.setProperty(LOCATION_PROPERTY, getParam(LOCATION_PROPERTY, request));
-    profileEntity.setProperty(
-        GEO_PT_PROPERTY,
-        getGeoPt(getParam(LAT_PROPERTY, request), getParam(LONG_PROPERTY, request)));
+    profileEntity.setProperty(LAT_PROPERTY, getParam(LAT_PROPERTY, request));
+    profileEntity.setProperty(LONG_PROPERTY, getParam(LONG_PROPERTY, request));
     profileEntity.setProperty(BIO_PROPERTY, getParam(BIO_PROPERTY, request));
 
     // Put entity in datastore.
     datastore.put(profileEntity);
     response.sendRedirect("/profile.html?id=" + id);
-  }
-
-  public GeoPt getGeoPt(String lat, String lng) {
-    if (lat.equals("") || lng.equals("")) {
-      return null;
-    }
-
-    return new GeoPt(Float.parseFloat(lat), Float.parseFloat(lng));
   }
 
   public String getParam(String property, HttpServletRequest request) {
