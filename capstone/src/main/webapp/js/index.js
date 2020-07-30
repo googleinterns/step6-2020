@@ -40,6 +40,7 @@ window.onload = function() {
 function createCard(business) {
   let businessCard = document.createElement('div');
   businessCard.classList.add('business-card');
+  businessCard.classList.add('card');
   businessCard.id = 'business-' + business.id;
 
   businessCard.appendChild(createBusinessLink(business.id, business.name));
@@ -53,6 +54,7 @@ function createBusinessLink(id, name) {
   let businessLink = buildElement('a', '');
   businessLink.href = 'business.html?id=' + id;
   businessLink.appendChild(buildElement('h2', name));
+  businessLink.classList.add('card-title');
   return businessLink;
 }
 
@@ -60,6 +62,7 @@ function createBusinessInfo(bio) {
   // Creates a description to the business.
   let businessInfo = buildElement('p', bio);
   businessInfo.classList.add('business-info');
+  businessInfo.classList.add('card-text');
   return businessInfo;
 }
 
