@@ -194,15 +194,16 @@
 
                         <div class="form-group" id="calendar-section">
                             <h5><label for="calendar">Share your calendar</label></h5>
-                            <p>If you have a Google Calendar of events, feel free to share the linked email below.</p>
-                            <p><strong>NOTE</strong>: Other users may be able to see this email address and events that are not intended to be marked as public.</p>
-                            <p>If the email address entered does not have a linked Google Calendar, it won't display properly</p>
+                            <p>If you have a public Google Calendar of events, feel free to share the linked email below.</p>
+                            <p><strong>NOTE</strong>: Other users will be able to see this email address and events that you may not have intended to be marked as public.</p>
+                            <p>If the email address entered does not have a linked Google Calendar, it will display an empty calendar on your page.</p>
                             
                             <input id="edit-calendar" type="text" name="calendarEmail" onchange="previewCalendar()"></input>
                             
                             <div id="calendar-warning" style="display: none">
-                              <p><strong>NOTE</strong> This is what other users when they navigate to your business profile page.</p>
-                              <p>Make sure the calendar is public so that other users can see the events on the calendar.</p>
+                              <p><strong>NOTE</strong>: This is what other users when they navigate to your business profile page.</p>
+                              <p><strong>NOTE</strong>: Make sure the calendar is public so that other users can see the events on the calendar.</p>
+                              <p><strong>IMPORTANT</strong>: You may be able to see your calendar since you are currently logged into your Google account, so make sure the visibility of events is set accordingly.</p>
                               <p>You can do so by following <a href="https://support.google.com/calendar/answer/37083?hl=en">these instructions</a>.</p>
                             </div>
                             <iframe id="edit-calendar-preview" height="500px" width="700px" style="display: none"></iframe><br>
