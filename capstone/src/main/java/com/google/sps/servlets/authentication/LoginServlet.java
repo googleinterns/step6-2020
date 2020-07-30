@@ -46,12 +46,14 @@ public class LoginServlet extends HttpServlet {
   private static final String IS_BUSINESS = "isBusiness";
   private static final String SUPPORT_PROPERTY = "support";
   private final String LOGIN_URL = userService.createLoginURL("/check_new_user");
-  private final String LOGOUT_URL = "/logout";
+  private final String LOGOUT_URL = userService.createLogoutURL("index.html");
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     User userData;
     Entity entity;
+    System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+System.out.println("logouturl: " + LOGOUT_URL);
 
     if (userService.isUserLoggedIn()) {
       String userId = userService.getCurrentUser().getUserId();
