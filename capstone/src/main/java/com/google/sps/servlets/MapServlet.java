@@ -88,13 +88,11 @@ public class MapServlet extends HttpServlet {
     PreparedQuery latResults = datastore.prepare(latQuery);
     Set<MapInfo> latList = new HashSet<MapInfo>();
     for (Entity entity : latResults.asIterable()) {
-      System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-      System.out.println("Entered for loop #1 ");
       String id = (String) entity.getKey().getName();
       String name = (String) entity.getProperty(NAME_PROPERTY);
       String location = (String) entity.getProperty(LOCATION_PROPERTY);
-      String lat = (String) entity.getProperty(LAT_PROPERTY);
-      String lng = (String) entity.getProperty(LONG_PROPERTY);
+      double lat = (Double) entity.getProperty(LAT_PROPERTY);
+      double lng = (Double) entity.getProperty(LONG_PROPERTY);
       
       MapInfo business = new MapInfo(id, name, location, lat, lng);
       latList.add(business);
@@ -113,21 +111,15 @@ public class MapServlet extends HttpServlet {
     PreparedQuery lngResults = datastore.prepare(lngQuery);
     Set<MapInfo> lngList = new HashSet<MapInfo>();
     for (Entity entity : lngResults.asIterable()) {
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-      System.out.println("Entered for loop #1 ");
       String id = (String) entity.getKey().getName();
       String name = (String) entity.getProperty(NAME_PROPERTY);
       String location = (String) entity.getProperty(LOCATION_PROPERTY);
-      String lat = (String) entity.getProperty(LAT_PROPERTY);
-      String lng = (String) entity.getProperty(LONG_PROPERTY);
+      double lat = (Double) entity.getProperty(LAT_PROPERTY);
+      double lng = (Double) entity.getProperty(LONG_PROPERTY);
       
       MapInfo business = new MapInfo(id, name, location, lat, lng);
       lngList.add(business);
     }
-
-    System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-    System.out.println("lat list is: " + latList);
-    System.out.println("lng list is: " + lngList);
 
     // Compare the two results 
     List<MapInfo> resultsList = lngList.stream()

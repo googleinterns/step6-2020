@@ -155,7 +155,7 @@ function search() {
       for(let i = 0; i < results.length; i++) {
         let markerLetter = String.fromCharCode('A'.charCodeAt(0) + (i % 26));
         let markerIcon = MARKER_PATH + markerLetter + '.png';
-        let coordinates = new google.maps.LatLng(results[i].geoPt.latitude, results[i].geoPt.longitude);
+        let coordinates = new google.maps.LatLng(results[i].latitude, results[i].longitude);
 
         // Use marker animation to drop the icons incrementally on the map.
         markers[i] = new google.maps.Marker({

@@ -22,8 +22,8 @@ public final class MapInfo {
   private String id;
   private String name;
   private String location;
-  private String latitude;
-  private String longitude;
+  private double latitude;
+  private double longitude;
 
   /**
    * Business user's information constructor.
@@ -34,7 +34,7 @@ public final class MapInfo {
    * @param latitude the user's latitude location.
    * @param longitude the user's longitude location.
    */
-  public MapInfo(String id, String name, String location, String latitude, String longitude) {
+  public MapInfo(String id, String name, String location, double latitude, double longitude) {
     this.id = id;
     this.name = name;
     this.location = location;

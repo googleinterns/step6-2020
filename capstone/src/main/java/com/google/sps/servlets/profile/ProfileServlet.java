@@ -132,8 +132,8 @@ public class ProfileServlet extends HttpServlet {
     profileEntity.setProperty(IS_BUSINESS_PROPERTY, getParam(IS_BUSINESS_PROPERTY, request));
     profileEntity.setProperty(NAME_PROPERTY, getParam(NAME_PROPERTY, request));
     profileEntity.setProperty(LOCATION_PROPERTY, getParam(LOCATION_PROPERTY, request));
-    profileEntity.setProperty(LAT_PROPERTY, getParam(LAT_PROPERTY, request));
-    profileEntity.setProperty(LONG_PROPERTY, getParam(LONG_PROPERTY, request));
+    profileEntity.setProperty(LAT_PROPERTY, getLatLngParam(LAT_PROPERTY, request));
+    profileEntity.setProperty(LONG_PROPERTY, getLatLngParam(LONG_PROPERTY, request));
     profileEntity.setProperty(BIO_PROPERTY, getParam(BIO_PROPERTY, request));
 
     // Put entity in datastore.
@@ -147,5 +147,13 @@ public class ProfileServlet extends HttpServlet {
     }
 
     return request.getParameter(property);
+  }
+
+  public Double getLatLngParam(String property, HttpServletRequest request) {
+    if (request.getParameter(property) == null) {
+      return null;
+    }
+
+    return Double.parseDouble(request.getParameter(property));
   }
 }

@@ -61,8 +61,10 @@ public class ProfileServletTest {
   private static final String NAME = "John Doe";
   private static final String NO_NAME = null;
   private static final String LOCATION = "Mountain View, CA";
-  private static final String LAT = "45.0";
-  private static final String LONG = "45.0";
+  private static final double LAT = 45.0;
+  private static final double LONG = 45.0;
+  private static final String LAT_STR = "45.0";
+  private static final String LONG_STR = "45.0";
   private static final String BIO = "This is my bio.";
   private static final String USER_ID = "12345";
   private static final String USER2_ID = "6789";
@@ -293,8 +295,8 @@ public class ProfileServletTest {
   // Helper function to set getParameter() method.
   private void setRequestParameters() {
     when(request.getParameter(LOCATION_PROPERTY)).thenReturn(LOCATION);
-    when(request.getParameter(LAT_PROPERTY)).thenReturn(LAT);
-    when(request.getParameter(LONG_PROPERTY)).thenReturn(LONG);
+    when(request.getParameter(LAT_PROPERTY)).thenReturn(LAT_STR);
+    when(request.getParameter(LONG_PROPERTY)).thenReturn(LONG_STR);
     when(request.getParameter(BIO_PROPERTY)).thenReturn(BIO);
   }
 }

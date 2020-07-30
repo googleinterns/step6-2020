@@ -58,10 +58,10 @@ public class MapServletTest {
   private static final String USER_ID_1 = "12345";
   private static final String USER_ID_2 = "6789";
   private static final String USER_ID_3 = "5555";
-  private static final String LAT_IN_BOUNDS = "37.386051";
-  private static final String LONG_IN_BOUNDS = "-122.083855";
-  private static final String LAT_NOT_IN_BOUNDS = "40.730610";
-  private static final String LONG_NOT_IN_BOUNDS = "-73.935242";
+  private static final double LAT_IN_BOUNDS = 37.386051;
+  private static final double LONG_IN_BOUNDS = -122.083855;
+  private static final double LAT_NOT_IN_BOUNDS = 40.730610;
+  private static final double LONG_NOT_IN_BOUNDS = -73.935242;
   private static final String NOT_A_BUSINESS = NO;
   private static final String A_BUSINESS = YES;
   private static final String NAME = "Pizzeria";
