@@ -13,7 +13,14 @@
 // limitations under the License.
 
 import { buildCommentForm, loadCommentList } from '/js/comments.js';
-import { checkUserLoggedIn, setLoginOrLogoutUrl, setProfileUrl} from '/js/util.js';
+import { 
+  buildButton,
+  checkUserLoggedIn,
+  getJsonObject,
+  makeRequest,
+  setLoginOrLogoutUrl,
+  setProfileUrl,
+  } from '/js/util.js';
 
 const calendarBaseURL = 'https://calendar.google.com/calendar/embed?src=';
 
@@ -25,11 +32,12 @@ window.addEventListener('load', function() {
   setLoginOrLogoutUrl();
   setProfileUrl();
   constructBusinessProfile(businessId);
-  
+
   const commentSection = document.getElementById('comment-section');
   checkUserLoggedIn().then(userIsLoggedIn => {
     commentSection.appendChild(buildCommentForm(userIsLoggedIn, businessId));
     commentSection.appendChild(loadCommentList('businessId', businessId));
+    initFollowButton(userIsLoggedIn, businessId);
   })
 })
 
@@ -140,6 +148,32 @@ function constructBusinessProfile(id) {
           document.getElementById('edit-' + property).value = info[property];
         })
       })
+}
+
+function initFollowButton(businessId) {
+  // The second condition checks if the user is following the business
+  getJsonObject('/follow', {'businessId' : businessId}).then(isFollowingBusiness => {
+    const buttonContainer = document.getElementById('main-card-footer');
+    let button;
+    if (isFollowingBusiness) {
+      // Create unfollow button
+      button = 
+          buildButton(
+            'btn btn-dark float-right', 
+            () => makeRequest('/follow', {'businessId': businessId}, 'DELETE'), 
+            'Follow',
+          );
+    } else {
+      // Create follow button
+      button = 
+          buildButton(
+            'btn bg-white float-right', 
+            () => makePostRequest('/follow', {'businessId': businessId}), 
+            'Follow',
+          );
+    }
+    buttonContainer.appendChild(button);
+  })
 }
 
 window.toggleProfile = function() {

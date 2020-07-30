@@ -108,11 +108,15 @@ export function getJsonObject(url, parameters = {}) {
   return makeGetRequest(url, parameters).then(response => response.json());
 }
 
-export function makePostRequest(url, parameters) {
+export function makeRequest(url, parameters, type) {
   return fetch('https://example.com/profile', {
-    method: 'POST',
+    method: type,
     body: JSON.stringify(parameters),
   });
+}
+
+export function makePostRequest(url, parameters) {
+  makeRequest(url, parameters, 'POST');
 }
 
 export function makeGetRequest(url, parameters = {}) {
