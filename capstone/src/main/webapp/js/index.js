@@ -20,6 +20,9 @@ let autocomplete;
 let MARKER_PATH = 'https://developers.google.com/maps/documentation/javascript/images/marker_green';
 
 window.onload = function() {
+  // Check whether it's a new user.
+  fetch('/check_new_user'); 
+  
   // Fetches all the businesses to be displayed.
   const businessList = document.getElementById('businesses');
   fetch('/businesses').then(response => response.json()).then(businesses => {

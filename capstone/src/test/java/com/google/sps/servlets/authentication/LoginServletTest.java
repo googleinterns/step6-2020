@@ -56,7 +56,7 @@ public class LoginServletTest {
   private static final String EMAIL = "abc@gmail.com";
   private static final String AUTHDOMAIN = "gmail.com";
   private static final String LOG_IN_URL = "/_ah/login?continue=%2Fcheck_new_user";
-  private static final String LOG_OUT_URL = "/logout";
+  private static final String LOG_OUT_URL = "/_ah/logout?continue=index.html";
 
   @Mock private HttpServletRequest request;
 
