@@ -109,14 +109,20 @@ export function getJsonObject(url, parameters = {}) {
 }
 
 export function makeRequest(url, parameters, type) {
-  return fetch('https://example.com/profile', {
-    method: type,
-    body: JSON.stringify(parameters),
-  });
+  if (Object.keys(parameters).length > 0) {
+    // Add parameter fields to the url as query parameters
+    
+    // Create query parameter strings to be added to the url
+    let queryParamStrings = Object.keys(parameters).map(key => key + '=' + parameters[key]);
+    
+    url += '?' + queryParamStrings.join('&');
+  }
+  
+  return fetch(url, {method: type});
 }
 
 export function makePostRequest(url, parameters) {
-  makeRequest(url, parameters, 'POST');
+  return makeRequest(url, parameters, 'POST');
 }
 
 export function makeGetRequest(url, parameters = {}) {
