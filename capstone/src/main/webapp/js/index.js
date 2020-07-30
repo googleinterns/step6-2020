@@ -24,12 +24,7 @@ window.onload = function() {
   fetch('/check_new_user'); 
   
   // Fetches all the businesses to be displayed.
-  const businessList = document.getElementById('businesses');
-  fetch('/businesses').then(response => response.json()).then(businesses => {
-    businesses.forEach(business => {
-      businessList.appendChild(createCard(business));
-    })
-  })
+  populateBusinessList();
 
   // Get login status of user to display on nav bar.
   setLoginOrLogoutUrl();
@@ -38,6 +33,15 @@ window.onload = function() {
   setProfileUrl();
 
   createHomePageMap();
+}
+
+function populateBusinessList() {
+  const businessList = document.getElementById('businesses');
+  fetch('/businesses').then(response => response.json()).then(businesses => {
+    businesses.forEach(business => {
+      businessList.appendChild(createCard(business));
+    })
+  })
 }
 
 function createCard(business) {
@@ -232,4 +236,29 @@ function buildIWContent(id, name, location) {
   document.getElementById('map-name').textContent = name;
   document.getElementById('map-location').textContent = location;
   document.getElementById('map-link').href = '/business.html?id=' + id;
+}
+
+window.fetchSearchResults = function() {
+  const searchItem = document.getElementById('business-text-search').value;
+  const businessList = document.getElementById('businesses');
+  
+  // Clear business list for update.
+  businessList.innerHTML = '';
+  if (searchItem == '') {
+    // Reset business list to original view of all businesses.
+    populateBusinessList();
+  } else {
+    fetch('/search?searchItem=' + searchItem)
+        .then(response => {
+            if (!response.ok) {
+              // Redirect to SearchServlet, which displays the appropriate error.
+              window.location.href = '/search?searchItem=' + searchItem;
+            }
+            return response.json();
+        }).then(businesses => {
+            businesses.forEach(business => {
+              businessList.appendChild(createCard(business));
+            })
+        });
+  }
 }
