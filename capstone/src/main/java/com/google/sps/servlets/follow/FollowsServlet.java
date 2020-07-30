@@ -30,7 +30,6 @@ import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 import com.google.sps.data.Follow;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.annotation.WebServlet;
@@ -48,7 +47,7 @@ public class FollowsServlet extends HttpServlet {
   private DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {    
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String filterParameter;
     String filterValue;
 
@@ -60,16 +59,15 @@ public class FollowsServlet extends HttpServlet {
       filterParameter = USER_ID_PROPERTY;
       filterValue = userService.getCurrentUser().getUserId();
     } else {
-        response.sendError(
-            HttpServletResponse.SC_BAD_REQUEST, "A user must be logged in or a businessId must be spcified.");
-        return;
+      response.sendError(
+          HttpServletResponse.SC_BAD_REQUEST,
+          "A user must be logged in or a businessId must be spcified.");
+      return;
     }
 
     Query query =
         new Query(FOLLOW_TASK_NAME)
-            .setFilter(
-                new FilterPredicate(
-                    filterParameter, FilterOperator.EQUAL, filterValue));
+            .setFilter(new FilterPredicate(filterParameter, FilterOperator.EQUAL, filterValue));
     List<Entity> followEntities = datastore.prepare(query).asList(withDefaults());
     List<Follow> follows =
         followEntities.stream()

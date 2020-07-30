@@ -15,7 +15,6 @@
 package com.google.sps.servlets;
 
 import static com.google.sps.data.FollowDatastoreUtil.BUSINESS_ID_PROPERTY;
-import static com.google.sps.data.FollowDatastoreUtil.USER_ID_PROPERTY;
 import static com.google.sps.util.FollowTestUtil.createMockFollowEntity;
 import static com.google.sps.util.TestUtil.assertResponseWithArbitraryTextRaised;
 import static com.google.sps.util.TestUtil.assertSameJsonObject;
@@ -25,13 +24,13 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import com.google.gson.Gson;
 import com.google.common.collect.ImmutableMap;
-import java.util.HashMap;
+import com.google.gson.Gson;
 import com.google.sps.data.Follow;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.After;
@@ -107,11 +106,11 @@ public class FollowsServletTest {
     assertSameJsonObject(expectedResponse, servletResponseWriter.toString());
   }
 
-  private void runTestDoGetUser(String userId, Follow[] expectedReturnedFollows) throws IOException {
+  private void runTestDoGetUser(String userId, Follow[] expectedReturnedFollows)
+      throws IOException {
     helper.setEnvAttributes(
-              new HashMap(
-                  ImmutableMap.of(
-                      "com.google.appengine.api.users.UserService.user_id_key", userId)));
+        new HashMap(
+            ImmutableMap.of("com.google.appengine.api.users.UserService.user_id_key", userId)));
     helper.setUp();
     initDatastore();
 
@@ -178,7 +177,7 @@ public class FollowsServletTest {
   public void testDoGetNoParameters() throws IOException {
     helper.setEnvIsLoggedIn(false);
     helper.setUp();
-    
+
     servlet.doGet(request, response);
 
     assertResponseWithArbitraryTextRaised(HttpServletResponse.SC_BAD_REQUEST, response);
