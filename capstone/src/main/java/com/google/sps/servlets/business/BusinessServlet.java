@@ -35,6 +35,14 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.search.Document;
+import com.google.appengine.api.search.Field;
+import com.google.appengine.api.search.Index;
+import com.google.appengine.api.search.IndexSpec;
+import com.google.appengine.api.search.PutException;
+import com.google.appengine.api.search.SearchService;
+import com.google.appengine.api.search.SearchServiceFactory;
+import com.google.appengine.api.search.StatusCode;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
@@ -51,8 +59,8 @@ import javax.servlet.http.HttpServletResponse;
 public class BusinessServlet extends HttpServlet {
 
   UserService userService = UserServiceFactory.getUserService();
-
   DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+  SearchService searchService = SearchServiceFactory.getSearchService();
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -140,6 +148,26 @@ public class BusinessServlet extends HttpServlet {
     };
 
     setEntityProperties(businessEntity, request, propertyNames);
+
+    // Create a corresponding document for searching through businesses.
+    Index index = searchService.getIndex(IndexSpec.newBuilder().setName("Business"));
+    Document document =
+        Document.newBuilder()
+            .setId(id)
+            .addField(
+                Field.newBuilder()
+                    .setName("name")
+                    .setTokenizedPrefix((String) businessEntity.getProperty(NAME_PROPERTY)))
+            .build();
+
+    try {
+      index.put(document);
+    } catch (PutException e) {
+      if (StatusCode.TRANSIENT_ERROR.equals(e.getOperationResult().getCode())) {
+        // retry putting the document to the index
+        index.put(document);
+      }
+    }
 
     // Put entity in datastore.
     datastore.put(businessEntity);
