@@ -43,6 +43,7 @@ export function buildCommentForm(userIsLoggedIn, businessId, parentId=null) {
 function buildFormSubmitButton() {
   const button = document.createElement('input');
 
+  button.className = "btn btn-danger float-right";
   button.type = 'submit';
   button.value = 'Submit';
   button.target = 'body';
@@ -93,9 +94,12 @@ export function loadCommentList(userIsLoggedIn, businessId) {
 
 /** Build text field in which to enter a commment. */
 function buildCommentTextArea(userIsLoggedIn) {
+  const wrapper = document.createElement('div');
+  wrapper.className = "form-group";
+
   const commentTextArea = document.createElement('textarea');
 
-  commentTextArea.class = "container-fluid";
+  commentTextArea.className = "form-control";
   commentTextArea.cols = 70;
   commentTextArea.name = 'content';
   
@@ -106,8 +110,9 @@ function buildCommentTextArea(userIsLoggedIn) {
   }
 
   commentTextArea.rows = 3;
+  wrapper.appendChild(commentTextArea);
 
-  return commentTextArea;
+  return wrapper;
 }
 
 /** 
