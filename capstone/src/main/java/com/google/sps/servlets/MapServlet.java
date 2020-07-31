@@ -82,9 +82,6 @@ public class MapServlet extends HttpServlet {
                 new FilterPredicate(LAT_PROPERTY, FilterOperator.GREATER_THAN_OR_EQUAL, SW_Lat),
                 new FilterPredicate(LAT_PROPERTY, FilterOperator.LESS_THAN_OR_EQUAL, NE_Lat)));
 
-    // Filter latFilter =
-    //             new FilterPredicate(LAT_PROPERTY, FilterOperator.GREATER_THAN_OR_EQUAL, SW_Lat);
-
     // Convert entities to Profile objects.
     Query latQuery = new Query(PROFILE_TASK_NAME).setFilter(latFilter);
     PreparedQuery latResults = datastore.prepare(latQuery);
@@ -95,11 +92,6 @@ public class MapServlet extends HttpServlet {
       String location = (String) entity.getProperty(LOCATION_PROPERTY);
       double lat = (Double) entity.getProperty(LAT_PROPERTY);
       double lng = (Double) entity.getProperty(LONG_PROPERTY);
-
-      System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-      System.out.println("lat id: " + id);
-      System.out.println("lat: " + lat);
-      System.out.println("lng: " + lng);
 
       MapInfo business = new MapInfo(id, name, location, lat, lng);
       latList.add(business);
@@ -112,9 +104,6 @@ public class MapServlet extends HttpServlet {
                 new FilterPredicate(LONG_PROPERTY, FilterOperator.GREATER_THAN_OR_EQUAL, SW_Lng),
                 new FilterPredicate(LONG_PROPERTY, FilterOperator.LESS_THAN_OR_EQUAL, NE_Lng)));
 
-    // Filter lngFilter =
-    //             new FilterPredicate(LONG_PROPERTY, FilterOperator.GREATER_THAN_OR_EQUAL, SW_Lng);
-
     // Convert entities to Profile objects.
     Query lngQuery = new Query(PROFILE_TASK_NAME).setFilter(lngFilter);
     PreparedQuery lngResults = datastore.prepare(lngQuery);
@@ -126,11 +115,6 @@ public class MapServlet extends HttpServlet {
       double lat = (Double) entity.getProperty(LAT_PROPERTY);
       double lng = (Double) entity.getProperty(LONG_PROPERTY);
 
-       System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-      System.out.println("long id: " + id);
-      System.out.println("lat: " + lat);
-      System.out.println("lng: " + lng);
-      
       MapInfo business = new MapInfo(id, name, location, lat, lng);
       lngList.add(business);
     }

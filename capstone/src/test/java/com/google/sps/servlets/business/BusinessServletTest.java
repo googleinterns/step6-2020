@@ -70,8 +70,10 @@ public class BusinessServletTest {
   private static final String NAME = "Pizzeria";
   private static final String NO_NAME = null;
   private static final String LOCATION = "Mountain View, CA";
-  private static final String LAT = "45.0";
-  private static final String LONG = "45.0";
+  private static final double LAT = 45.0;
+  private static final double LONG = 45.0;
+  private static final String LAT_STR = "45.0";
+  private static final String LONG_STR = "45.0";
   private static final String BIO = "This is my business bio.";
   private static final String STORY = "The pandemic has affected my business in X many ways.";
   private static final String ABOUT = "Here is the Pizzeria's menu.";
@@ -242,8 +244,8 @@ public class BusinessServletTest {
     when(request.getParameter(IS_BUSINESS_PROPERTY)).thenReturn("Yes");
     when(request.getParameter(NAME_PROPERTY)).thenReturn(NAME);
     when(request.getParameter(LOCATION_PROPERTY)).thenReturn(LOCATION);
-    when(request.getParameter(LAT_PROPERTY)).thenReturn(LAT);
-    when(request.getParameter(LONG_PROPERTY)).thenReturn(LONG);
+    when(request.getParameter(LAT_PROPERTY)).thenReturn(LAT_STR);
+    when(request.getParameter(LONG_PROPERTY)).thenReturn(LONG_STR);
     when(request.getParameter(BIO_PROPERTY)).thenReturn(BIO);
     when(request.getParameter(STORY_PROPERTY)).thenReturn(STORY);
     when(request.getParameter(ABOUT_PROPERTY)).thenReturn(ABOUT);

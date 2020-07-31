@@ -138,8 +138,6 @@ public class BusinessServlet extends HttpServlet {
       IS_BUSINESS_PROPERTY,
       NAME_PROPERTY,
       LOCATION_PROPERTY,
-      LAT_PROPERTY,
-      LONG_PROPERTY,
       BIO_PROPERTY,
       STORY_PROPERTY,
       ABOUT_PROPERTY,
@@ -148,6 +146,9 @@ public class BusinessServlet extends HttpServlet {
     };
 
     setEntityProperties(businessEntity, request, propertyNames);
+
+    businessEntity.setProperty(LAT_PROPERTY, doesParamExist(LAT_PROPERTY, request) ? Double.parseDouble(request.getParameter(LAT_PROPERTY)) : null);
+    businessEntity.setProperty(LONG_PROPERTY, doesParamExist(LONG_PROPERTY, request) ? Double.parseDouble(request.getParameter(LONG_PROPERTY)) : null);
 
     // Create a corresponding document for searching through businesses.
     Index index = searchService.getIndex(IndexSpec.newBuilder().setName("Business"));
@@ -180,5 +181,9 @@ public class BusinessServlet extends HttpServlet {
     for (String property : propertyNames) {
       targetEntity.setProperty(property, Objects.toString(request.getParameter(property), ""));
     }
+  }
+
+  public boolean doesParamExist(String property, HttpServletRequest request) {
+    return request.getParameter(property) != null;
   }
 }
