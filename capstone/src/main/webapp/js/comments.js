@@ -47,7 +47,7 @@ function buildFormSubmitButton() {
 
   const button = document.createElement('input');
 
-  button.className = 'btn btn-danger';
+  button.className = 'btn btn-danger mb-2';
   button.type = 'submit';
   button.value = 'Submit';
   button.target = 'body';
