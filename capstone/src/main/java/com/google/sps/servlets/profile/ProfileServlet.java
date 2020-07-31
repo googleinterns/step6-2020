@@ -132,9 +132,10 @@ public class ProfileServlet extends HttpServlet {
     profileEntity.setProperty(IS_BUSINESS_PROPERTY, getParam(IS_BUSINESS_PROPERTY, request));
     profileEntity.setProperty(NAME_PROPERTY, getParam(NAME_PROPERTY, request));
     profileEntity.setProperty(LOCATION_PROPERTY, getParam(LOCATION_PROPERTY, request));
-    profileEntity.setProperty(LAT_PROPERTY, getLatLngParam(LAT_PROPERTY, request));
-    profileEntity.setProperty(LONG_PROPERTY, getLatLngParam(LONG_PROPERTY, request));
     profileEntity.setProperty(BIO_PROPERTY, getParam(BIO_PROPERTY, request));
+
+    profileEntity.setProperty(LAT_PROPERTY, doesParamExist(LAT_PROPERTY, request) ? Double.parseDouble(request.getParameter(LAT_PROPERTY)) : null);
+    profileEntity.setProperty(LONG_PROPERTY, doesParamExist(LONG_PROPERTY, request) ? Double.parseDouble(request.getParameter(LONG_PROPERTY)) : null);
 
     // Put entity in datastore.
     datastore.put(profileEntity);
@@ -149,11 +150,7 @@ public class ProfileServlet extends HttpServlet {
     return request.getParameter(property);
   }
 
-  public Double getLatLngParam(String property, HttpServletRequest request) {
-    if (request.getParameter(property) == null) {
-      return null;
-    }
-
-    return Double.parseDouble(request.getParameter(property));
+  public boolean doesParamExist(String property, HttpServletRequest request) {
+    return request.getParameter(property) != null;
   }
 }

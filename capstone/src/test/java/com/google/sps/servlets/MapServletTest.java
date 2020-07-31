@@ -103,13 +103,13 @@ public class MapServletTest {
   /*
    *  Test doGet() for response returning the correct empty list of businesses.
    **/
-//   @Test
-//   public void testEmptydoGet() throws Exception {
-//     setRequestParams();
+  @Test
+  public void testEmptydoGet() throws Exception {
+    setRequestParams();
 
-//     servlet.doGet(request, response);
-//     Assert.assertEquals(servletResponseWriter.toString().replace("\n", ""), "[]");
-//   }
+    servlet.doGet(request, response);
+    Assert.assertEquals(servletResponseWriter.toString().replace("\n", ""), "[]");
+  }
 
   /*
    *  Test doGet() for response returning the correct list of businesses in the area given non businesses
@@ -159,14 +159,14 @@ public class MapServletTest {
   /*
    *  Test doGet() for response returning error because of invalid parameters.
    **/
-//   @Test
-//   public void testDoGetReturnError() throws Exception {
-//     servlet.doGet(request, response);
+  @Test
+  public void testDoGetReturnError() throws Exception {
+    servlet.doGet(request, response);
 
-//     // verify if a sendError() was performed with the expected values.
-//     Mockito.verify(response, Mockito.times(1))
-//         .sendError(Mockito.eq(HttpServletResponse.SC_BAD_REQUEST), Mockito.anyString());
-//   }
+    // verify if a sendError() was performed with the expected values.
+    Mockito.verify(response, Mockito.times(1))
+        .sendError(Mockito.eq(HttpServletResponse.SC_BAD_REQUEST), Mockito.anyString());
+  }
 
   // Create a business entity.
   private Entity createBusiness(String id) {

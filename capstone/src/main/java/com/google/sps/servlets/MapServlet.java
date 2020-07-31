@@ -63,13 +63,13 @@ public class MapServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
     // Get map bounds from request parameter.
-    float SW_Lat, SW_Lng, NE_Lat, NE_Lng;
+    double SW_Lat, SW_Lng, NE_Lat, NE_Lng;
 
     try {
-      SW_Lat = Float.parseFloat(request.getParameter(SW_LAT_PROPERTY));
-      SW_Lng = Float.parseFloat(request.getParameter(SW_LNG_PROPERTY));
-      NE_Lat = Float.parseFloat(request.getParameter(NE_LAT_PROPERTY));
-      NE_Lng = Float.parseFloat(request.getParameter(NE_LNG_PROPERTY));
+      SW_Lat = Double.parseDouble(request.getParameter(SW_LAT_PROPERTY));
+      SW_Lng = Double.parseDouble(request.getParameter(SW_LNG_PROPERTY));
+      NE_Lat = Double.parseDouble(request.getParameter(NE_LAT_PROPERTY));
+      NE_Lng = Double.parseDouble(request.getParameter(NE_LNG_PROPERTY));
     } catch (NullPointerException e) {
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Request parameters are invalid.");
       return;
@@ -77,11 +77,13 @@ public class MapServlet extends HttpServlet {
 
     // Filter businesses that are within the map search bounds.
     Filter latFilter =
-            CompositeFilterOperator.and(
-              new FilterPredicate(IS_BUSINESS_PROPERTY, FilterOperator.EQUAL, YES),
-              CompositeFilterOperator.and(
+            new CompositeFilter(CompositeFilterOperator.AND, Arrays.asList(
+                new FilterPredicate(IS_BUSINESS_PROPERTY, FilterOperator.EQUAL, YES),
                 new FilterPredicate(LAT_PROPERTY, FilterOperator.GREATER_THAN_OR_EQUAL, SW_Lat),
                 new FilterPredicate(LAT_PROPERTY, FilterOperator.LESS_THAN_OR_EQUAL, NE_Lat)));
+
+    // Filter latFilter =
+    //             new FilterPredicate(LAT_PROPERTY, FilterOperator.GREATER_THAN_OR_EQUAL, SW_Lat);
 
     // Convert entities to Profile objects.
     Query latQuery = new Query(PROFILE_TASK_NAME).setFilter(latFilter);
@@ -93,18 +95,25 @@ public class MapServlet extends HttpServlet {
       String location = (String) entity.getProperty(LOCATION_PROPERTY);
       double lat = (Double) entity.getProperty(LAT_PROPERTY);
       double lng = (Double) entity.getProperty(LONG_PROPERTY);
-      
+
+      System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+      System.out.println("lat id: " + id);
+      System.out.println("lat: " + lat);
+      System.out.println("lng: " + lng);
+
       MapInfo business = new MapInfo(id, name, location, lat, lng);
       latList.add(business);
     }
 
     // Filter businesses that are within the map search bounds.
     Filter lngFilter =
-            CompositeFilterOperator.and(
-              new FilterPredicate(IS_BUSINESS_PROPERTY, FilterOperator.EQUAL, YES),
-              CompositeFilterOperator.and(
+            new CompositeFilter(CompositeFilterOperator.AND, Arrays.asList(
+                new FilterPredicate(IS_BUSINESS_PROPERTY, FilterOperator.EQUAL, YES),
                 new FilterPredicate(LONG_PROPERTY, FilterOperator.GREATER_THAN_OR_EQUAL, SW_Lng),
                 new FilterPredicate(LONG_PROPERTY, FilterOperator.LESS_THAN_OR_EQUAL, NE_Lng)));
+
+    // Filter lngFilter =
+    //             new FilterPredicate(LONG_PROPERTY, FilterOperator.GREATER_THAN_OR_EQUAL, SW_Lng);
 
     // Convert entities to Profile objects.
     Query lngQuery = new Query(PROFILE_TASK_NAME).setFilter(lngFilter);
@@ -116,6 +125,11 @@ public class MapServlet extends HttpServlet {
       String location = (String) entity.getProperty(LOCATION_PROPERTY);
       double lat = (Double) entity.getProperty(LAT_PROPERTY);
       double lng = (Double) entity.getProperty(LONG_PROPERTY);
+
+       System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+      System.out.println("long id: " + id);
+      System.out.println("lat: " + lat);
+      System.out.println("lng: " + lng);
       
       MapInfo business = new MapInfo(id, name, location, lat, lng);
       lngList.add(business);
