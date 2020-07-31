@@ -1,0 +1,11 @@
+indexes:
+
+- kind: UserProfile
+  properties:
+  - name: isBusiness
+  - name: lat
+
+- kind: UserProfile
+  properties:
+  - name: isBusiness
+  - name: long
