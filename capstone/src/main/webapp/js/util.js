@@ -121,10 +121,6 @@ export function makeRequest(url, parameters, type) {
   return fetch(url, {method: type});
 }
 
-export function makePostRequest(url, parameters) {
-  return makeRequest(url, parameters, 'POST');
-}
-
 export function makeGetRequest(url, parameters = {}) {
   if (Object.keys(parameters).length > 0) {
     // Add parameter fields to the url as query parameters

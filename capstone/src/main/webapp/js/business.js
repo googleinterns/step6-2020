@@ -18,7 +18,6 @@ import {
   checkUserLoggedIn,
   getJsonObject,
   makeRequest,
-  makePostRequest,
   setLoginOrLogoutUrl,
   setProfileUrl,
   } from '/js/util.js';
@@ -191,17 +190,15 @@ function setFollowButtonToUnfollow() {
 function followBusiness() {
   const url = new URLSearchParams(window.location.search);
   const businessId = url.get('id');
-
-  makePostRequest('/follow', {'businessId': businessId});
-  setFollowButtonToUnfollow()
+  
+  makeRequest('/follow', {'businessId': businessId}, 'POST').then(setFollowButtonToUnfollow);
 }
 
 function unfollowBusiness() {
   const url = new URLSearchParams(window.location.search);
   const businessId = url.get('id');
 
-  makeRequest('/follow', {'businessId': businessId}, 'DELETE');
-  setFollowButtonToFollow();
+  makeRequest('/follow', {'businessId': businessId}, 'DELETE').then(setFollowButtonToFollow);
 }
 
 window.toggleProfile = function() {
