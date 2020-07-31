@@ -127,3 +127,9 @@ export function makeGetRequest(url, parameters = {}) {
   
   return fetch(url);
 }
+
+export function removeAllChildNodes(parent) {
+    while (parent.firstChild) {
+        parent.removeChild(parent.firstChild);
+    }
+}
