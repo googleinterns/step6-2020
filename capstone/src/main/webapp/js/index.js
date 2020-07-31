@@ -40,33 +40,30 @@ function populateBusinessList() {
   getFollows().then(follows => {
     // Fetch and display all businesses that are followed
     const followedBusinessList = document.getElementById('followed-businesses');
+    const otherBusinessList = document.getElementById('businesses');
     if (follows.length > 0) {
       followedBusinessList.appendChild(buildElement('h1', 'Businesses you follow'));
       follows.forEach(follow =>
           getJsonObject('/business/' + follow.businessId).then(business =>
               followedBusinessList.appendChild(createCard(business))));
+      otherBusinessList.appendChild(buildElement('h1', 'Other businesses'));
     }
 
      // Fetches all the businesses to be displayed.
-    const followSet = new Set(follows);
-    const businessList = document.getElementById('businesses');
-    if (follows.length == 0) {
-      businessList.appendChild(buildElement('h1', 'Businesses'));
-    } else {
-      businessList.appendChild(buildElement('h1', 'Other businesses'));
-    }
+    const alreadyListed = new Set(follows.map(follow => follow.businessId));
+    
     fetch('/businesses').then(response => response.json()).then(businesses => {
       businesses
           // filter out businesses that are followed and thus have been displayed
-          .filter(business => !followSet.has(business))
-          .forEach(business => businessList.appendChild(createCard(business)))
+          .filter(business => !alreadyListed.has(business.id))
+          .forEach(business => otherBusinessList.appendChild(createCard(business)))
     });
   });
 }
 
 function getFollows() {
   return getJsonObject('/login').then(user => {
-    if (user.isLoggedn) {
+    if (user.isLoggedin) {
       return getJsonObject('/follows', {'userId': user.userId});
     } else {
       return [];
