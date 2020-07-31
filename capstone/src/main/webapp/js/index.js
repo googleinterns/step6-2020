@@ -40,8 +40,8 @@ function populateBusinessList() {
   getFollows().then(follows => {
     // Fetch and display all businesses that are followed
     const followedBusinessList = document.getElementById('followed-businesses');
-    followedBusinessList.appendChild(buildElement('h1', 'Businesses you follow'));
-    if (follows != []) {
+    if (follows.length > 0) {
+      followedBusinessList.appendChild(buildElement('h1', 'Businesses you follow'));
       follows.forEach(follow =>
           getJsonObject('/business/' + follow.businessId).then(business =>
               followedBusinessList.appendChild(createCard(business))));
@@ -50,7 +50,11 @@ function populateBusinessList() {
      // Fetches all the businesses to be displayed.
     const followSet = new Set(follows);
     const businessList = document.getElementById('businesses');
-    businessList.appendChild(buildElement('h1', 'Other businesses'));
+    if (follows.length == 0) {
+      businessList.appendChild(buildElement('h1', 'Businesses'));
+    } else {
+      businessList.appendChild(buildElement('h1', 'Other businesses'));
+    }
     fetch('/businesses').then(response => response.json()).then(businesses => {
       businesses
           // filter out businesses that are followed and thus have been displayed
