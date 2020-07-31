@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { buildElement, setLoginOrLogoutUrl, setProfileUrl } from '/js/util.js';
+import { buildElement, getJsonObject, setLoginOrLogoutUrl, setProfileUrl } from '/js/util.js';
 
 let map, infoWindow;
 let markers = [];
@@ -26,6 +26,7 @@ window.onload = function() {
   // Fetches all the businesses to be displayed.
   populateBusinessList();
 
+
   // Get login status of user to display on nav bar.
   setLoginOrLogoutUrl();
   
@@ -36,12 +37,37 @@ window.onload = function() {
 }
 
 function populateBusinessList() {
-  const businessList = document.getElementById('businesses');
-  fetch('/businesses').then(response => response.json()).then(businesses => {
-    businesses.forEach(business => {
-      businessList.appendChild(createCard(business));
-    })
-  })
+  getFollows().then(follows => {
+    // Fetch and display all businesses that are followed
+    const followedBusinessList = document.getElementById('followed-businesses');
+    followedBusinessList.appendChild(buildElement('h1', 'Businesses you follow'));
+    if (follows != []) {
+      follows.forEach(follow =>
+          getJsonObject('/business/' + follow.businessId).then(business =>
+              followedBusinessList.appendChild(createCard(business))));
+    }
+
+     // Fetches all the businesses to be displayed.
+    const followSet = new Set(follows);
+    const businessList = document.getElementById('businesses');
+    businessList.appendChild(buildElement('h1', 'Other businesses'));
+    fetch('/businesses').then(response => response.json()).then(businesses => {
+      businesses
+          // filter out businesses that are followed and thus have been displayed
+          .filter(business => !followSet.has(business))
+          .forEach(business => businessList.appendChild(createCard(business)))
+    });
+  });
+}
+
+function getFollows() {
+  getJsonObject('/login').then(user => {
+    if (user.isLoggedn) {
+      return getJsonObject('/follows', {'userId': user.userId});
+    } else {
+      return [];
+    }
+  });
 }
 
 function createCard(business) {
