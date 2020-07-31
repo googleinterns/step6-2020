@@ -13,23 +13,35 @@
 // limitations under the License.
 
 import { buildCommentForm, loadCommentList } from '/js/comments.js';
-import { checkUserLoggedIn, setLoginOrLogoutUrl, setProfileUrl} from '/js/util.js';
+import { 
+  buildButton,
+  checkUserLoggedIn,
+  getJsonObject,
+  makeRequest,
+  setLoginOrLogoutUrl,
+  setProfileUrl,
+  } from '/js/util.js';
 
 const calendarBaseURL = 'https://calendar.google.com/calendar/embed?src=';
+
+function getBusinessId() {
+  const url = new URLSearchParams(window.location.search);
+  return url.get('id');
+}
 
 window.addEventListener('load', function() {
   // window.location.search returns the search string of the URL.
   // In this case, window.location.search = ?id={businessID}
-  const url = new URLSearchParams(window.location.search);
-  const businessId = url.get('id');
   setLoginOrLogoutUrl();
   setProfileUrl();
+  const businessId = getBusinessId();
   constructBusinessProfile(businessId);
-  
+
   const commentSection = document.getElementById('comment-section');
   checkUserLoggedIn().then(userIsLoggedIn => {
     commentSection.appendChild(buildCommentForm(userIsLoggedIn, businessId));
     commentSection.appendChild(loadCommentList('businessId', businessId));
+    initFollowButton();
   })
 })
 
@@ -142,6 +154,53 @@ function constructBusinessProfile(id) {
           document.getElementById('edit-' + property).value = info[property];
         })
       })
+}
+
+function initFollowButton() {
+  getJsonObject('/follow', {'businessId' : getBusinessId()}).then(isFollowingBusiness => {
+    if (!isFollowingBusiness) {
+      // Change follow button to unfollow button
+      setFollowButtonToFollow();
+
+    } else {
+      // Keep it as the follow button and add the eventlistener
+      setFollowButtonToUnfollow();
+    }
+  });
+}
+
+function setFollowButtonToFollow() {
+  const button = document.getElementById('follow-button');
+
+  button.className = "btn btn-light float-right";
+  button.innerText = 'Follow';
+
+  button.removeEventListener('click', unfollowBusiness);
+  button.addEventListener('click', followBusiness);
+}
+
+function setFollowButtonToUnfollow() {
+  const button = document.getElementById('follow-button');
+
+  button.className = "btn btn-dark float-right";
+  button.innerText = 'Unfollow'; 
+  
+  button.removeEventListener('click', followBusiness);
+  button.addEventListener('click', unfollowBusiness);
+}
+
+function followBusiness() {
+  const url = new URLSearchParams(window.location.search);
+  const businessId = url.get('id');
+  
+  makeRequest('/follow', {'businessId': businessId}, 'POST').then(setFollowButtonToUnfollow);
+}
+
+function unfollowBusiness() {
+  const url = new URLSearchParams(window.location.search);
+  const businessId = url.get('id');
+
+  makeRequest('/follow', {'businessId': businessId}, 'DELETE').then(setFollowButtonToFollow);
 }
 
 window.toggleProfile = function() {
