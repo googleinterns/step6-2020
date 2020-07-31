@@ -61,7 +61,7 @@ function populateBusinessList() {
 }
 
 function getFollows() {
-  getJsonObject('/login').then(user => {
+  return getJsonObject('/login').then(user => {
     if (user.isLoggedn) {
       return getJsonObject('/follows', {'userId': user.userId});
     } else {
