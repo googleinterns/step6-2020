@@ -19,7 +19,7 @@ let markers = [];
 let autocomplete;
 let MARKER_PATH = 'https://developers.google.com/maps/documentation/javascript/images/marker_green';
 
-window.onload = function() {
+window.addEventListener('DOMContentLoaded', (event) => {
   // Check whether it's a new user.
   fetch('/check_new_user'); 
   
@@ -33,7 +33,7 @@ window.onload = function() {
   setProfileUrl();
 
   createHomePageMap();
-}
+})
 
 function populateBusinessList() {
   const businessList = document.getElementById('businesses');

@@ -17,7 +17,7 @@ import { checkUserLoggedIn, setLoginOrLogoutUrl, setProfileUrl} from '/js/util.j
 
 const calendarBaseURL = 'https://calendar.google.com/calendar/embed?src=';
 
-window.addEventListener('load', function() {
+window.addEventListener('DOMContentLoaded', (event) =>  {
   // window.location.search returns the search string of the URL.
   // In this case, window.location.search = ?id={businessID}
   const url = new URLSearchParams(window.location.search);

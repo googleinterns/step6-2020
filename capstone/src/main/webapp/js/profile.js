@@ -16,7 +16,7 @@ import { loadCommentList, loadUserPageCommentList } from '/js/comments.js'
 import { setLoginOrLogoutUrl, setProfileUrl, getJsonObject } from '/js/util.js';
 
 // Toggle between view and edit profile options.
-window.addEventListener('load', function() {
+window.addEventListener('DOMContentLoaded', (event) =>  {
   // Get login status of user to display on nav bar.
   setLoginOrLogoutUrl();
   setProfileUrl();
