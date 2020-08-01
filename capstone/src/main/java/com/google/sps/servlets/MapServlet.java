@@ -47,6 +47,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Set;
+import com.google.common.collect.Sets;
 import java.util.HashSet;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -85,13 +86,16 @@ public class MapServlet extends HttpServlet {
     // Convert entities to Profile objects.
     Query latQuery = new Query(PROFILE_TASK_NAME).setFilter(latFilter);
     PreparedQuery latResults = datastore.prepare(latQuery);
-    Set<MapInfo> latList = new HashSet<MapInfo>();
+    List<MapInfo> latList = new ArrayList<>();
     for (Entity entity : latResults.asIterable()) {
       String id = (String) entity.getKey().getName();
       String name = (String) entity.getProperty(NAME_PROPERTY);
       String location = (String) entity.getProperty(LOCATION_PROPERTY);
       double lat = (Double) entity.getProperty(LAT_PROPERTY);
       double lng = (Double) entity.getProperty(LONG_PROPERTY);
+
+      System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+      System.out.println("lat id: " + id);
 
       MapInfo business = new MapInfo(id, name, location, lat, lng);
       latList.add(business);
@@ -107,7 +111,7 @@ public class MapServlet extends HttpServlet {
     // Convert entities to Profile objects.
     Query lngQuery = new Query(PROFILE_TASK_NAME).setFilter(lngFilter);
     PreparedQuery lngResults = datastore.prepare(lngQuery);
-    Set<MapInfo> lngList = new HashSet<MapInfo>();
+    List<MapInfo> lngList = new ArrayList<>();
     for (Entity entity : lngResults.asIterable()) {
       String id = (String) entity.getKey().getName();
       String name = (String) entity.getProperty(NAME_PROPERTY);
@@ -115,17 +119,24 @@ public class MapServlet extends HttpServlet {
       double lat = (Double) entity.getProperty(LAT_PROPERTY);
       double lng = (Double) entity.getProperty(LONG_PROPERTY);
 
+      System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+      System.out.println("long id: " + id);
+
       MapInfo business = new MapInfo(id, name, location, lat, lng);
       lngList.add(business);
     }
 
-    // Compare the two results 
-    List<MapInfo> resultsList = lngList.stream()
-                                      .filter(latList::contains)
-                                      .collect(Collectors.toList());
+    List<MapInfo> resultsList = latList.stream()
+              .filter(os -> lngList.stream()                    // filter
+                  .anyMatch(ns ->                                  // compare both
+                       os.getId().equals(ns.getId()))) // last name
+              .collect(Collectors.toList());
+
+    System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    System.out.println("results: " + resultsList.toString());
 
     response.setContentType("application/json;");
     Gson gson = new Gson();
-    response.getWriter().println(gson.toJson(latList));
+    response.getWriter().println(gson.toJson(resultsList));
   }
 }

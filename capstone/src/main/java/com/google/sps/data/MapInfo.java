@@ -41,4 +41,8 @@ public final class MapInfo {
     this.latitude = latitude;
     this.longitude = longitude;
   }
+
+  public String getId() {
+    return this.id;
+  }
 }

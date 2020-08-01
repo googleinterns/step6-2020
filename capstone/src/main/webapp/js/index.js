@@ -146,7 +146,7 @@ function search() {
   fetch('/map?SW_Lat='+SW_Lat+'&SW_Lng='+SW_Lng+'&NE_Lat='+NE_Lat+'&NE_Lng='+NE_Lng)
     .then(response => response.json())
     .then(results => {
-
+        console.log(results);
       clearResults();
       clearMarkers();
 
