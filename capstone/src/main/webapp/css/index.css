@@ -141,4 +141,5 @@ table {
 #text-search-div {
   font-size: 18px;
   padding: 15px;
+  padding-top: 0;
 }
