@@ -21,6 +21,7 @@ window.addEventListener('DOMContentLoaded', (event) =>  {
   setLoginOrLogoutUrl();
   setProfileUrl();
   displayProfile();
+  displayCalendar();
   
   const url = new URLSearchParams(window.location.search);
   const profileId = url.get('id');
@@ -221,4 +222,64 @@ function geocodeAddress(address, geocoder, resultsMap, bounds) {
       mapElement.style.display = 'none';
     }
   });
+}
+
+async function displayCalendar() {
+  const userId = getId();
+  let calendarSrc = '';
+
+  let followsResponse = await fetch('/follows?userId=' + userId);
+  let businessIds = await followsResponse.json();
+
+  businessIds.forEach(async (business) => {
+    let businessResponse = await fetch('/business/' + business.businessId);
+    let businessInfo = await businessResponse.json();
+
+    let businessCalendar = businessInfo.calendarEmail;
+    console.log(businessCalendar);
+    if (businessCalendar != null) {
+      if (calendarSrc == '') {
+        calendarSrc = businessCalendar;
+      } else {
+        calendarSrc += '&src=' + businessCalendar;
+      }
+    }
+    console.log(calendarSrc);
+  })
+
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+  const calendarSection = document.getElementById('calendar-section');
+  console.log(calendarSrc);
+  if (calendarSrc == '') {
+    calendarSection.style.display = 'none';
+    return;
+  }
+  const calendarIframe = document.getElementById('calendar')
+  calendarSection.style.display = 'block';
+  calendarIframe.src = 'https://calendar.google.com/calendar/embed?src=' + calendarSrc;
+
+  // fetch('/follows?userId=' + userId).then(response => response.json()).then(businessIds => {
+  //   businessIds.forEach(business => {
+  //     fetch('/business/' + business.businessId).then(response => response.json()).then(businessInfo => {
+  //       let businessCalendar = businessInfo.calendarEmail;
+  //       console.log(businessCalendar);
+  //       if (businessCalendar != null) {
+  //         if (calendarSrc == '') {
+  //           calendarSrc = businessCalendar;
+  //         } else {
+  //           calendarSrc += '&' + businessCalendar;
+  //         }
+  //       }
+  //       console.log(calendarSrc);
+  //     })
+  //   })
+  //   const calendarSection = document.getElementById('calendar-section');
+  //   if (calendarSrc == '') {
+  //     calendarSection.style.display = 'none';
+  //     return;
+  //   }
+  //   const calendarIframe = document.getElementById('calendar')
+  //   calendarSection.style.display = 'block';
+  //   calendarIframe.src = 'https://calendar.google.com/calendar/embed?src=' + calendarSrc;
+  // })
 }

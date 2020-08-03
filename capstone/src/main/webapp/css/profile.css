@@ -1,17 +1,22 @@
 #basic-questionnaire {
-    display: block;
+  display: block;
 }
 
 #business-questionnaire {
-    display: none;
+  display: none;
+}
+
+#calendar {
+  height: 900px;
+  width: 1110px;
 }
 
 #edit-profile-section {
-    display: none;
+  display: none;
 }
 
 #first-question {
-    display: block;
+  display: block;
 }
 
 #lat-long {
