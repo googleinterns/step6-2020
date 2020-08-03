@@ -94,9 +94,6 @@ public class MapServlet extends HttpServlet {
       double lat = (Double) entity.getProperty(LAT_PROPERTY);
       double lng = (Double) entity.getProperty(LONG_PROPERTY);
 
-      System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-      System.out.println("lat id: " + id);
-
       MapInfo business = new MapInfo(id, name, location, lat, lng);
       latList.add(business);
     }
@@ -119,21 +116,15 @@ public class MapServlet extends HttpServlet {
       double lat = (Double) entity.getProperty(LAT_PROPERTY);
       double lng = (Double) entity.getProperty(LONG_PROPERTY);
 
-      System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-      System.out.println("long id: " + id);
-
       MapInfo business = new MapInfo(id, name, location, lat, lng);
       lngList.add(business);
     }
 
     List<MapInfo> resultsList = latList.stream()
-              .filter(os -> lngList.stream()                    // filter
-                  .anyMatch(ns ->                                  // compare both
-                       os.getId().equals(ns.getId()))) // last name
+              .filter(os -> lngList.stream()
+                  .anyMatch(ns ->
+                       os.getId().equals(ns.getId())))
               .collect(Collectors.toList());
-
-    System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-    System.out.println("results: " + resultsList.toString());
 
     response.setContentType("application/json;");
     Gson gson = new Gson();
