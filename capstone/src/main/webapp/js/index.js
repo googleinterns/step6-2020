@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { buildElement, setLoginOrLogoutUrl, setProfileUrl } from '/js/util.js';
+import { buildElement, getJsonObject, setLoginOrLogoutUrl, setProfileUrl } from '/js/util.js';
 
 let map, infoWindow;
 let markers = [];
@@ -23,8 +23,11 @@ window.onload = function() {
   // Check whether it's a new user.
   fetch('/check_new_user'); 
   
+  populateFollowedBusinessList();
+
   // Fetches all the businesses to be displayed.
   populateBusinessList();
+
 
   // Get login status of user to display on nav bar.
   setLoginOrLogoutUrl();
@@ -35,13 +38,37 @@ window.onload = function() {
   createHomePageMap();
 }
 
+function populateFollowedBusinessList() {
+  const followedBusinessList = document.getElementById('followed-businesses');
+  getFollows().then(follows => {
+    if (follows.length > 0) {
+      const header = buildElement('h3', 'Businesses you follow');
+      header.className = 'text-center';
+      followedBusinessList.appendChild(header);
+      follows.forEach(follow =>
+          getJsonObject('/business/' + follow.businessId).then(business =>
+              followedBusinessList.appendChild(createCard(business))));
+    }
+  });
+}
+
 function populateBusinessList() {
   const businessList = document.getElementById('businesses');
   fetch('/businesses').then(response => response.json()).then(businesses => {
     businesses.forEach(business => {
       businessList.appendChild(createCard(business));
     })
-  })
+  });
+}
+
+function getFollows() {
+  return getJsonObject('/login').then(user => {
+    if (user.isLoggedin) {
+      return getJsonObject('/follows', {'userId': user.userId});
+    } else {
+      return [];
+    }
+  });
 }
 
 function createCard(business) {
