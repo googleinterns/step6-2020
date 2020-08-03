@@ -14,10 +14,10 @@
 
 package com.google.sps.servlets;
 
-import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.GEO_PT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LAT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LONG_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NE_LAT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NE_LNG_PROPERTY;
@@ -29,7 +29,6 @@ import static com.google.sps.data.ProfileDatastoreUtil.YES;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
@@ -37,14 +36,13 @@ import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.appengine.api.datastore.Query.GeoRegion.Rectangle;
-import com.google.appengine.api.datastore.Query.StContainsFilter;
 import com.google.gson.Gson;
 import com.google.sps.data.MapInfo;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -60,50 +58,73 @@ public class MapServlet extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
     // Get map bounds from request parameter.
-    float SW_Lat, SW_Lng, NE_Lat, NE_Lng;
+    double SW_Lat, SW_Lng, NE_Lat, NE_Lng;
 
     try {
-      SW_Lat = Float.parseFloat(request.getParameter(SW_LAT_PROPERTY));
-      SW_Lng = Float.parseFloat(request.getParameter(SW_LNG_PROPERTY));
-      NE_Lat = Float.parseFloat(request.getParameter(NE_LAT_PROPERTY));
-      NE_Lng = Float.parseFloat(request.getParameter(NE_LNG_PROPERTY));
+      SW_Lat = Double.parseDouble(request.getParameter(SW_LAT_PROPERTY));
+      SW_Lng = Double.parseDouble(request.getParameter(SW_LNG_PROPERTY));
+      NE_Lat = Double.parseDouble(request.getParameter(NE_LAT_PROPERTY));
+      NE_Lng = Double.parseDouble(request.getParameter(NE_LNG_PROPERTY));
     } catch (NullPointerException e) {
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Request parameters are invalid.");
       return;
     }
 
-    GeoPt SW = new GeoPt(SW_Lat, SW_Lng);
-    GeoPt NE = new GeoPt(NE_Lat, NE_Lng);
-
-    Rectangle bounds = new Rectangle(SW, NE);
-
     // Filter businesses that are within the map search bounds.
-    Filter propertyFilter =
+    Filter latFilter =
         new CompositeFilter(
             CompositeFilterOperator.AND,
             Arrays.asList(
                 new FilterPredicate(IS_BUSINESS_PROPERTY, FilterOperator.EQUAL, YES),
-                new StContainsFilter(GEO_PT_PROPERTY, bounds)));
-
-    Query query = new Query(PROFILE_TASK_NAME).setFilter(propertyFilter);
-
-    PreparedQuery results = datastore.prepare(query);
+                new FilterPredicate(LAT_PROPERTY, FilterOperator.GREATER_THAN_OR_EQUAL, SW_Lat),
+                new FilterPredicate(LAT_PROPERTY, FilterOperator.LESS_THAN_OR_EQUAL, NE_Lat)));
 
     // Convert entities to Profile objects.
-    List<MapInfo> businesses = new ArrayList<>();
-    for (Entity entity : results.asIterable()) {
+    Query latQuery = new Query(PROFILE_TASK_NAME).setFilter(latFilter);
+    PreparedQuery latResults = datastore.prepare(latQuery);
+    List<MapInfo> latList = new ArrayList<>();
+    for (Entity entity : latResults.asIterable()) {
       String id = (String) entity.getKey().getName();
       String name = (String) entity.getProperty(NAME_PROPERTY);
       String location = (String) entity.getProperty(LOCATION_PROPERTY);
-      String bio = (String) entity.getProperty(BIO_PROPERTY);
-      GeoPt geoPt = (GeoPt) entity.getProperty(GEO_PT_PROPERTY);
+      double lat = (Double) entity.getProperty(LAT_PROPERTY);
+      double lng = (Double) entity.getProperty(LONG_PROPERTY);
 
-      MapInfo business = new MapInfo(id, name, location, bio, geoPt);
-      businesses.add(business);
+      MapInfo business = new MapInfo(id, name, location, lat, lng);
+      latList.add(business);
     }
+
+    // Filter businesses that are within the map search bounds.
+    Filter lngFilter =
+        new CompositeFilter(
+            CompositeFilterOperator.AND,
+            Arrays.asList(
+                new FilterPredicate(IS_BUSINESS_PROPERTY, FilterOperator.EQUAL, YES),
+                new FilterPredicate(LONG_PROPERTY, FilterOperator.GREATER_THAN_OR_EQUAL, SW_Lng),
+                new FilterPredicate(LONG_PROPERTY, FilterOperator.LESS_THAN_OR_EQUAL, NE_Lng)));
+
+    // Convert entities to Profile objects.
+    Query lngQuery = new Query(PROFILE_TASK_NAME).setFilter(lngFilter);
+    PreparedQuery lngResults = datastore.prepare(lngQuery);
+    List<MapInfo> lngList = new ArrayList<>();
+    for (Entity entity : lngResults.asIterable()) {
+      String id = (String) entity.getKey().getName();
+      String name = (String) entity.getProperty(NAME_PROPERTY);
+      String location = (String) entity.getProperty(LOCATION_PROPERTY);
+      double lat = (Double) entity.getProperty(LAT_PROPERTY);
+      double lng = (Double) entity.getProperty(LONG_PROPERTY);
+
+      MapInfo business = new MapInfo(id, name, location, lat, lng);
+      lngList.add(business);
+    }
+
+    List<MapInfo> resultsList =
+        latList.stream()
+            .filter(os -> lngList.stream().anyMatch(ns -> os.getId().equals(ns.getId())))
+            .collect(Collectors.toList());
 
     response.setContentType("application/json;");
     Gson gson = new Gson();
-    response.getWriter().println(gson.toJson(businesses));
+    response.getWriter().println(gson.toJson(resultsList));
   }
 }

@@ -17,7 +17,6 @@ package com.google.sps.servlets;
 import static com.google.sps.data.ProfileDatastoreUtil.ABOUT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.CALENDAR_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.GEO_PT_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
@@ -31,7 +30,6 @@ import static org.mockito.Mockito.doReturn;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.Field;
 import com.google.appengine.api.search.Index;
@@ -76,8 +74,6 @@ public class SearchServletTest {
   private static final String NAME_2 = "Infamous Pizzeria";
   private static final String NAME_3 = "Italy's Finest Pizza";
   private static final String LOCATION = "Mountain View, CA";
-  private static final String LAT = "45.0";
-  private static final String LONG = "45.0";
   private static final String BIO = "This is my business bio.";
   private static final String STORY = "The pandemic has affected my business in X many ways.";
   private static final String ABOUT = "Here is the Pizzeria's menu.";
@@ -90,7 +86,6 @@ public class SearchServletTest {
   private StringWriter servletResponseWriter;
   private SearchServlet servlet;
   private DatastoreService datastore;
-  private GeoPt GEO_PT;
 
   @Before
   public void setUp() throws IOException {
@@ -101,7 +96,6 @@ public class SearchServletTest {
     servletResponseWriter = new StringWriter();
     doReturn(new PrintWriter(servletResponseWriter)).when(response).getWriter();
     servlet = new SearchServlet();
-    GEO_PT = new GeoPt(Float.parseFloat(LAT), Float.parseFloat(LONG));
   }
 
   @After
@@ -114,7 +108,6 @@ public class SearchServletTest {
     Entity ent = new Entity(PROFILE_TASK_NAME, id);
     ent.setProperty(NAME_PROPERTY, name);
     ent.setProperty(LOCATION_PROPERTY, LOCATION);
-    ent.setProperty(GEO_PT_PROPERTY, GEO_PT);
     ent.setProperty(BIO_PROPERTY, BIO);
     ent.setProperty(STORY_PROPERTY, STORY);
     ent.setProperty(ABOUT_PROPERTY, ABOUT);

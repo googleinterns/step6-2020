@@ -19,7 +19,7 @@ let markers = [];
 let autocomplete;
 let MARKER_PATH = 'https://developers.google.com/maps/documentation/javascript/images/marker_green';
 
-window.onload = function() {
+window.addEventListener('DOMContentLoaded', (event) => {
   // Check whether it's a new user.
   fetch('/check_new_user'); 
   
@@ -36,7 +36,7 @@ window.onload = function() {
   setProfileUrl();
 
   createHomePageMap();
-}
+})
 
 function populateFollowedBusinessList() {
   const followedBusinessList = document.getElementById('followed-businesses');
@@ -173,7 +173,7 @@ function search() {
   fetch('/map?SW_Lat='+SW_Lat+'&SW_Lng='+SW_Lng+'&NE_Lat='+NE_Lat+'&NE_Lng='+NE_Lng)
     .then(response => response.json())
     .then(results => {
-    
+        console.log(results);
       clearResults();
       clearMarkers();
 
@@ -182,7 +182,7 @@ function search() {
       for(let i = 0; i < results.length; i++) {
         let markerLetter = String.fromCharCode('A'.charCodeAt(0) + (i % 26));
         let markerIcon = MARKER_PATH + markerLetter + '.png';
-        let coordinates = new google.maps.LatLng(results[i].geoPt.latitude, results[i].geoPt.longitude);
+        let coordinates = new google.maps.LatLng(results[i].latitude, results[i].longitude);
 
         // Use marker animation to drop the icons incrementally on the map.
         markers[i] = new google.maps.Marker({

@@ -14,7 +14,6 @@
 
 package com.google.sps.data;
 
-import com.google.appengine.api.datastore.GeoPt;
 
 // This stores some information about business to display on the home page map.
 public final class MapInfo {
@@ -22,8 +21,8 @@ public final class MapInfo {
   private String id;
   private String name;
   private String location;
-  private String bio;
-  private GeoPt geoPt;
+  private double latitude;
+  private double longitude;
 
   /**
    * Business user's information constructor.
@@ -31,14 +30,18 @@ public final class MapInfo {
    * @param id the unique id of the user.
    * @param name the user's name.
    * @param location the user's location.
-   * @param bio the user's bio.
-   * @param geoPt the user's lat and long coordinates.
+   * @param latitude the user's latitude location.
+   * @param longitude the user's longitude location.
    */
-  public MapInfo(String id, String name, String location, String bio, GeoPt geoPt) {
+  public MapInfo(String id, String name, String location, double latitude, double longitude) {
     this.id = id;
     this.name = name;
     this.location = location;
-    this.bio = bio;
-    this.geoPt = geoPt;
+    this.latitude = latitude;
+    this.longitude = longitude;
+  }
+
+  public String getId() {
+    return this.id;
   }
 }

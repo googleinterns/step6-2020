@@ -29,7 +29,7 @@ function getBusinessId() {
   return url.get('id');
 }
 
-window.addEventListener('load', function() {
+window.addEventListener('DOMContentLoaded', (event) =>  {
   // window.location.search returns the search string of the URL.
   // In this case, window.location.search = ?id={businessID}
   setLoginOrLogoutUrl();
