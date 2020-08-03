@@ -108,11 +108,17 @@ export function getJsonObject(url, parameters = {}) {
   return makeGetRequest(url, parameters).then(response => response.json());
 }
 
-export function makePostRequest(url, parameters) {
-  return fetch('https://example.com/profile', {
-    method: 'POST',
-    body: JSON.stringify(parameters),
-  });
+export function makeRequest(url, parameters, type) {
+  if (Object.keys(parameters).length > 0) {
+    // Add parameter fields to the url as query parameters
+    
+    // Create query parameter strings to be added to the url
+    let queryParamStrings = Object.keys(parameters).map(key => key + '=' + parameters[key]);
+    
+    url += '?' + queryParamStrings.join('&');
+  }
+  
+  return fetch(url, {method: type});
 }
 
 export function makeGetRequest(url, parameters = {}) {
@@ -126,4 +132,10 @@ export function makeGetRequest(url, parameters = {}) {
   }
   
   return fetch(url);
+}
+
+export function removeAllChildNodes(parent) {
+    while (parent.firstChild) {
+        parent.removeChild(parent.firstChild);
+    }
 }

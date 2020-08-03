@@ -17,6 +17,7 @@ import {
   buildButton,
   buildLinkElement,
   getJsonObject, 
+  removeAllChildNodes,
   } from '/js/util.js';
 
 /** Build form for submitting comments. */
@@ -41,13 +42,19 @@ export function buildCommentForm(userIsLoggedIn, businessId, parentId=null) {
 }
 
 function buildFormSubmitButton() {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'text-right';
+
   const button = document.createElement('input');
 
+  button.className = 'btn btn-danger';
   button.type = 'submit';
   button.value = 'Submit';
   button.target = 'body';
 
-  return button;
+  wrapper.appendChild(button);
+
+  return wrapper;
 }
 
 /** 
@@ -93,9 +100,13 @@ export function loadCommentList(userIsLoggedIn, businessId) {
 
 /** Build text field in which to enter a commment. */
 function buildCommentTextArea(userIsLoggedIn) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'form-group';
+  wrapper.style.marginBottom = '0.5rem';
+
   const commentTextArea = document.createElement('textarea');
 
-  commentTextArea.class = "container-fluid";
+  commentTextArea.className = 'form-control';
   commentTextArea.cols = 70;
   commentTextArea.name = 'content';
   
@@ -106,8 +117,9 @@ function buildCommentTextArea(userIsLoggedIn) {
   }
 
   commentTextArea.rows = 3;
+  wrapper.appendChild(commentTextArea);
 
-  return commentTextArea;
+  return wrapper;
 }
 
 /** 
@@ -135,11 +147,11 @@ function buildUserPageComment(comment) {
 * This function is meant for comments appearing on the page they where posted.
 */
 function buildCommentElement(comment) {
-  const commentElement = document.createElement('div');
+  const wrapper = document.createElement('div');
+  wrapper.id = comment.id;
 
-  // Set to bootstrap card element and set margin-top to 2 via bootstrap
-  commentElement.className = 'card mt-2'; 
-  commentElement.id = comment.id;
+  const commentElement = document.createElement('div');
+  commentElement.className = 'card';
 
   // Build the body of the commentElement
   const commentBody = document.createElement('div');
@@ -152,13 +164,19 @@ function buildCommentElement(comment) {
   commentBody.appendChild(buildElement('p', comment.content));
   
   commentElement.appendChild(commentBody);
+  wrapper.appendChild(commentElement);
 
-  return commentElement;
+
+  return wrapper;
 }
 
 
 function buildTopLevelCommentElement(comment, userIsLoggedIn) {
   const commentElement = buildCommentElement(comment);
+
+  // Set margin-top to 4 via bootstrap
+  commentElement.className = 'mt-4'; 
+
   const commentBody = commentElement.querySelector('.card-body');
 
   // Area that is initially empty to which reply form can be later added
@@ -168,40 +186,42 @@ function buildTopLevelCommentElement(comment, userIsLoggedIn) {
     // Add a button that opens a reply form bellow the comment
     commentBody.appendChild(
         buildButton(
-          'btn btn-danger btn-space', 
-          () => 
-              replyFormDiv.appendChild(
-                  buildCommentForm(true, comment.businessId, comment.id)), 
+          'btn btn-danger mr-2', 
+          () => {
+            const commentForm = buildCommentForm(true, comment.businessId, comment.id);
+            commentForm.className = 'card-body';
+            replyFormDiv.className = 'card';
+            removeAllChildNodes(replyFormDiv);
+            replyFormDiv.appendChild(commentForm);
+          }, 
           'Reply',
         ));
   }
 
+  const repliesDiv = document.createElement('div');
   if (comment.hasReplies) {
     // Add a button that shows replies bellow the comment
     commentBody.appendChild(
         buildButton(
-          'show-replies-button btn btn-danger btn-space', 
-          () => showReplies(comment.id), 
+          'show-replies-button btn btn-danger', 
+          () => showReplies(comment.id, repliesDiv), 
           'Show replies',
         ));
   }
-  commentElement.appendChild(commentBody);
 
   commentElement.appendChild(replyFormDiv);
+  commentElement.appendChild(repliesDiv);
 
   return commentElement;
 }
 
 /** Show replies to a specific comment and display it below the comment */
-async function showReplies(commentId) {
-  const parentComment = document.getElementById(commentId);
-
-  const replyDiv = document.createElement('div');
+async function showReplies(commentId, repliesDiv) {
+  removeAllChildNodes(repliesDiv);
 
   getJsonObject('/comments', {'parentId' : commentId})
       .then(replies => replies.forEach(reply =>
-          replyDiv.appendChild(buildCommentElement(reply))
+          repliesDiv.appendChild(buildCommentElement(reply))
       ));
 
-  parentComment.appendChild(replyDiv);
 }
