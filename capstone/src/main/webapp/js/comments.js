@@ -47,7 +47,7 @@ function buildFormSubmitButton() {
 
   const button = document.createElement('input');
 
-  button.className = 'btn btn-danger';
+  button.className = 'btn btn-danger mb-2';
   button.type = 'submit';
   button.value = 'Submit';
   button.target = 'body';
@@ -147,15 +147,13 @@ function buildUserPageComment(comment) {
 * This function is meant for comments appearing on the page they where posted.
 */
 function buildCommentElement(comment) {
-  const wrapper = document.createElement('div');
-  wrapper.id = comment.id;
-
   const commentElement = document.createElement('div');
   commentElement.className = 'card';
+  commentElement.id = comment.id;
 
   // Build the body of the commentElement
   const commentBody = document.createElement('div');
-  commentBody.className = 'card-body'
+  commentBody.className = 'card-body';
 
   const headerElement = buildElement('h5', comment.name + '  ');
   headerElement.appendChild(buildElement('small', comment.timestampStr)); 
@@ -164,10 +162,8 @@ function buildCommentElement(comment) {
   commentBody.appendChild(buildElement('p', comment.content));
   
   commentElement.appendChild(commentBody);
-  wrapper.appendChild(commentElement);
 
-
-  return wrapper;
+  return commentElement;
 }
 
 
@@ -175,7 +171,7 @@ function buildTopLevelCommentElement(comment, userIsLoggedIn) {
   const commentElement = buildCommentElement(comment);
 
   // Set margin-top to 4 via bootstrap
-  commentElement.className = 'mt-4'; 
+  commentElement.classList.add('mt-4'); 
 
   const commentBody = commentElement.querySelector('.card-body');
 
@@ -186,13 +182,10 @@ function buildTopLevelCommentElement(comment, userIsLoggedIn) {
     // Add a button that opens a reply form bellow the comment
     commentBody.appendChild(
         buildButton(
-          'btn btn-danger mr-2', 
+          'btn btn-danger mr-2 mb-2', 
           () => {
-            const commentForm = buildCommentForm(true, comment.businessId, comment.id);
-            commentForm.className = 'card-body';
-            replyFormDiv.className = 'card';
             removeAllChildNodes(replyFormDiv);
-            replyFormDiv.appendChild(commentForm);
+            replyFormDiv.appendChild(buildCommentForm(true, comment.businessId, comment.id));
           }, 
           'Reply',
         ));
@@ -203,14 +196,14 @@ function buildTopLevelCommentElement(comment, userIsLoggedIn) {
     // Add a button that shows replies bellow the comment
     commentBody.appendChild(
         buildButton(
-          'show-replies-button btn btn-danger', 
+          'show-replies-button btn btn-danger mb-2', 
           () => showReplies(comment.id, repliesDiv), 
           'Show replies',
         ));
   }
 
-  commentElement.appendChild(replyFormDiv);
-  commentElement.appendChild(repliesDiv);
+  commentBody.appendChild(replyFormDiv);
+  commentBody.appendChild(repliesDiv);
 
   return commentElement;
 }
