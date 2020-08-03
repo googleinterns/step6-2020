@@ -226,18 +226,16 @@ function geocodeAddress(address, geocoder, resultsMap, bounds) {
 
 async function displayCalendar() {
   const userId = getId();
-  let calendarSrc = '';
-
- 
 
   getJsonObject('/follows', {'userId': userId}).then(businessIds =>
-    generateCalendarSrc.then(calendarSrc => {
+    generateCalendarSrc(businessIds).then(calendarSrc => {
       const calendarSection = document.getElementById('calendar-section');
       if (calendarSrc == '') {
         calendarSection.style.display = 'none';
       } else {
-        const calendarIframe = document.getElementById('calendar')
         calendarSection.style.display = 'block';
+        const calendarIframe = document.getElementById('calendar')
+        calendarSrc += '&title=Followed Businesses';
         calendarIframe.src = 'https://calendar.google.com/calendar/embed?src=' + calendarSrc;
       }
     })
@@ -247,45 +245,9 @@ async function displayCalendar() {
 function generateCalendarSrc(businessIds) {
   const businessIdsPromise = 
       Promise.all(businessIds.map(businessId =>
-          getJsonObject('/business/' + business.businessId)
+          getJsonObject('/business/' + businessId.businessId)
               .then(businessInfo => businessInfo.calendarEmail)));
-  return 
-      businessIdsPromise.then(ids => ids.filter(id => id == null)).then(ids => ids.join('&src='));
-  
+  return businessIdsPromise
+      .then(emails => emails.filter(email => email != null))
+      .then(emails => emails.join('&src='));
 }
-
-// if (calendarSrc == '') {
-//               calendarSrc = businessCalendar;
-//             } else {
-//               calendarSrc += '&src=' + businessCalendar;
-//             }
-
- // let followsResponse = await fetch('/follows?userId=' + userId);
-  // let businessIds = await followsResponse.json();
-
-  // businessIds.forEach(async (business) => {
-  //   let businessResponse = await fetch('/business/' + business.businessId);
-  //   let businessInfo = await businessResponse.json();
-
-  //   let businessCalendar = businessInfo.calendarEmail;
-  //   console.log(businessCalendar);
-  //   if (businessCalendar != null) {
-  //     if (calendarSrc == '') {
-  //       calendarSrc = businessCalendar;
-  //     } else {
-  //       calendarSrc += '&src=' + businessCalendar;
-  //     }
-  //   }
-  //   console.log(calendarSrc);
-  // })
-
-  // await new Promise((resolve) => setTimeout(resolve, 3000));
-  // const calendarSection = document.getElementById('calendar-section');
-  // console.log(calendarSrc);
-  // if (calendarSrc == '') {
-  //   calendarSection.style.display = 'none';
-  //   return;
-  // }
-  // const calendarIframe = document.getElementById('calendar')
-  // calendarSection.style.display = 'block';
-  // calendarIframe.src = 'https://calendar.google.com/calendar/embed?src=' + calendarSrc;
