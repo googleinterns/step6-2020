@@ -149,7 +149,7 @@ function buildUserPageComment(comment) {
 function buildCommentElement(comment) {
   const commentElement = document.createElement('div');
   commentElement.className = 'card';
-  commentElement.id = comment.id
+  commentElement.id = comment.id;
 
   // Build the body of the commentElement
   const commentBody = document.createElement('div');
