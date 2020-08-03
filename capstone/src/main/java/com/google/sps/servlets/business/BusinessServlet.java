@@ -147,8 +147,16 @@ public class BusinessServlet extends HttpServlet {
 
     setEntityProperties(businessEntity, request, propertyNames);
 
-    businessEntity.setProperty(LAT_PROPERTY, doesParamExist(LAT_PROPERTY, request) ? Double.parseDouble(request.getParameter(LAT_PROPERTY)) : null);
-    businessEntity.setProperty(LONG_PROPERTY, doesParamExist(LONG_PROPERTY, request) ? Double.parseDouble(request.getParameter(LONG_PROPERTY)) : null);
+    businessEntity.setProperty(
+        LAT_PROPERTY,
+        doesParamExist(LAT_PROPERTY, request)
+            ? Double.parseDouble(request.getParameter(LAT_PROPERTY))
+            : null);
+    businessEntity.setProperty(
+        LONG_PROPERTY,
+        doesParamExist(LONG_PROPERTY, request)
+            ? Double.parseDouble(request.getParameter(LONG_PROPERTY))
+            : null);
 
     // Create a corresponding document for searching through businesses.
     Index index = searchService.getIndex(IndexSpec.newBuilder().setName("Business"));

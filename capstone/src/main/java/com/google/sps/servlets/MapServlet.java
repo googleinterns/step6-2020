@@ -14,10 +14,9 @@
 
 package com.google.sps.servlets;
 
-import static com.google.sps.data.ProfileDatastoreUtil.BIO_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.IS_BUSINESS_PROPERTY;
-import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LAT_PROPERTY;
+import static com.google.sps.data.ProfileDatastoreUtil.LOCATION_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.LONG_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NAME_PROPERTY;
 import static com.google.sps.data.ProfileDatastoreUtil.NE_LAT_PROPERTY;
@@ -37,18 +36,13 @@ import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.appengine.api.datastore.Query.GeoRegion.Rectangle;
-import com.google.appengine.api.datastore.Query.StContainsFilter;
 import com.google.gson.Gson;
 import com.google.sps.data.MapInfo;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 import java.util.List;
-import java.util.Set;
-import com.google.common.collect.Sets;
-import java.util.HashSet;
+import java.util.stream.Collectors;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -78,7 +72,9 @@ public class MapServlet extends HttpServlet {
 
     // Filter businesses that are within the map search bounds.
     Filter latFilter =
-            new CompositeFilter(CompositeFilterOperator.AND, Arrays.asList(
+        new CompositeFilter(
+            CompositeFilterOperator.AND,
+            Arrays.asList(
                 new FilterPredicate(IS_BUSINESS_PROPERTY, FilterOperator.EQUAL, YES),
                 new FilterPredicate(LAT_PROPERTY, FilterOperator.GREATER_THAN_OR_EQUAL, SW_Lat),
                 new FilterPredicate(LAT_PROPERTY, FilterOperator.LESS_THAN_OR_EQUAL, NE_Lat)));
@@ -100,7 +96,9 @@ public class MapServlet extends HttpServlet {
 
     // Filter businesses that are within the map search bounds.
     Filter lngFilter =
-            new CompositeFilter(CompositeFilterOperator.AND, Arrays.asList(
+        new CompositeFilter(
+            CompositeFilterOperator.AND,
+            Arrays.asList(
                 new FilterPredicate(IS_BUSINESS_PROPERTY, FilterOperator.EQUAL, YES),
                 new FilterPredicate(LONG_PROPERTY, FilterOperator.GREATER_THAN_OR_EQUAL, SW_Lng),
                 new FilterPredicate(LONG_PROPERTY, FilterOperator.LESS_THAN_OR_EQUAL, NE_Lng)));
@@ -120,11 +118,10 @@ public class MapServlet extends HttpServlet {
       lngList.add(business);
     }
 
-    List<MapInfo> resultsList = latList.stream()
-              .filter(os -> lngList.stream()
-                  .anyMatch(ns ->
-                       os.getId().equals(ns.getId())))
-              .collect(Collectors.toList());
+    List<MapInfo> resultsList =
+        latList.stream()
+            .filter(os -> lngList.stream().anyMatch(ns -> os.getId().equals(ns.getId())))
+            .collect(Collectors.toList());
 
     response.setContentType("application/json;");
     Gson gson = new Gson();

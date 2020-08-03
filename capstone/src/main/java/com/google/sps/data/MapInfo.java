@@ -14,7 +14,6 @@
 
 package com.google.sps.data;
 
-import com.google.appengine.api.datastore.GeoPt;
 
 // This stores some information about business to display on the home page map.
 public final class MapInfo {

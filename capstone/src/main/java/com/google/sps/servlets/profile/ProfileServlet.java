@@ -134,8 +134,16 @@ public class ProfileServlet extends HttpServlet {
     profileEntity.setProperty(LOCATION_PROPERTY, getParam(LOCATION_PROPERTY, request));
     profileEntity.setProperty(BIO_PROPERTY, getParam(BIO_PROPERTY, request));
 
-    profileEntity.setProperty(LAT_PROPERTY, doesParamExist(LAT_PROPERTY, request) ? Double.parseDouble(request.getParameter(LAT_PROPERTY)) : null);
-    profileEntity.setProperty(LONG_PROPERTY, doesParamExist(LONG_PROPERTY, request) ? Double.parseDouble(request.getParameter(LONG_PROPERTY)) : null);
+    profileEntity.setProperty(
+        LAT_PROPERTY,
+        doesParamExist(LAT_PROPERTY, request)
+            ? Double.parseDouble(request.getParameter(LAT_PROPERTY))
+            : null);
+    profileEntity.setProperty(
+        LONG_PROPERTY,
+        doesParamExist(LONG_PROPERTY, request)
+            ? Double.parseDouble(request.getParameter(LONG_PROPERTY))
+            : null);
 
     // Put entity in datastore.
     datastore.put(profileEntity);
