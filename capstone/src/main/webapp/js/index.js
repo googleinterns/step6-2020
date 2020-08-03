@@ -54,11 +54,20 @@ function populateFollowedBusinessList() {
 
 function populateBusinessList() {
   const businessList = document.getElementById('businesses');
-  fetch('/businesses').then(response => response.json()).then(businesses => {
-    businesses.forEach(business => {
-      businessList.appendChild(createCard(business));
+
+  getFollowedBusinesses().then(followSet =>
+    getJsonObject('/businesses').then(businesses => {
+      businesses.filter(business => !followSet.has(business.id)).forEach(business => {
+        businessList.appendChild(createCard(business));
+      })
     })
-  });
+  );
+}
+
+function getFollowedBusinesses() {
+  return getFollows()
+      .then(followArray => followArray.map(follow => follow.businessId))
+      .then(followedBusinessArray => new Set(followedBusinessArray));
 }
 
 function getFollows() {
