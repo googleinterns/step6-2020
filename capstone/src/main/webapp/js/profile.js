@@ -21,6 +21,7 @@ window.addEventListener('DOMContentLoaded', (event) =>  {
   setLoginOrLogoutUrl();
   setProfileUrl();
   displayProfile();
+  displayCalendar();
   
   const url = new URLSearchParams(window.location.search);
   const profileId = url.get('id');
@@ -221,4 +222,32 @@ function geocodeAddress(address, geocoder, resultsMap, bounds) {
       mapElement.style.display = 'none';
     }
   });
+}
+
+async function displayCalendar() {
+  const userId = getId();
+
+  getJsonObject('/follows', {'userId': userId}).then(businessIds =>
+    generateCalendarSrc(businessIds).then(calendarSrc => {
+      const calendarSection = document.getElementById('calendar-section');
+      if (calendarSrc == '') {
+        calendarSection.style.display = 'none';
+      } else {
+        calendarSection.style.display = 'block';
+        const calendarIframe = document.getElementById('calendar')
+        calendarSrc += '&title=Followed Businesses';
+        calendarIframe.src = 'https://calendar.google.com/calendar/embed?src=' + calendarSrc;
+      }
+    })
+  );
+}
+
+function generateCalendarSrc(businessIds) {
+  const businessIdsPromise = 
+      Promise.all(businessIds.map(businessId =>
+          getJsonObject('/business/' + businessId.businessId)
+              .then(businessInfo => businessInfo.calendarEmail)));
+  return businessIdsPromise
+      .then(emails => emails.filter(email => email != null))
+      .then(emails => emails.join('&src='));
 }
