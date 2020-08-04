@@ -93,13 +93,6 @@
     </dependency>
 
     <dependency>
-      <groupId>com.google.appengine</groupId>
-      <artifactId>appengine-tools-sdk</artifactId>
-      <version>1.9.60</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
       <groupId>com.google.collections</groupId>
       <artifactId>google-collections</artifactId>
       <version>1.0-rc1</version>
