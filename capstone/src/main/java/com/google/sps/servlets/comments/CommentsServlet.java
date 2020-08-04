@@ -111,7 +111,7 @@ public class CommentsServlet extends HttpServlet {
     } else {
       sortDirection = SortDirection.DESCENDING;
     }
-    
+
     Query query =
         new Query(COMMENT_TASK_NAME)
             .setFilter(buildFilter(filterProperty, filterValue))
