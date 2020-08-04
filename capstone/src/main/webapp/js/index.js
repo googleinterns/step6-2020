@@ -22,8 +22,6 @@ let MARKER_PATH = 'https://developers.google.com/maps/documentation/javascript/i
 window.addEventListener('DOMContentLoaded', (event) => {
   // Check whether it's a new user.
   fetch('/check_new_user'); 
-  
-  populateFollowedBusinessList();
 
   // Fetches all the businesses to be displayed.
   populateBusinessList();
@@ -53,12 +51,25 @@ function populateFollowedBusinessList() {
 }
 
 function populateBusinessList() {
-  const businessList = document.getElementById('businesses');
-  fetch('/businesses').then(response => response.json()).then(businesses => {
-    businesses.forEach(business => {
-      businessList.appendChild(createCard(business));
+  populateFollowedBusinessList();
+  const businessList = document.getElementById('other-businesses');
+  const header = buildElement('h3', 'All businesses');
+  header.className = 'text-center';
+  businessList.appendChild(header);
+
+  getFollowedBusinesses().then(followSet =>
+    getJsonObject('/businesses').then(businesses => {
+      businesses.filter(business => !followSet.has(business.id)).forEach(business => {
+        businessList.appendChild(createCard(business));
+      })
     })
-  });
+  );
+}
+
+function getFollowedBusinesses() {
+  return getFollows()
+      .then(followArray => followArray.map(follow => follow.businessId))
+      .then(followedBusinessArray => new Set(followedBusinessArray));
 }
 
 function getFollows() {
@@ -267,13 +278,15 @@ function buildIWContent(id, name, location) {
 
 window.fetchSearchResults = function() {
   const searchItem = document.getElementById('business-text-search').value;
-  const businessList = document.getElementById('businesses');
+  const businessList = document.getElementById('result-businesses');
   
   // Clear business list for update.
   businessList.innerHTML = '';
   if (searchItem == '') {
     // Reset business list to original view of all businesses.
-    populateBusinessList();
+    document.getElementById('followed-businesses').style.display = 'block';
+    document.getElementById('other-businesses').style.display = 'block';
+    businessList.style.display = 'none';
   } else {
     fetch('/search?searchItem=' + searchItem)
         .then(response => {
@@ -283,6 +296,9 @@ window.fetchSearchResults = function() {
             }
             return response.json();
         }).then(businesses => {
+            document.getElementById('followed-businesses').style.display = 'none';
+            document.getElementById('other-businesses').style.display = 'none';
+            businessList.style.display = 'block';
             businesses.forEach(business => {
               businessList.appendChild(createCard(business));
             })
