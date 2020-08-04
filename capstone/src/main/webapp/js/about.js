@@ -15,9 +15,6 @@
 import { buildElement, getJsonObject, setLoginOrLogoutUrl, setProfileUrl } from '/js/util.js';
 
 window.addEventListener('DOMContentLoaded', (event) => {
-  // Check whether it's a new user.
-  fetch('/check_new_user'); 
-
   // Get login status of user to display on nav bar.
   setLoginOrLogoutUrl();
   
