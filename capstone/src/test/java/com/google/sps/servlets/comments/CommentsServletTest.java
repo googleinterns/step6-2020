@@ -299,10 +299,11 @@ public class CommentsServletTest {
 
     Comment[] expectedReturnedComments =
         new Comment[] {
-          generateCommentForTest(
-              /*timestamp*/ 2, USER_ID_1, BUSINESS_ID_0, /*parentId*/ parameterVal),
+          // Replies sorted in reverse order
           generateCommentForTest(
               /*timestamp*/ 1, USER_ID_0, BUSINESS_ID_0, /*parentId*/ parameterVal),
+          generateCommentForTest(
+              /*timestamp*/ 2, USER_ID_1, BUSINESS_ID_0, /*parentId*/ parameterVal),
         };
 
     runTest(parameterName, parameterVal, expectedReturnedComments);
