@@ -94,7 +94,9 @@ window.submitProfileForm = function() {
   } else {
     convertToLatLong().then((results) => {
       form.submit();
-    }) 
+    }).catch((e) => {
+      alert("Invalid location");
+    });
   }
 }
 
