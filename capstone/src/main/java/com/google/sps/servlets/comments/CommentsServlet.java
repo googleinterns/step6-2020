@@ -104,10 +104,18 @@ public class CommentsServlet extends HttpServlet {
 
   private List<Entity> runCommentsQuery(String filterProperty, String filterValue)
       throws IllegalArgumentException {
+    SortDirection sortDirection;
+    if (filterProperty.equals(PARENT_ID_PROPERTY)) {
+      // Sort replies by oldest first
+      sortDirection = SortDirection.ASCENDING;
+    } else {
+      sortDirection = SortDirection.DESCENDING;
+    }
+    
     Query query =
         new Query(COMMENT_TASK_NAME)
             .setFilter(buildFilter(filterProperty, filterValue))
-            .addSort(TIMESTAMP_PROPERTY, SortDirection.DESCENDING);
+            .addSort(TIMESTAMP_PROPERTY, sortDirection);
     return datastore.prepare(query).asList(FetchOptions.Builder.withLimit(COMMENT_LIMIT));
   }
 
