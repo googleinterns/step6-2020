@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { buildElement, getJsonObject, setLoginOrLogoutUrl, setProfileUrl } from '/js/util.js';
+import { buildElement, getJsonObject } from '/js/util.js';
 
 let map, infoWindow;
 let markers = [];
@@ -25,13 +25,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
   // Fetches all the businesses to be displayed.
   populateBusinessList();
-
-
-  // Get login status of user to display on nav bar.
-  setLoginOrLogoutUrl();
-  
-  // Update and set profile nav link.
-  setProfileUrl();
 
   createHomePageMap();
 })
