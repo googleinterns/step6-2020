@@ -17,9 +17,7 @@ import {
   buildButton,
   checkUserLoggedIn,
   getJsonObject,
-  makeRequest,
-  setLoginOrLogoutUrl,
-  setProfileUrl,
+  makeRequest
   } from '/js/util.js';
 
 const calendarBaseURL = 'https://calendar.google.com/calendar/embed?src=';
@@ -32,8 +30,6 @@ function getBusinessId() {
 window.addEventListener('DOMContentLoaded', (event) =>  {
   // window.location.search returns the search string of the URL.
   // In this case, window.location.search = ?id={businessID}
-  setLoginOrLogoutUrl();
-  setProfileUrl();
   const businessId = getBusinessId();
   constructBusinessProfile(businessId);
 
